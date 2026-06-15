@@ -1,0 +1,166 @@
+export type CMSStatus = "draft" | "published" | "hidden"
+export type LegalNoticeType = "ai-warning" | "terms" | "privacy" | "cookie"
+
+export interface SiteConfigData {
+  logoUrl: string
+  logoPubId: string
+  siteName: string
+  tagline: string
+  favicon: string
+  contactEmail: string
+  contactPhone: string
+  contactAddress: string
+  socialLinks: { facebook?: string; twitter?: string; linkedin?: string; youtube?: string }
+}
+
+export interface NavItem {
+  _id: string
+  label: string
+  href: string
+  order: number
+  isExternal: boolean
+}
+export interface NavMenuData { items: NavItem[]; status: CMSStatus }
+
+// ── Homepage sub-types ────────────────────────────────────────────────────────
+
+export interface HomePageServiceCard {
+  _id: string
+  title: string
+  subtitle: string
+  href: string
+  icon: string        // lucide icon name e.g. "MessageSquare"
+  comingSoon: boolean
+  visible: boolean
+  order: number
+}
+
+export interface HomePageStatCard {
+  _id: string
+  label: string
+  value: string       // display value set manually, e.g. "19+"
+  icon: string        // lucide icon name
+  visible: boolean
+  order: number
+}
+
+export interface HomePageFeature {
+  _id: string
+  title: string
+  body: string
+  icon: string
+  order: number
+  visible: boolean
+}
+
+export interface HomePagePlan {
+  _id: string
+  name: string
+  price: string
+  badge: string
+  ctaText: string
+  ctaHref: string
+  plan: string        // "" | "standard" | "premium" — controls which CTA component renders
+  highlighted: boolean
+  visible: boolean
+  order: number
+  items: string[]
+}
+
+export interface HomePageData {
+  sections: {
+    hero: boolean
+    stats: boolean
+    features: boolean
+    pricing: boolean
+    cta: boolean
+  }
+  hero: {
+    title: string
+    subtitle: string
+    ctaText: string
+    ctaHref: string
+    imageUrl: string
+    imagePubId: string
+  }
+  serviceCards: HomePageServiceCard[]
+  statsHeading: string
+  stats: HomePageStatCard[]
+  featuresHeading: string
+  features: HomePageFeature[]
+  pricingHeading: string
+  plans: HomePagePlan[]
+  ctaSection: {
+    title: string
+    subtitle: string
+    buttonText: string
+    buttonHref: string
+  }
+  status: CMSStatus
+}
+
+// ── Other CMS types (unchanged) ───────────────────────────────────────────────
+
+export interface AboutPageData {
+  title: string
+  body: object
+  mission: string
+  team: Array<{ _id: string; name: string; role: string; imageUrl: string; imagePubId: string; order: number }>
+  status: CMSStatus
+}
+
+export interface FAQItem {
+  _id: string
+  question: string
+  answer: string
+  category: string
+  order: number
+  status: CMSStatus
+}
+export interface FAQData { items: FAQItem[] }
+
+export interface BlogCategoryData {
+  _id: string
+  name: string
+  slug: string
+  description: string
+  status: CMSStatus
+}
+
+export interface BlogPostData {
+  _id: string
+  title: string
+  slug: string
+  body: object
+  excerpt: string
+  coverImageUrl: string
+  coverImagePubId: string
+  category: string
+  tags: string[]
+  author: string
+  status: CMSStatus
+  publishedAt: string | null
+  createdAt: string
+}
+
+export interface FooterColumn {
+  _id: string
+  heading: string
+  links: Array<{ label: string; href: string }>
+  order: number
+}
+export interface FooterData {
+  columns: FooterColumn[]
+  disclaimer: string
+  copyright: string
+  status: CMSStatus
+}
+
+export interface LegalNoticeData {
+  _id: string
+  type: LegalNoticeType
+  title: string
+  body: object
+  status: CMSStatus
+  publishedAt: string | null
+}

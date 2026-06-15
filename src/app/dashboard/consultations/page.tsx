@@ -13,6 +13,39 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+type RawSource = { title?: string; articleNumber?: string; url?: string };
+
+/** Groups flat per-paragraph sources into (law, article, points[]) for display. */
+function groupSources(
+  sources: RawSource[]
+): Array<{ label: string; url?: string }> {
+  const map = new Map<string, { label: string; url?: string; points: string[] }>();
+  for (const s of sources) {
+    const title = s.title ?? "";
+    const raw = s.articleNumber ?? "";
+    // Strip paragraph/subparagraph suffix to get base article: "მუხლი X პ.Y" → "მუხლი X"
+    const baseArticle = raw.replace(/\s+[პქ]\.[^\s]+/g, "").trim();
+    // Extract point notation (e.g. "3.1" from "პ.3.1")
+    const pointMatch = raw.match(/[პქ]\.(\S+)/g);
+    const point = pointMatch ? pointMatch.map((p) => p.replace(/^[პქ]\./, "")).join(" ") : "";
+    const key = `${title}|${baseArticle}|${s.url ?? ""}`;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, {
+        label: baseArticle ? `${title} — ${baseArticle}` : title,
+        url: s.url,
+        points: point ? [point] : [],
+      });
+    } else if (point && !existing.points.includes(point)) {
+      existing.points.push(point);
+    }
+  }
+  return [...map.values()].map(({ label, url, points }) => ({
+    label: points.length > 0 ? `${label}, პუნქტი${points.length > 1 ? "ები" : ""}: ${points.join("; ")}` : label,
+    url,
+  }));
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function ConsultationsPage() {
@@ -75,17 +108,11 @@ export default async function ConsultationsPage() {
                         იურიდიული საფუძველი:
                       </p>
                       <div className="flex flex-wrap gap-1.5">
-                        {sources.slice(0, 5).map((s, i) => (
+                        {groupSources(sources as RawSource[]).map((g, i) => (
                           <Badge key={i} variant="secondary" className="text-xs">
-                            {s.title}
-                            {s.articleNumber ? ` — ${s.articleNumber}` : ""}
+                            {g.label}
                           </Badge>
                         ))}
-                        {sources.length > 5 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{sources.length - 5}
-                          </Badge>
-                        )}
                       </div>
                       {sources[0]?.url && (
                         <a

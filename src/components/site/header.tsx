@@ -1,19 +1,20 @@
 import Link from "next/link";
+import { User2 } from "lucide-react";
 import { auth } from "@/auth";
 import { buttonVariants } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
-
-const publicNav = [
-  { href: "/", label: "მთავარი" },
-  { href: "/about", label: "ჩვენ შესახებ" },
-  { href: "/services", label: "მომსახურებები" },
-  { href: "/legislation", label: "კანონმდებლობა" },
-  { href: "/blog", label: "ბლოგი" },
-];
+import { getNavMenu, getSiteConfig } from "@/lib/cms";
 
 export async function Header() {
-  const session = await auth();
+  const [session, nav, config] = await Promise.all([
+    auth(),
+    getNavMenu(),
+    getSiteConfig(),
+  ]);
   const user = session?.user;
+
+  const siteName = config.siteName?.trim() || "ჩემი იურისტი";
+  const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white shadow-sm">
@@ -21,19 +22,21 @@ export async function Header() {
         {/* Logo */}
         <Link href="/" className="flex flex-col leading-tight shrink-0">
           <span className="text-lg font-bold text-[#1a1a2e] tracking-wide">
-            ჩემი იურისტი
+            {siteName}
           </span>
           <span className="text-xs text-[#6b7280] font-normal">
-            კანონი მარტივ ენაზე
+            {tagline}
           </span>
         </Link>
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-5 text-sm">
-          {publicNav.map((n) => (
+          {nav.items.map((n) => (
             <Link
-              key={n.href}
+              key={n._id}
               href={n.href}
+              target={n.isExternal ? "_blank" : undefined}
+              rel={n.isExternal ? "noopener noreferrer" : undefined}
               className="text-[#374151] hover:text-[#1a1a2e] font-medium transition-colors"
             >
               {n.label}
@@ -53,9 +56,13 @@ export async function Header() {
                   ადმინი
                 </Link>
               )}
-              <span className="text-sm text-muted-foreground hidden sm:inline">
-                {user.name ?? user.email}
-              </span>
+              <Link
+                href="/profile"
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                <User2 className="h-4 w-4 sm:mr-1.5" />
+                <span className="hidden sm:inline">{user.name ?? user.email}</span>
+              </Link>
               <LogoutButton />
             </>
           ) : (
