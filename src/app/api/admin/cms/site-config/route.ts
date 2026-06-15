@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { getAdminSession } from "@/lib/admin"
 import { dbConnect } from "@/lib/db"
 import { SiteConfig } from "@/lib/models/SiteConfig"
@@ -19,5 +20,6 @@ export async function PUT(req: NextRequest) {
   const body = await req.json()
   await dbConnect()
   const doc = await SiteConfig.findOneAndUpdate({}, { $set: body }, { upsert: true, new: true }).lean()
+  revalidatePath("/", "layout")
   return NextResponse.json({ data: doc })
 }

@@ -30,12 +30,24 @@ type Message = {
 // can't answer from the approved text we must not show citations beside it.
 const NOT_FOUND_MSG = "პასუხი ვერ მოიძებნა დამტკიცებულ იურიდიულ წყაროებში.";
 
-/** "მუხლი 37, პუნქტი 2, ქვეპუნქტი „ა“" from a single citation item. */
-function formatItem(it: LegalBasisItem): string {
-  let s = it.article;
-  if (it.paragraph) s += `, პუნქტი ${it.paragraph}`;
-  if (it.subparagraph) s += `, ქვეპუნქტი „${it.subparagraph}“`;
-  return s;
+/** Groups items by article and returns collapsed point strings per article. */
+function groupByArticle(
+  items: LegalBasisItem[]
+): Array<{ article: string; points: string[] }> {
+  const map = new Map<string, string[]>();
+  for (const it of items) {
+    if (!map.has(it.article)) map.set(it.article, []);
+    let point = '';
+    if (it.paragraph && it.subparagraph) {
+      point = `${it.paragraph} „${it.subparagraph}”`;
+    } else if (it.paragraph) {
+      point = it.paragraph;
+    } else if (it.subparagraph) {
+      point = `„${it.subparagraph}”`;
+    }
+    if (point) map.get(it.article)!.push(point);
+  }
+  return [...map.entries()].map(([article, points]) => ({ article, points }));
 }
 
 export function ChatClient() {
@@ -159,30 +171,36 @@ export function ChatClient() {
                     <p className="text-xs font-semibold text-muted-foreground">
                       იურიდიული საფუძველი:
                     </p>
-                    {m.legalBasis.map((g) => (
-                      <div key={g.url} className="space-y-1">
-                        <p className="text-xs font-medium">{g.lawName}:</p>
-                        <ul className="ml-1 space-y-0.5">
-                          {g.items.map((it, i) => (
-                            <li
-                              key={`${it.article}-${it.paragraph ?? ""}-${it.subparagraph ?? ""}-${i}`}
-                              className="text-xs text-muted-foreground"
-                            >
-                              {formatItem(it)}
-                            </li>
-                          ))}
-                        </ul>
-                        <a
-                          href={g.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="flex items-start gap-1.5 text-xs text-primary hover:underline"
-                        >
-                          <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                          <span>წყარო</span>
-                        </a>
-                      </div>
-                    ))}
+                    {m.legalBasis.map((g) => {
+                      const articleGroups = groupByArticle(g.items);
+                      return (
+                        <div key={g.url} className="space-y-1">
+                          <p className="text-xs font-medium">{g.lawName}:</p>
+                          <ul className="ml-1 space-y-0.5">
+                            {articleGroups.map(({ article, points }) => (
+                              <li key={article} className="text-xs text-muted-foreground">
+                                {article}
+                                {points.length > 1 && (
+                                  <>, პუნქტები: {points.join("; ")}</>
+                                )}
+                                {points.length === 1 && (
+                                  <>, პუნქტი {points[0]}</>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                          <a
+                            href={g.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="flex items-start gap-1.5 text-xs text-primary hover:underline"
+                          >
+                            <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                            <span>წყარო</span>
+                          </a>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>

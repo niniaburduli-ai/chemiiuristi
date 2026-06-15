@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import {
@@ -348,8 +348,8 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
             <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">კონსულტაციები არ არის</td></tr>
           )}
           {initial.map((c) => (
-            <>
-              <tr key={c.id} className="border-b [&>td]:px-4 [&>td]:py-3">
+            <React.Fragment key={c.id}>
+              <tr className="border-b [&>td]:px-4 [&>td]:py-3">
                 <td className="max-w-[280px]">
                   <div className="truncate font-medium">{c.question}</div>
                 </td>
@@ -373,7 +373,7 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
                   </td>
                 </tr>
               )}
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>

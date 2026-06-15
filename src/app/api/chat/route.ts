@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     keywords: expanded.keywords,
     hypothetical: expanded.hypothetical,
   };
-  const matches = searchSources(fetched, searchQuery, 6);
+  const matches = searchSources(fetched, searchQuery, 10);
   if (matches.length === 0) {
     return NextResponse.json(
       { answer: NOT_FOUND_MSG, legalBasis: [] },

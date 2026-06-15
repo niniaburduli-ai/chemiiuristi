@@ -31,14 +31,17 @@ export function LegalNoticesForm() {
   const [msg, setMsg] = useState("")
 
   useEffect(() => {
-    fetch("/api/admin/cms/legal").then((r) => r.json()).then(({ items }: { items: LegalNoticeData[] }) => {
-      if (!items) return
-      setNotices((p) => {
-        const next = { ...p }
-        for (const item of items) next[item.type as LegalNoticeType] = item
-        return next
+    fetch("/api/admin/cms/legal")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(({ items }: { items: LegalNoticeData[] }) => {
+        if (!items) return
+        setNotices((p) => {
+          const next = { ...p }
+          for (const item of items) next[item.type as LegalNoticeType] = item
+          return next
+        })
       })
-    })
+      .catch(() => {})
   }, [])
 
   const notice = notices[active]
@@ -49,14 +52,20 @@ export function LegalNoticesForm() {
 
   async function save(status: LegalNoticeData["status"]) {
     setSaving(true); setMsg("")
-    const res = await fetch("/api/admin/cms/legal", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...notice, status, ...(status === "published" ? { publishedAt: new Date().toISOString() } : {}) }),
-    })
-    const { data } = await res.json()
-    if (data) setNotices((p) => ({ ...p, [active]: data }))
-    setMsg("შენახულია"); setSaving(false)
+    try {
+      const res = await fetch("/api/admin/cms/legal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...notice, status, ...(status === "published" ? { publishedAt: new Date().toISOString() } : {}) }),
+      })
+      const json = await res.json()
+      if (json.data) setNotices((p) => ({ ...p, [active]: json.data }))
+      setMsg(res.ok ? "შენახულია" : (json.error ?? "შეცდომა"))
+    } catch {
+      setMsg("შეცდომა")
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (

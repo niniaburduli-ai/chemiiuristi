@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Globe, TriangleAlert } from "lucide-react";
+import { getFooter, getSiteConfig } from "@/lib/cms";
 
-const nav = [
+const DEFAULT_DISCLAIMER =
+  "გაფრთხილება: პასუხები გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს.";
+const DEFAULT_COPYRIGHT = `© 2026 ჩემი იურისტი. ყველა უფლება დაცულია.`;
+
+const staticNav = [
   { href: "/", label: "მთავარი" },
   { href: "/about", label: "ჩვენ შესახებ" },
   { href: "/services", label: "მომსახურებები" },
@@ -9,13 +14,23 @@ const nav = [
   { href: "/blog", label: "ბლოგი" },
 ];
 
-const legal = [
+const staticLegal = [
   { href: "/privacy", label: "კონფიდენციალურობის პოლიტიკა" },
   { href: "/terms", label: "გამოყენების პირობები" },
   { href: "/disclaimer", label: "პასუხისმგებლობის შეზღუდვა" },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const [footer, config] = await Promise.all([getFooter(), getSiteConfig()]);
+
+  const disclaimer = footer.disclaimer?.trim() || DEFAULT_DISCLAIMER;
+  const copyright = footer.copyright?.trim() || DEFAULT_COPYRIGHT;
+  const siteName = config.siteName?.trim() || "ჩემი იურისტი";
+  const tagline = config.tagline?.trim() || "კანონი მარტივი ენით";
+  const contactEmail = config.contactEmail?.trim() || "info@chemiuristi.ge";
+  const contactPhone = config.contactPhone?.trim() || "+995 32 12 123 456";
+  const contactAddress = config.contactAddress?.trim() || "თბილისი, საქართველო";
+
   return (
     <footer className="bg-[#3730a3] text-white">
       {/* Main footer grid */}
@@ -24,8 +39,8 @@ export function Footer() {
         {/* Col 1 — brand */}
         <div className="space-y-4">
           <div>
-            <p className="font-bold text-lg leading-tight">ჩემი იურისტი</p>
-            <p className="text-indigo-300 text-xs mt-0.5">კანონი მარტივი ენით</p>
+            <p className="font-bold text-lg leading-tight">{siteName}</p>
+            <p className="text-indigo-300 text-xs mt-0.5">{tagline}</p>
           </div>
           <p className="text-indigo-200 text-xs leading-relaxed">
             AI-ზე დაფუძნებული იურიდიული პლატფორმა, რომელიც გთავაზობს
@@ -37,7 +52,7 @@ export function Footer() {
         <div>
           <p className="font-semibold text-white mb-4">ნავიგაცია</p>
           <ul className="space-y-2.5">
-            {nav.map((n) => (
+            {staticNav.map((n) => (
               <li key={n.href}>
                 <Link
                   href={n.href}
@@ -55,7 +70,7 @@ export function Footer() {
         <div>
           <p className="font-semibold text-white mb-4">სასარგებლო ინფორმაცია</p>
           <ul className="space-y-2.5">
-            {legal.map((l) => (
+            {staticLegal.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -73,48 +88,50 @@ export function Footer() {
         <div>
           <p className="font-semibold text-white mb-4">კონტაქტი</p>
           <ul className="space-y-3">
-            <li className="flex items-center gap-2.5 text-indigo-200">
-              <Mail className="h-4 w-4 shrink-0 text-indigo-300" />
-              <a href="mailto:info@chemiuristi.ge" className="hover:text-white transition-colors">
-                info@chemiuristi.ge
-              </a>
-            </li>
+            {contactEmail && (
+              <li className="flex items-center gap-2.5 text-indigo-200">
+                <Mail className="h-4 w-4 shrink-0 text-indigo-300" />
+                <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors">
+                  {contactEmail}
+                </a>
+              </li>
+            )}
             <li className="flex items-center gap-2.5 text-indigo-200">
               <Globe className="h-4 w-4 shrink-0 text-indigo-300" />
               <a href="https://chemiuristi.ge" className="hover:text-white transition-colors">
                 chemiuristi.ge
               </a>
             </li>
-            <li className="flex items-center gap-2.5 text-indigo-200">
-              <Phone className="h-4 w-4 shrink-0 text-indigo-300" />
-              <a href="tel:+995321212345" className="hover:text-white transition-colors">
-                +995 32 12 123 456
-              </a>
-            </li>
-            <li className="flex items-center gap-2.5 text-indigo-200">
-              <MapPin className="h-4 w-4 shrink-0 text-indigo-300" />
-              <span>თბილისი, საქართველო</span>
-            </li>
+            {contactPhone && (
+              <li className="flex items-center gap-2.5 text-indigo-200">
+                <Phone className="h-4 w-4 shrink-0 text-indigo-300" />
+                <a href={`tel:${contactPhone.replace(/\s/g, "")}`} className="hover:text-white transition-colors">
+                  {contactPhone}
+                </a>
+              </li>
+            )}
+            {contactAddress && (
+              <li className="flex items-center gap-2.5 text-indigo-200">
+                <MapPin className="h-4 w-4 shrink-0 text-indigo-300" />
+                <span>{contactAddress}</span>
+              </li>
+            )}
           </ul>
         </div>
       </div>
 
-      {/* Warning banner */}
+      {/* Warning banner — disclaimer from CMS */}
       <div className="py-3 px-4 border-t border-indigo-700">
         <p className="flex items-center justify-center gap-2 text-xs md:text-sm text-indigo-200 text-center leading-snug max-w-3xl mx-auto">
           <TriangleAlert className="h-4 w-4 shrink-0 text-indigo-300" />
-          <span>
-            გაფრთხილება: პასუხები გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს.
-          </span>
+          <span>{disclaimer}</span>
         </p>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar — copyright from CMS */}
       <div className="border-t border-indigo-700">
         <div className="container mx-auto px-4 py-4 text-center">
-          <p className="text-indigo-300 text-xs">
-            © 2026 ჩემი იურისტი. ყველა უფლება დაცულია.
-          </p>
+          <p className="text-indigo-300 text-xs">{copyright}</p>
         </div>
       </div>
     </footer>
