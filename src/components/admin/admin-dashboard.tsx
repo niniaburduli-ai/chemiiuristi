@@ -12,7 +12,9 @@ import {
   ImageIcon,
   MessagesSquare,
   FileSearch,
+  LayoutDashboard,
 } from "lucide-react";
+import { CMSPanel } from "@/components/admin/cms/CMSPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -124,6 +126,9 @@ export function AdminDashboard({
         <TabsTrigger value="files">
           <ImageIcon className="h-4 w-4 mr-2" /> ფაილები ({initialUploads.length})
         </TabsTrigger>
+        <TabsTrigger value="cms">
+          <LayoutDashboard className="h-4 w-4 mr-2" /> შინაარსი (CMS)
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="users" className="mt-6">
@@ -140,6 +145,9 @@ export function AdminDashboard({
       </TabsContent>
       <TabsContent value="files" className="mt-6">
         <UploadsTable initial={initialUploads} />
+      </TabsContent>
+      <TabsContent value="cms" className="mt-6">
+        <CMSPanel />
       </TabsContent>
     </Tabs>
   );

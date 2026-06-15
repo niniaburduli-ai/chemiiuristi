@@ -13,6 +13,7 @@ export const authConfig = {
       const isProtected =
         isAdminArea ||
         nextUrl.pathname.startsWith("/dashboard") ||
+        nextUrl.pathname.startsWith("/profile") ||
         nextUrl.pathname.startsWith("/chat") ||
         nextUrl.pathname.startsWith("/billing") ||
         nextUrl.pathname.startsWith("/generate") ||

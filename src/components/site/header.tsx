@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { User2 } from "lucide-react";
 import { auth } from "@/auth";
 import { buttonVariants } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -53,9 +54,13 @@ export async function Header() {
                   ადმინი
                 </Link>
               )}
-              <span className="text-sm text-muted-foreground hidden sm:inline">
-                {user.name ?? user.email}
-              </span>
+              <Link
+                href="/profile"
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                <User2 className="h-4 w-4 sm:mr-1.5" />
+                <span className="hidden sm:inline">{user.name ?? user.email}</span>
+              </Link>
               <LogoutButton />
             </>
           ) : (
