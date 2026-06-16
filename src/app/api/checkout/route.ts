@@ -3,19 +3,10 @@ import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
 import { CheckoutSchema } from "@/lib/validators";
-import { getDodoClient, productIdForPlan } from "@/lib/dodo";
+import { createSubscriptionCheckout } from "@/lib/flitt";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-/** Base URL for post-checkout redirect. */
-function appUrl(): string {
-  return (
-    process.env.APP_URL ||
-    process.env.AUTH_URL ||
-    "http://localhost:3000"
-  ).replace(/\/$/, "");
-}
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -43,34 +34,19 @@ export async function POST(req: Request) {
   const user = await User.findById(session.user.id).lean();
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  let productId: string;
   try {
-    productId = productIdForPlan(plan);
-  } catch {
-    // Plan not configured yet (e.g. premium product id not provided).
-    return NextResponse.json(
-      { error: `Plan "${plan}" is not available yet.` },
-      { status: 503 }
-    );
-  }
-
-  try {
-    const dodo = getDodoClient();
-    const checkout = await dodo.checkoutSessions.create({
-      product_cart: [{ product_id: productId, quantity: 1 }],
-      customer: { email: user.email, name: user.name },
-      return_url: `${appUrl()}/billing?status=success`,
-      // Echoed back on subscription webhooks so we can map to the user/plan.
-      metadata: { userId: String(user._id), plan },
+    const { checkoutUrl, orderId, paymentId } = await createSubscriptionCheckout(plan, {
+      id: String(user._id),
+      email: user.email,
+      name: user.name,
     });
-
-    if (!checkout.checkout_url) {
-      return NextResponse.json(
-        { error: "Checkout URL missing from provider response" },
-        { status: 502 }
-      );
-    }
-    return NextResponse.json({ checkoutUrl: checkout.checkout_url });
+    // Persist the pending order so the callback can be cross-checked.
+    await User.findByIdAndUpdate(user._id, {
+      flittOrderId: orderId,
+      flittPaymentId: paymentId ?? "",
+      subscriptionStatus: "pending",
+    });
+    return NextResponse.json({ checkoutUrl });
   } catch (err) {
     return NextResponse.json(
       { error: "Payment provider error", detail: String(err instanceof Error ? err.message : err) },

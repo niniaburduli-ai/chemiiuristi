@@ -14,7 +14,7 @@ type Props = {
   variant?: "default" | "outline";
 };
 
-/** Starts a Dodo checkout for a paid plan and redirects to the hosted page. */
+/** Starts a Flitt checkout for a paid plan and redirects to the hosted page. */
 export function UpgradeButton({ plan, label, className, variant = "default" }: Props) {
   const [loading, setLoading] = useState(false);
 
