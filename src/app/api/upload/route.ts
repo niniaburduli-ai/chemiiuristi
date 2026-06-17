@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
   try {
     const result = await uploadBuffer(buffer, {
-      folder: `my-lawyer/${session.user.id}`,
+      folder: `chemiadvokati/${session.user.id}`,
       filename: file.name,
     });
 
