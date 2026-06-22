@@ -138,10 +138,15 @@ export function ChatClient() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="mb-6">
-        <p className="font-semibold text-base">გამარჯობა! მე ვარ თქვენი AI იურიდიული ასისტენტი.</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          დასვით თქვენი იურიდიული შეკითხვა და მიიღეთ პასუხი მოქმედი კანონმდებლობის საფუძველზე.
+      <div className="mb-6 flex flex-col gap-3">
+        <p className="font-semibold text-base">
+          გამარჯობა! მე ვარ „ჩემი იურისტი" — თქვენი პერსონალური ციფრული იურიდიული ასისტენტი.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          მე დაგეხმარებით სამართლებრივი საკითხების გარკვევაში მარტივი, გასაგები ენით, საქართველოს მოქმედი კანონმდებლობის საფუძველზე.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          უბრალოდ დამისვით კითხვა — და მე შევეცდები მოგცეთ მკაფიო და პრაქტიკული პასუხი.
         </p>
       </div>
 
@@ -210,12 +215,18 @@ export function ChatClient() {
       </div>
 
       <form
-        className="sticky bottom-4 flex gap-2"
+        className="sticky bottom-4 flex flex-col gap-2"
         onSubmit={(e) => {
           e.preventDefault();
           send(input);
         }}
       >
+        {messages.length === 0 && (
+          <label className="text-sm font-semibold text-primary">
+            რით შემიძლია დაგეხმაროთ დღეს?
+          </label>
+        )}
+        <div className="flex gap-2">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -239,9 +250,10 @@ export function ChatClient() {
         <Button type="submit" size="icon" disabled={loading}>
           <Send className="h-4 w-4" />
         </Button>
+        </div>
       </form>
       <p className="text-xs text-muted-foreground text-center mt-3">
-        გაფრთხილება: პასუხები გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს.
+        გაფრთხილება: „პასუხი გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს."
       </p>
     </div>
   );

@@ -12,9 +12,9 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
     imagePubId: "",
   },
   serviceCards: [
-    { _id: "sc-1", title: "AI იურისტი", subtitle: "დასვი კითხვა", href: "/chat", icon: "MessageSquare", comingSoon: false, visible: true, order: 0 },
-    { _id: "sc-2", title: "შაბლონები", subtitle: "შექმენი შაბლონი", href: "/templates", icon: "FileText", comingSoon: true, visible: true, order: 1 },
-    { _id: "sc-3", title: "დოკუმენტები", subtitle: "შეამოწმე დოკუმენტი", href: "/docs", icon: "FolderOpen", comingSoon: true, visible: true, order: 2 },
+    { _id: "sc-1", title: "AI Assistant", subtitle: "AI Consultation", description: "Get instant answers to your legal questions using artificial intelligence, available 24/7.", ctaText: "Ask a Question", href: "/chat", icon: "MessageSquare", comingSoon: false, visible: true, order: 0 },
+    { _id: "sc-2", title: "Templates", subtitle: "Document Generator", description: "Create professional contracts and official documents in seconds by filling out a simple questionnaire.", ctaText: "Create Document", href: "/templates", icon: "FileText", comingSoon: true, visible: true, order: 1 },
+    { _id: "sc-3", title: "Smart Analysis", subtitle: "Document Analysis", description: "Upload any file and the system will automatically detect hidden risks and suspicious clauses.", ctaText: "Check File", href: "/docs", icon: "FolderOpen", comingSoon: true, visible: true, order: 2 },
   ],
   statsHeading: "ჩვენი შედეგები ციფრებში",
   stats: [

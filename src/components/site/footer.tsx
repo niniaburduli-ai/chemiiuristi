@@ -3,15 +3,16 @@ import { Mail, Phone, MapPin, Globe, TriangleAlert } from "lucide-react";
 import { getFooter, getSiteConfig } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
+import { getFeatureFlags, isPathEnabled } from "@/lib/features";
 
 const DEFAULT_DISCLAIMER =
-  "გაფრთხილება: პასუხები გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს.";
-const DEFAULT_COPYRIGHT = `© 2026 ჩემი იურისტი. ყველა უფლება დაცულია.`;
+  'გაფრთხილება: „პასუხი გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს."';
+const DEFAULT_COPYRIGHT = "© 2026 ჩემი იურისტი - ყველა უფლება დაცულია.";
 
 export async function Footer() {
   const locale = await getLocale();
   const d = getDict(locale);
-  const [footer, config] = await Promise.all([getFooter(locale), getSiteConfig(locale)]);
+  const [footer, config, flags] = await Promise.all([getFooter(locale), getSiteConfig(locale), getFeatureFlags()]);
 
   const staticNav = [
     { href: "/", label: d.footer.nav.home },
@@ -19,7 +20,7 @@ export async function Footer() {
     { href: "/services", label: d.footer.nav.services },
     { href: "/legislation", label: d.footer.nav.legislation },
     { href: "/blog", label: d.footer.nav.blog },
-  ];
+  ].filter((n) => isPathEnabled(n.href, flags));
 
   const staticLegal = [
     { href: "/privacy", label: d.footer.legal.privacy },
@@ -30,7 +31,7 @@ export async function Footer() {
   const disclaimer = footer.disclaimer?.trim() || DEFAULT_DISCLAIMER;
   const copyright = footer.copyright?.trim() || DEFAULT_COPYRIGHT;
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
-  const tagline = config.tagline?.trim() || "კანონი მარტივი ენით";
+  const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
   const contactEmail = config.contactEmail?.trim() || "info@chemiuristi.ge";
   const contactPhone = config.contactPhone?.trim() || "+995 32 12 123 456";
   const contactAddress = config.contactAddress?.trim() || "თბილისი, საქართველო";
@@ -38,10 +39,10 @@ export async function Footer() {
   return (
     <footer className="bg-[#3730a3] text-white">
       {/* Main footer grid */}
-      <div className="container mx-auto px-4 py-12 grid gap-10 md:grid-cols-4 text-sm">
+      <div className="container mx-auto px-4 py-8 grid gap-6 md:grid-cols-4 text-sm items-start">
 
         {/* Col 1 — brand */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div>
             <p className="font-bold text-lg leading-tight">{siteName}</p>
             <p className="text-indigo-300 text-xs mt-0.5">{tagline}</p>
@@ -53,8 +54,8 @@ export async function Footer() {
 
         {/* Col 2 — navigation */}
         <div>
-          <p className="font-semibold text-white mb-4">{d.footer.navigation}</p>
-          <ul className="space-y-2.5">
+          <p className="font-semibold text-white mb-2">{d.footer.navigation}</p>
+          <ul className="space-y-1.5">
             {staticNav.map((n) => (
               <li key={n.href}>
                 <Link
@@ -71,8 +72,8 @@ export async function Footer() {
 
         {/* Col 3 — legal info */}
         <div>
-          <p className="font-semibold text-white mb-4">{d.footer.usefulInfo}</p>
-          <ul className="space-y-2.5">
+          <p className="font-semibold text-white mb-2">{d.footer.usefulInfo}</p>
+          <ul className="space-y-1.5">
             {staticLegal.map((l) => (
               <li key={l.href}>
                 <Link
@@ -89,33 +90,33 @@ export async function Footer() {
 
         {/* Col 4 — contact */}
         <div>
-          <p className="font-semibold text-white mb-4">{d.footer.contact}</p>
-          <ul className="space-y-3">
+          <p className="font-semibold text-white mb-2">{d.footer.contact}</p>
+          <ul className="space-y-1.5">
             {contactEmail && (
-              <li className="flex items-center gap-2.5 text-indigo-200">
-                <Mail className="h-4 w-4 shrink-0 text-indigo-300" />
-                <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors">
+              <li className="flex items-center gap-2 text-indigo-200">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
+                <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors truncate">
                   {contactEmail}
                 </a>
               </li>
             )}
-            <li className="flex items-center gap-2.5 text-indigo-200">
-              <Globe className="h-4 w-4 shrink-0 text-indigo-300" />
+            <li className="flex items-center gap-2 text-indigo-200">
+              <Globe className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
               <a href="https://chemiuristi.ge" className="hover:text-white transition-colors">
                 chemiuristi.ge
               </a>
             </li>
             {contactPhone && (
-              <li className="flex items-center gap-2.5 text-indigo-200">
-                <Phone className="h-4 w-4 shrink-0 text-indigo-300" />
+              <li className="flex items-center gap-2 text-indigo-200">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
                 <a href={`tel:${contactPhone.replace(/\s/g, "")}`} className="hover:text-white transition-colors">
                   {contactPhone}
                 </a>
               </li>
             )}
             {contactAddress && (
-              <li className="flex items-center gap-2.5 text-indigo-200">
-                <MapPin className="h-4 w-4 shrink-0 text-indigo-300" />
+              <li className="flex items-center gap-2 text-indigo-200">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
                 <span>{contactAddress}</span>
               </li>
             )}
@@ -124,16 +125,16 @@ export async function Footer() {
       </div>
 
       {/* Warning banner — disclaimer from CMS */}
-      <div className="py-3 px-4 border-t border-indigo-700">
-        <p className="flex items-center justify-center gap-2 text-xs md:text-sm text-indigo-200 text-center leading-snug max-w-3xl mx-auto">
-          <TriangleAlert className="h-4 w-4 shrink-0 text-indigo-300" />
+      <div className="py-2.5 px-4 border-t border-indigo-700">
+        <p className="flex items-start justify-center gap-2 text-xs text-indigo-200 text-center leading-snug max-w-3xl mx-auto">
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-indigo-300 mt-px" />
           <span>{disclaimer}</span>
         </p>
       </div>
 
       {/* Bottom bar — copyright from CMS */}
       <div className="border-t border-indigo-700">
-        <div className="container mx-auto px-4 py-4 text-center">
+        <div className="container mx-auto px-4 py-3 text-center">
           <p className="text-indigo-300 text-xs">{copyright}</p>
         </div>
       </div>

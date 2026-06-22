@@ -77,49 +77,85 @@ export default async function Home() {
     <div>
       {/* ── HERO ── */}
       {sections.hero !== false && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#ededff] via-[#eef0ff] to-[#e8eaff]">
-          <div className="container mx-auto px-4 py-14 md:py-20">
-            <div className="max-w-2xl">
-              <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a2e] leading-none mb-3 tracking-tight">
-                {hero.title || HOME_SEED.hero.title}
-              </h1>
-              <p className="text-3xl md:text-4xl text-[#4338ca] mb-10 font-semibold">
-                {hero.subtitle || HOME_SEED.hero.subtitle}
-              </p>
+        <section className="relative bg-gradient-to-br from-[#ededff] via-[#eef0ff] to-[#e8eaff]">
+          <div className="container mx-auto px-4">
+            {/* Two-column: cards left, image right */}
+            <div className="flex flex-col lg:flex-row items-stretch min-h-[580px]">
 
-              <div className="grid grid-cols-3 gap-3 max-w-xl">
-                {serviceCards.map((card) => {
-                  const CardIcon = resolveIcon(card.icon)
-                  if (card.comingSoon) {
+              {/* ── LEFT 50%: heading + cards, vertically centered ── */}
+              <div className="w-full lg:w-1/2 flex flex-col justify-center py-10 md:py-14 lg:pr-8">
+                <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a2e] leading-none mb-3 tracking-tight">
+                  {hero.title || HOME_SEED.hero.title}
+                </h1>
+                <p className="text-3xl md:text-4xl text-[#4338ca] mb-8 font-semibold">
+                  {hero.subtitle || HOME_SEED.hero.subtitle}
+                </p>
+
+                <div className="grid grid-cols-3 gap-3">
+                  {serviceCards.map((card) => {
+                    const CardIcon = resolveIcon(card.icon)
+                    if (card.comingSoon) {
+                      return (
+                        <div
+                          key={card._id}
+                          className="bg-white/60 border border-[#e0e0ff] rounded-2xl p-4 flex flex-col gap-2 cursor-default opacity-70"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
+                              <CardIcon className="h-6 w-6 text-[#a5b4fc]" />
+                            </div>
+                            <span className="text-[10px] text-gray-400 font-semibold tracking-widest uppercase">
+                              Coming Soon
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-bold text-[#6b7280] text-lg leading-snug">{card.title}</p>
+                            <p className="text-sm font-medium text-[#a5b4fc] mt-0.5">{card.subtitle}</p>
+                          </div>
+                          {card.description && (
+                            <p className="text-sm text-gray-400 leading-relaxed flex-1">{card.description}</p>
+                          )}
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-400">
+                            {card.ctaText ?? "Coming soon"} <ArrowRight className="h-4 w-4" />
+                          </div>
+                        </div>
+                      )
+                    }
                     return (
-                      <div
+                      <Link
                         key={card._id}
-                        className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-1 cursor-default"
+                        href={card.href}
+                        className="bg-white border border-[#e0e0ff] rounded-2xl p-4 flex flex-col gap-2 hover:shadow-lg hover:-translate-y-1 transition-all group"
                       >
-                        <span className="text-[10px] text-gray-400 font-medium tracking-wide mb-0.5 uppercase">
-                          მალე დაემატება
-                        </span>
-                        <CardIcon className="h-7 w-7 text-[#a5b4fc] mb-1" />
-                        <span className="font-bold text-[#6b7280] text-base leading-snug">{card.title}</span>
-                        <span className="text-sm text-gray-400 leading-snug">{card.subtitle}</span>
-                        <ArrowRight className="h-5 w-5 text-gray-300 mt-2" />
-                      </div>
+                        <div className="w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
+                          <CardIcon className="h-6 w-6 text-[#6366f1]" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-[#1a1a2e] text-lg leading-snug">{card.title}</p>
+                          <p className="text-sm font-semibold text-[#6366f1] mt-0.5">{card.subtitle}</p>
+                        </div>
+                        {card.description && (
+                          <p className="text-sm text-gray-500 leading-relaxed flex-1">{card.description}</p>
+                        )}
+                        <div className="flex items-center gap-1.5 text-sm font-semibold text-[#4338ca] group-hover:gap-2.5 transition-all">
+                          {card.ctaText ?? "Learn more"} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </Link>
                     )
-                  }
-                  return (
-                    <Link
-                      key={card._id}
-                      href={card.href}
-                      className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col gap-1 group"
-                    >
-                      <CardIcon className="h-7 w-7 text-[#6366f1] mb-1" />
-                      <span className="font-bold text-[#1a1a2e] text-base leading-snug">{card.title}</span>
-                      <span className="text-sm text-gray-500 leading-snug">{card.subtitle}</span>
-                      <ArrowRight className="h-5 w-5 text-[#6366f1] mt-2 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
-                  )
-                })}
+                  })}
+                </div>
               </div>
+
+              {/* ── RIGHT 50%: image, bottom-anchored, no bottom padding ── */}
+              <div className="hidden lg:flex lg:w-1/2 items-end justify-center pt-8">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/kartlis_deda_5.png"
+                  alt="ქართლის დედა სასწორით"
+                  className="max-h-[640px] w-auto mix-blend-multiply"
+                />
+              </div>
+
             </div>
           </div>
         </section>
@@ -162,13 +198,13 @@ export default async function Home() {
           <h2 className="text-2xl md:text-3xl font-bold text-center text-[#1a1a2e] mb-12">
             {featuresHeading}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {features.map((f, idx) => {
               const FIcon = resolveIcon(f.icon)
               return (
-                <div key={f._id} className="flex flex-col items-center text-center gap-3">
-                  <div className="w-16 h-16 rounded-full bg-[#ededff] flex items-center justify-center shrink-0">
-                    <FIcon className="h-7 w-7 text-[#6366f1]" />
+                <div key={f._id} className="bg-[#f7f7ff] border border-[#e0e0ff] rounded-2xl px-5 py-6 flex flex-col items-center text-center gap-3">
+                  <div className="shrink-0 w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
+                    <FIcon className="h-6 w-6 text-[#6366f1]" />
                   </div>
                   <p className="font-bold text-[#3730a3] text-sm leading-snug">
                     {idx + 1}. {f.title}

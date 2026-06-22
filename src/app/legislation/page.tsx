@@ -3,24 +3,71 @@
 import { useState } from "react";
 import { Search, BookOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-type Doc = { id: string; code: string; article: string; title: string; tag: string };
+type Doc = { id: string; title: string; description: string; tag: string; url: string };
 
 const mockDocs: Doc[] = [
-  { id: "1", code: "სამოქალაქო კოდექსი", article: "მუხლი 286", title: "უძრავი ნივთის ნასყიდობა", tag: "სამოქალაქო" },
-  { id: "2", code: "შრომის კოდექსი", article: "მუხლი 37", title: "შრომითი ხელშეკრულების შეწყვეტა", tag: "შრომა" },
-  { id: "3", code: "შრომის კოდექსი", article: "მუხლი 24", title: "სამუშაო დროის ხანგრძლივობა", tag: "შრომა" },
-  { id: "4", code: "საგადასახადო კოდექსი", article: "მუხლი 79", title: "შემოსავლის გადასახადი", tag: "გადასახადი" },
-  { id: "5", code: "სისხლის სამართლის კოდექსი", article: "მუხლი 177", title: "ქურდობა", tag: "სისხლის" },
-  { id: "6", code: "სამოქალაქო კოდექსი", article: "მუხლი 1198", title: "ალიმენტი", tag: "ოჯახი" },
-  { id: "7", code: "ადმინისტრაციული კოდექსი", article: "მუხლი 174", title: "მცირე ხულიგნობა", tag: "ადმინისტრაციული" },
-  { id: "8", code: "სამოქალაქო კოდექსი", article: "მუხლი 531", title: "ქირავნობა", tag: "სამოქალაქო" },
+  {
+    id: "1",
+    title: "შრომის კოდექსი",
+    description: "არეგულირებს დასაქმებულისა და დამსაქმებლის ურთიერთობას, მათ შორის: განთავისუფლებას, შვებულებას, ხელფასს, ზეგანაკვეთურ სამუშაოს, დეკრეტს, კონტრაქტებს, კომპენსაციას, სამუშაო დროს და სხვა შრომით საკითხებს.",
+    tag: "შრომა",
+    url: "https://matsne.gov.ge/ka/document/view/1155567?utm_source=&publication=28",
+  },
+  {
+    id: "2",
+    title: "სამოქალაქო კოდექსი",
+    description: "მოიცავს ხელშეკრულებებს, ქირავნობას, სესხს, ვალდებულებებს, მემკვიდრეობას, საოჯახო სამართალს, საკუთრების უფლებას, იპოთეკას, ზიანის ანაზღაურებას და სხვა სამოქალაქო ურთიერთობებს.",
+    tag: "სამოქალაქო",
+    url: "https://www.matsne.gov.ge/ka/document/view/31702?publication=138",
+  },
+  {
+    id: "3",
+    title: "ადმინისტრაციულ სამართალდარღვევათა კოდექსი",
+    description: "მოიცავს ადმინისტრაციულ დარღვევებსა და პასუხისმგებლობას, მათ შორის: ჯარიმებს, საგზაო დარღვევებს, საპატრულო სამართალდარღვევებს და სხვა ადმინისტრაციულ საკითხებს.",
+    tag: "ადმინისტრაციული",
+    url: "https://matsne.gov.ge/ka/document/view/28216?publication=623",
+  },
+  {
+    id: "4",
+    title: "კანონი მომხმარებელთა უფლებების დაცვის შესახებ",
+    description: "არეგულირებს მომხმარებლის უფლებებს პროდუქტის ან მომსახურების შეძენისას, მათ შორის: ონლაინ შეძენას, ნივთის დაბრუნებას, გარანტიას, დაზიანებულ პროდუქტს, შეცდომაში შეყვანას და მომსახურების ხარისხს.",
+    tag: "მომხმარებელი",
+    url: "https://matsne.gov.ge/ka/document/view/5420598?publication=3",
+  },
+  {
+    id: "5",
+    title: "საგადასახადო კოდექსი",
+    description: "არეგულირებს საგადასახადო საკითხებს, მათ შორის: ინდმეწარმეს, მცირე ბიზნესს, გადასახადებს, დღგ-ს, დეკლარაციებს, ჯარიმებსა და სხვა ფინანსურ ვალდებულებებს.",
+    tag: "გადასახადი",
+    url: "https://matsne.gov.ge/ka/document/view/1043717?publication=244",
+  },
+  {
+    id: "6",
+    title: "პერსონალური მონაცემების დაცვა",
+    description: "არეგულირებს პერსონალური მონაცემების დამუშავებასა და დაცვას, მათ შორის: ვიდეოკამერებს, პირადი ინფორმაციის გავრცელებას, კონფიდენციალურობას და მონაცემთა უსაფრთხოებას.",
+    tag: "კონფიდენციალობა",
+    url: "https://matsne.gov.ge/ka/document/view/1043717?publication=244",
+  },
+  {
+    id: "7",
+    title: "საქართველოს კონსტიტუცია",
+    description: "მოიცავს სახელმწიფოს მოწყობის, ადამიანის უფლებების, თავისუფლებების, საკუთრების უფლების, სიტყვის თავისუფლების, თანასწორობისა და მოქალაქის კონსტიტუციური უფლებების ძირითად პრინციპებს.",
+    tag: "კონსტიტუცია",
+    url: "https://matsne.gov.ge/ka/document/view/30346?publication=36",
+  },
+  {
+    id: "8",
+    title: "კანონი ფულის გათეთრებისა და ტერორიზმის დაფინანსების აღმკვეთი ღონისძიებების შესახებ",
+    description: "არეგულირებს ფულის გათეთრებისა და ტერორიზმის დაფინანსების წინააღმდეგ მიმართულ წესებს, ფინანსური მონიტორინგის ვალდებულებებს, საეჭვო ტრანზაქციების კონტროლს, იდენტიფიკაციასა და ფინანსური უსაფრთხოების მოთხოვნებს.",
+    tag: "ფინანსები",
+    url: "https://matsne.gov.ge/ka/document/view/4690334?publication=14",
+  },
 ];
 
-const categories = ["ყველა", "სამოქალაქო", "შრომა", "სისხლის", "გადასახადი", "ოჯახი", "ადმინისტრაციული"];
+const categories = ["ყველა", "შრომა", "სამოქალაქო", "ადმინისტრაციული", "მომხმარებელი", "გადასახადი", "კონფიდენციალობა", "კონსტიტუცია", "ფინანსები"];
 
 export default function LegislationPage() {
   const [q, setQ] = useState("");
@@ -31,8 +78,8 @@ export default function LegislationPage() {
     const matchQ =
       !q ||
       d.title.toLowerCase().includes(q.toLowerCase()) ||
-      d.code.toLowerCase().includes(q.toLowerCase()) ||
-      d.article.toLowerCase().includes(q.toLowerCase());
+      d.description.toLowerCase().includes(q.toLowerCase()) ||
+      d.tag.toLowerCase().includes(q.toLowerCase());
     return matchCat && matchQ;
   });
 
@@ -64,24 +111,26 @@ export default function LegislationPage() {
           ))}
         </TabsList>
         <TabsContent value={cat} className="mt-4">
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {filtered.map((d) => (
-              <Card key={d.id} className="hover:border-primary/50 transition-colors cursor-pointer">
-                <CardContent className="py-4">
-                  <div className="flex items-start gap-3">
-                    <BookOpen className="h-5 w-5 mt-0.5 shrink-0 text-muted-foreground" />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium">{d.title}</div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {d.code} — {d.article}
-                      </div>
-                      <Badge variant="secondary" className="mt-2 text-xs">
-                        {d.tag}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <a
+                key={d.id}
+                href={d.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 bg-[#f7f7ff] border border-[#e0e0ff] rounded-2xl px-6 py-7 hover:shadow-md hover:-translate-y-0.5 transition-all"
+              >
+                <div className="shrink-0 w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-[#6366f1]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-[#3730a3] leading-snug">{d.title}</p>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{d.description}</p>
+                  <Badge variant="secondary" className="mt-3 text-xs">
+                    {d.tag}
+                  </Badge>
+                </div>
+              </a>
             ))}
           </div>
           {filtered.length === 0 && (

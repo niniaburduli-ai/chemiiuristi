@@ -103,13 +103,21 @@ export function RegisterForm() {
             >
               მომსახურების პირობებს
             </Link>
-            {" "}და{" "}
+            {", "}
             <Link
               href="/privacy"
               target="_blank"
               className="text-foreground underline underline-offset-2 hover:text-[#4338ca]"
             >
-              კონფიდენციალურობის პოლიტიკას
+              კონფიდენციალურობის პოლიტიკასა
+            </Link>
+            {" "}და{" "}
+            <Link
+              href="/disclaimer"
+              target="_blank"
+              className="text-foreground underline underline-offset-2 hover:text-[#4338ca]"
+            >
+              პასუხისმგებლობის შეზღუდვას
             </Link>
             .
           </label>

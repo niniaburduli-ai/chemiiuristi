@@ -4,12 +4,21 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { RichTextEditor } from "./RichTextEditor"
 import { ImageUpload } from "./ImageUpload"
 import { Loader2, Plus, Save, Trash2 } from "lucide-react"
 import type { AboutPageData } from "@/types/cms"
 
-const EMPTY: AboutPageData = { title: "", body: {}, mission: "", team: [], status: "draft" }
+const EMPTY: AboutPageData = {
+  title: "",
+  intro: "",
+  body: {},
+  historyTitle: "",
+  historyBody: "",
+  missionTitle: "",
+  mission: "",
+  team: [],
+  status: "draft",
+}
 
 export function AboutPageForm() {
   const [data, setData] = useState<AboutPageData>(EMPTY)
@@ -41,13 +50,34 @@ export function AboutPageForm() {
         <Label>სათაური</Label>
         <Input value={data.title} onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))} />
       </div>
+
       <div>
-        <Label>მისია</Label>
-        <Textarea value={data.mission} rows={3} onChange={(e) => setData((p) => ({ ...p, mission: e.target.value }))} />
+        <Label>შესავალი</Label>
+        <p className="text-xs text-muted-foreground mb-1">პარაგრაფები გამოიყოთ ცარიელი სტრიქონით</p>
+        <Textarea value={data.intro} rows={6} onChange={(e) => setData((p) => ({ ...p, intro: e.target.value }))} />
       </div>
-      <div>
-        <Label className="mb-2 block">ძირითადი ტექსტი</Label>
-        <RichTextEditor value={data.body} onChange={(body) => setData((p) => ({ ...p, body }))} />
+
+      <div className="rounded-lg border p-4 space-y-3">
+        <div>
+          <Label>ისტორიის სათაური</Label>
+          <Input value={data.historyTitle} onChange={(e) => setData((p) => ({ ...p, historyTitle: e.target.value }))} />
+        </div>
+        <div>
+          <Label>ისტორიის ტექსტი</Label>
+          <p className="text-xs text-muted-foreground mb-1">პარაგრაფები გამოიყოთ ცარიელი სტრიქონით</p>
+          <Textarea value={data.historyBody} rows={6} onChange={(e) => setData((p) => ({ ...p, historyBody: e.target.value }))} />
+        </div>
+      </div>
+
+      <div className="rounded-lg border p-4 space-y-3">
+        <div>
+          <Label>მისიის სათაური</Label>
+          <Input value={data.missionTitle} onChange={(e) => setData((p) => ({ ...p, missionTitle: e.target.value }))} />
+        </div>
+        <div>
+          <Label>მისია</Label>
+          <Textarea value={data.mission} rows={3} onChange={(e) => setData((p) => ({ ...p, mission: e.target.value }))} />
+        </div>
       </div>
 
       <section className="space-y-3 rounded-lg border p-4">

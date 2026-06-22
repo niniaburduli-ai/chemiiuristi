@@ -29,15 +29,15 @@ const DEFAULT_NAV: NavMenuData = {
   items: [
     { _id: "1", label: "მთავარი", href: "/", order: 0, isExternal: false },
     { _id: "2", label: "ჩვენ შესახებ", href: "/about", order: 1, isExternal: false },
-    { _id: "3", label: "მომსახურებები", href: "/#services", order: 2, isExternal: false },
-    { _id: "4", label: "ბლოგი", href: "/blog", order: 3, isExternal: false },
-    { _id: "5", label: "კანონმდებლობა", href: "/legislation", order: 4, isExternal: false },
+    { _id: "3", label: "მომსახურებები", href: "/services", order: 2, isExternal: false },
+    { _id: "4", label: "კანონმდებლობა", href: "/legislation", order: 3, isExternal: false },
+    { _id: "5", label: "ბლოგი", href: "/blog", order: 4, isExternal: false },
   ],
   status: "published",
 }
 
 const DEFAULT_FOOTER: FooterData = {
-  columns: [], disclaimer: "ეს სერვისი არ წარმოადგენს იურიდიულ კონსულტაციას.", copyright: `© ${new Date().getFullYear()} ჩემი იურისტი`, status: "published",
+  columns: [], disclaimer: 'გაფრთხილება: „პასუხი გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს."', copyright: "© 2026 ჩემი იურისტი - ყველა უფლება დაცულია.", status: "published",
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

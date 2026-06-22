@@ -28,6 +28,8 @@ export interface HomePageServiceCard {
   _id: string
   title: string
   subtitle: string
+  description?: string
+  ctaText?: string
   href: string
   icon: string        // lucide icon name e.g. "MessageSquare"
   comingSoon: boolean
@@ -104,7 +106,11 @@ export interface HomePageData {
 
 export interface AboutPageData {
   title: string
+  intro: string
   body: object
+  historyTitle: string
+  historyBody: string
+  missionTitle: string
   mission: string
   team: Array<{ _id: string; name: string; role: string; imageUrl: string; imagePubId: string; order: number }>
   status: CMSStatus
