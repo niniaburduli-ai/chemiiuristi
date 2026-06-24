@@ -27,10 +27,16 @@ type Plan = {
   currency: string
   period: string
   consultations: number
+  includeDocGeneration: boolean
   docGeneration: number
+  includeDocReview: boolean
   docReview: number
   features: string[]
   featuresEn: string[]
+  featuresDocGeneration: string[]
+  featuresDocGenerationEn: string[]
+  featuresDocReview: string[]
+  featuresDocReviewEn: string[]
   isFree: boolean
   highlighted: boolean
   visible: boolean
@@ -41,8 +47,29 @@ type Plan = {
 const BLANK: Plan = {
   id: "", key: "", name: "", nameEn: "", description: "", descriptionEn: "",
   priceMinor: 0, currency: "GEL", period: "month",
-  consultations: 0, docGeneration: 0, docReview: 0,
-  features: [], featuresEn: [], isFree: false, highlighted: false, visible: true, active: true, order: 0,
+  consultations: 0, includeDocGeneration: true, docGeneration: 0, includeDocReview: true, docReview: 0,
+  features: [], featuresEn: [],
+  featuresDocGeneration: [], featuresDocGenerationEn: [],
+  featuresDocReview: [], featuresDocReviewEn: [],
+  isFree: false, highlighted: false, visible: true, active: true, order: 0,
+}
+
+// Default feature texts per plan key — used to auto-populate empty fields when enabling a service.
+const DEFAULT_GEN_KA: Record<string, string> = {
+  standard: "19 შაბლonის გენერირება",
+  premium: "შეუზღუდავი შაბლonის გენერირება",
+}
+const DEFAULT_GEN_EN: Record<string, string> = {
+  standard: "19 template generations",
+  premium: "Unlimited template generations",
+}
+const DEFAULT_REV_KA: Record<string, string> = {
+  standard: "9 დოკუმენტის შემოწმება",
+  premium: "99 დოკუმენტის/ხელშეკრულების შემოწმება",
+}
+const DEFAULT_REV_EN: Record<string, string> = {
+  standard: "9 document reviews",
+  premium: "99 document/contract reviews",
 }
 
 function gel(minor: number): string {
@@ -135,8 +162,16 @@ export function PlansPanel() {
                 </td>
                 <td className="font-mono text-xs">{p.key}</td>
                 <td>{p.isFree || p.priceMinor === 0 ? "უფასო" : `${gel(p.priceMinor)} ${p.currency}/${p.period === "month" ? "თვე" : p.period}`}</td>
-                <td className="text-muted-foreground">
-                  {p.consultations} / {p.docGeneration} / {p.docReview}
+                <td>
+                  <div className="text-muted-foreground text-xs">{p.consultations} კონს.</div>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${p.includeDocGeneration ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"}`}>
+                      შაბლ: {p.includeDocGeneration ? "✓" : "✗"}
+                    </span>
+                    <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${p.includeDocReview ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"}`}>
+                      დოკ: {p.includeDocReview ? "✓" : "✗"}
+                    </span>
+                  </div>
                 </td>
                 <td>
                   <div className="flex flex-wrap gap-1">
@@ -199,6 +234,10 @@ function PlanDialog({
   const [priceGel, setPriceGel] = useState("0")
   const [featuresText, setFeaturesText] = useState("")
   const [featuresEnText, setFeaturesEnText] = useState("")
+  const [featuresGenText, setFeaturesGenText] = useState("")
+  const [featuresGenEnText, setFeaturesGenEnText] = useState("")
+  const [featuresRevText, setFeaturesRevText] = useState("")
+  const [featuresRevEnText, setFeaturesRevEnText] = useState("")
   const [saving, setSaving] = useState(false)
   const [syncedId, setSyncedId] = useState<string | null>(null)
 
@@ -209,6 +248,10 @@ function PlanDialog({
     setPriceGel((plan.priceMinor / 100).toString())
     setFeaturesText((plan.features ?? []).join("\n"))
     setFeaturesEnText((plan.featuresEn ?? []).join("\n"))
+    setFeaturesGenText((plan.featuresDocGeneration ?? []).join("\n"))
+    setFeaturesGenEnText((plan.featuresDocGenerationEn ?? []).join("\n"))
+    setFeaturesRevText((plan.featuresDocReview ?? []).join("\n"))
+    setFeaturesRevEnText((plan.featuresDocReviewEn ?? []).join("\n"))
   }
   if (!plan && syncedId !== null) setSyncedId(null)
 
@@ -218,11 +261,16 @@ function PlanDialog({
 
   async function save() {
     setSaving(true)
+    const split = (t: string) => t.split("\n").map((s) => s.trim()).filter(Boolean)
     const payload = {
       ...form,
       priceMinor: Math.round((parseFloat(priceGel) || 0) * 100),
-      features: featuresText.split("\n").map((s) => s.trim()).filter(Boolean),
-      featuresEn: featuresEnText.split("\n").map((s) => s.trim()).filter(Boolean),
+      features: split(featuresText),
+      featuresEn: split(featuresEnText),
+      featuresDocGeneration: split(featuresGenText),
+      featuresDocGenerationEn: split(featuresGenEnText),
+      featuresDocReview: split(featuresRevText),
+      featuresDocReviewEn: split(featuresRevEnText),
     }
     try {
       const isNew = !form.id
@@ -296,22 +344,70 @@ function PlanDialog({
               <Input type="number" min={0} value={form.consultations} onChange={(e) => set("consultations", Number(e.target.value))} />
             </div>
             <div className="grid gap-2">
-              <Label>დოკ. გენ.</Label>
-              <Input type="number" min={0} value={form.docGeneration} onChange={(e) => set("docGeneration", Number(e.target.value))} />
+              <label className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <input
+                  type="checkbox"
+                  checked={form.includeDocGeneration}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    set("includeDocGeneration", checked)
+                    if (checked && !featuresGenText.trim()) {
+                      setFeaturesGenText(DEFAULT_GEN_KA[form.key] ?? "")
+                      setFeaturesGenEnText(DEFAULT_GEN_EN[form.key] ?? "")
+                    }
+                  }}
+                />
+                შაბლ. გენ. (ჩართული)
+              </label>
+              <Input type="number" min={0} value={form.docGeneration} disabled={!form.includeDocGeneration} onChange={(e) => set("docGeneration", Number(e.target.value))} className={!form.includeDocGeneration ? "opacity-40" : ""} />
             </div>
             <div className="grid gap-2">
-              <Label>დოკ. მიმ.</Label>
-              <Input type="number" min={0} value={form.docReview} onChange={(e) => set("docReview", Number(e.target.value))} />
+              <label className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <input
+                  type="checkbox"
+                  checked={form.includeDocReview}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    set("includeDocReview", checked)
+                    if (checked && !featuresRevText.trim()) {
+                      setFeaturesRevText(DEFAULT_REV_KA[form.key] ?? "")
+                      setFeaturesRevEnText(DEFAULT_REV_EN[form.key] ?? "")
+                    }
+                  }}
+                />
+                დოკ. მიმ. (ჩართული)
+              </label>
+              <Input type="number" min={0} value={form.docReview} disabled={!form.includeDocReview} onChange={(e) => set("docReview", Number(e.target.value))} className={!form.includeDocReview ? "opacity-40" : ""} />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label>მახასიათებლები KA (თითო ხაზზე)</Label>
-              <Textarea rows={4} value={featuresText} onChange={(e) => setFeaturesText(e.target.value)} placeholder={"9 კონსულტაცია თვეში\nმუხლების ციტირება"} />
+              <Label>მახასიათებლები KA — ბაზა (თითო ხაზზე)</Label>
+              <Textarea rows={3} value={featuresText} onChange={(e) => setFeaturesText(e.target.value)} placeholder={"9 კონსულტაცია თვეში\nმუხლების ციტირება"} />
             </div>
             <div className="grid gap-2">
-              <Label>Features EN (one per line)</Label>
-              <Textarea rows={4} value={featuresEnText} onChange={(e) => setFeaturesEnText(e.target.value)} placeholder={"9 consultations per month\nArticle citations"} />
+              <Label>Base Features EN (one per line)</Label>
+              <Textarea rows={3} value={featuresEnText} onChange={(e) => setFeaturesEnText(e.target.value)} placeholder={"9 consultations per month\nArticle citations"} />
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label className={!form.includeDocGeneration ? "text-muted-foreground" : ""}>შაბლ. გენ. KA {!form.includeDocGeneration && "(გამორთ.)"}</Label>
+              <Textarea rows={2} value={featuresGenText} onChange={(e) => setFeaturesGenText(e.target.value)} disabled={!form.includeDocGeneration} className={!form.includeDocGeneration ? "opacity-40" : ""} placeholder={"19 შაბლონის გენერირება"} />
+            </div>
+            <div className="grid gap-2">
+              <Label className={!form.includeDocGeneration ? "text-muted-foreground" : ""}>Template Gen. EN {!form.includeDocGeneration && "(disabled)"}</Label>
+              <Textarea rows={2} value={featuresGenEnText} onChange={(e) => setFeaturesGenEnText(e.target.value)} disabled={!form.includeDocGeneration} className={!form.includeDocGeneration ? "opacity-40" : ""} placeholder={"19 template generations"} />
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label className={!form.includeDocReview ? "text-muted-foreground" : ""}>დოკ. მიმ. KA {!form.includeDocReview && "(გამორთ.)"}</Label>
+              <Textarea rows={2} value={featuresRevText} onChange={(e) => setFeaturesRevText(e.target.value)} disabled={!form.includeDocReview} className={!form.includeDocReview ? "opacity-40" : ""} placeholder={"9 დოკუმენტის შემოწმება"} />
+            </div>
+            <div className="grid gap-2">
+              <Label className={!form.includeDocReview ? "text-muted-foreground" : ""}>Doc Review EN {!form.includeDocReview && "(disabled)"}</Label>
+              <Textarea rows={2} value={featuresRevEnText} onChange={(e) => setFeaturesRevEnText(e.target.value)} disabled={!form.includeDocReview} className={!form.includeDocReview ? "opacity-40" : ""} placeholder={"9 document reviews"} />
             </div>
           </div>
           <div className="flex flex-wrap gap-4 text-sm">

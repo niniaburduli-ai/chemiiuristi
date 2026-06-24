@@ -1,18 +1,18 @@
 import Link from "next/link"
 import {
-  ShieldCheck, Clock, Check, ArrowRight,
+  ShieldCheck, Clock, ArrowRight,
   MessageSquare, FileText, FolderOpen,
   MousePointerClick, Zap, Layers, Users, Circle,
   type LucideIcon,
 } from "lucide-react"
 import { buttonVariants } from "@/components/ui/button"
-import { UpgradeButton } from "@/components/site/upgrade-button"
+import { PricingSection } from "@/components/site/PricingSection"
 import { getHomePage } from "@/lib/cms"
 import { getVisiblePlans } from "@/lib/plans-db"
 import { getFeatureFlags, isPathEnabled } from "@/lib/features"
 import { getPublicStats, resolveMetric } from "@/lib/stats"
 import { getLocale } from "@/lib/i18n/locale"
-import { pick, pickArr } from "@/lib/i18n/loc"
+import { pick } from "@/lib/i18n/loc"
 import { getHomeSeed } from "@/lib/homepage-defaults"
 import { getDict } from "@/lib/i18n/dictionaries"
 
@@ -46,62 +46,76 @@ function featuresGrid(n: number) {
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
 }
 
-function pricingGrid(n: number) {
-  if (n <= 1) return "grid-cols-1 max-w-sm mx-auto"
-  if (n === 2) return "md:grid-cols-2 max-w-2xl mx-auto"
-  return "md:grid-cols-3"
-}
+export const dynamic = "force-dynamic"
 
 export default async function Home() {
   const locale = await getLocale()
   const d = getDict(locale)
-  const seed = getHomeSeed(locale)
-  const [cms, flags, publicStats] = await Promise.all([
-    getHomePage(locale),
+  const seed = getHomeSeed()
+  const [cmsData, flags, publicStats] = await Promise.all([
+    getHomePage(),
     getFeatureFlags(),
     getPublicStats(),
   ])
+  const dbPlans = await getVisiblePlans()
 
-  const sections  = cms?.sections  ?? seed.sections
-  const hero      = cms?.hero      ?? seed.hero
-  const ctaSection = cms?.ctaSection ?? seed.ctaSection
+  // Seed lookup maps for En fallback when CMS doc predates bilingual fields
+  const seedCardById = new Map(seed.serviceCards.map((c) => [c._id, c]))
+  const seedStatById = new Map(seed.stats.map((s) => [s._id, s]))
+  const seedFeatureById = new Map(seed.features.map((f) => [f._id, f]))
 
-  const serviceCards = ((cms?.serviceCards ?? seed.serviceCards) as typeof seed.serviceCards)
-    .filter((c) => c.visible !== false)
-    .filter((c) => isPathEnabled(c.href, flags))
+  const sections = cmsData?.sections ?? seed.sections
+
+  // ── Hero ─────────────────────────────────────────────────────────────────────
+  const cmsHero = cmsData?.hero ?? seed.hero
+  const heroTitle    = pick(cmsHero.title    || seed.hero.title,    cmsHero.titleEn    || seed.hero.titleEn,    locale)
+  const heroSubtitle = pick(cmsHero.subtitle || seed.hero.subtitle, cmsHero.subtitleEn || seed.hero.subtitleEn, locale)
+
+  // ── Service cards ─────────────────────────────────────────────────────────────
+  const allServiceCards = (cmsData?.serviceCards ?? seed.serviceCards)
     .sort((a, b) => a.order - b.order)
+  const visibleHrefs = new Set(
+    allServiceCards
+      .filter((c) => c.visible !== false)
+      .filter((c) => isPathEnabled(c.href, flags))
+      .map((c) => c.href),
+  )
 
-  const statsHeading = cms?.statsHeading || seed.statsHeading
-  const stats = ((cms?.stats ?? seed.stats) as typeof seed.stats)
+  // ── Stats ─────────────────────────────────────────────────────────────────────
+  const stats = (cmsData?.stats ?? seed.stats)
     .filter((s) => s.visible !== false)
     .sort((a, b) => a.order - b.order)
 
-  const featuresHeading = cms?.featuresHeading || seed.featuresHeading
-  const features = ((cms?.features ?? seed.features) as typeof seed.features)
+  const statsHeading = pick(
+    cmsData?.statsHeading    || seed.statsHeading,
+    cmsData?.statsHeadingEn  || seed.statsHeadingEn,
+    locale,
+  )
+
+  // ── Features ──────────────────────────────────────────────────────────────────
+  const features = (cmsData?.features ?? seed.features)
     .filter((f) => f.visible !== false)
     .sort((a, b) => a.order - b.order)
 
-  const pricingHeading = cms?.pricingHeading || seed.pricingHeading
-  // Pricing reads the single source of truth — the dynamic Plan collection —
-  // so price/feature edits in the admin Plans tab show here immediately.
-  const dbPlans = await getVisiblePlans()
-  const plans = dbPlans.map((p) => {
-    const paid = !p.isFree && p.priceMinor > 0 && p.active
-    const gel = p.priceMinor / 100
-    return {
-      _id: p.id,
-      name: pick(p.name, p.nameEn, locale),
-      price: Number.isInteger(gel) ? String(gel) : gel.toFixed(2),
-      badge: p.highlighted ? d.pricing.popular : "",
-      ctaText: paid ? d.pricing.join : d.pricing.start,
-      ctaHref: paid ? "/billing" : "/register",
-      plan: paid ? p.key : "",
-      highlighted: p.highlighted,
-      visible: true,
-      order: p.order,
-      items: pickArr(p.features, p.featuresEn, locale),
-    }
-  })
+  const featuresHeading = pick(
+    cmsData?.featuresHeading   || seed.featuresHeading,
+    cmsData?.featuresHeadingEn || seed.featuresHeadingEn,
+    locale,
+  )
+
+  // ── Pricing heading ───────────────────────────────────────────────────────────
+  const pricingHeading = pick(
+    cmsData?.pricingHeading   || seed.pricingHeading,
+    cmsData?.pricingHeadingEn || seed.pricingHeadingEn,
+    locale,
+  )
+
+  // ── CTA ───────────────────────────────────────────────────────────────────────
+  const cmsCta = cmsData?.ctaSection ?? seed.ctaSection
+  const ctaTitle      = pick(cmsCta.title      || seed.ctaSection.title,      cmsCta.titleEn      || seed.ctaSection.titleEn,      locale)
+  const ctaSubtitle   = pick(cmsCta.subtitle   || seed.ctaSection.subtitle,   cmsCta.subtitleEn   || seed.ctaSection.subtitleEn,   locale)
+  const ctaButtonText = pick(cmsCta.buttonText || seed.ctaSection.buttonText, cmsCta.buttonTextEn || seed.ctaSection.buttonTextEn, locale)
+  const ctaButtonHref = cmsCta.buttonHref || seed.ctaSection.buttonHref
 
   return (
     <div>
@@ -116,16 +130,24 @@ export default async function Home() {
               <div className="w-full lg:w-1/2 flex flex-col justify-center py-10 md:py-14 lg:pr-8">
                 <div className="-mt-28">
                 <h1 className="text-5xl md:text-7xl font-bold text-[#1a1a2e] leading-none mb-3 tracking-tight">
-                  {hero.title || d.home.heroTitle}
+                  {heroTitle}
                 </h1>
                 <p className="text-3xl md:text-4xl text-[#4338ca] mb-8 font-semibold">
-                  {hero.subtitle || d.home.heroSubtitle}
+                  {heroSubtitle}
                 </p>
                 </div>
 
-                <div className={`grid ${serviceCardsGrid(serviceCards.length)} gap-3`}>
-                  {serviceCards.map((card) => {
+                <div className="grid grid-cols-3 gap-3">
+                  {allServiceCards.map((card) => {
+                    if (!visibleHrefs.has(card.href)) {
+                      return <div key={card._id} className="invisible" aria-hidden="true" />
+                    }
                     const CardIcon = resolveIcon(card.icon)
+                    const seedCard = seedCardById.get(card._id)
+                    const cardTitle    = pick(card.title,    card.titleEn    || seedCard?.titleEn,    locale)
+                    const cardSubtitle = pick(card.subtitle, card.subtitleEn || seedCard?.subtitleEn, locale)
+                    const cardCta      = pick(card.ctaText || seedCard?.ctaText || "", card.ctaTextEn || seedCard?.ctaTextEn, locale) || d.home.learnMore
+
                     if (card.comingSoon) {
                       return (
                         <div
@@ -141,14 +163,11 @@ export default async function Home() {
                             </span>
                           </div>
                           <div>
-                            <p className="font-bold text-[#6b7280] text-lg leading-snug">{card.title}</p>
-                            <p className="text-sm font-medium text-[#a5b4fc] mt-0.5">{card.subtitle}</p>
+                            <p className="font-bold text-[#6b7280] text-lg leading-snug">{cardTitle}</p>
+                            <p className="text-sm font-medium text-[#a5b4fc] mt-0.5">{cardSubtitle}</p>
                           </div>
-                          {card.description && (
-                            <p className="text-sm text-gray-400 leading-relaxed flex-1">{card.description}</p>
-                          )}
                           <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-400">
-                            {card.ctaText ?? d.home.comingSoon} <ArrowRight className="h-4 w-4" />
+                            {cardCta} <ArrowRight className="h-4 w-4" />
                           </div>
                         </div>
                       )
@@ -163,14 +182,11 @@ export default async function Home() {
                           <CardIcon className="h-6 w-6 text-[#6366f1]" />
                         </div>
                         <div>
-                          <p className="font-bold text-[#1a1a2e] text-lg leading-snug">{card.title}</p>
-                          <p className="text-sm font-semibold text-[#6366f1] mt-0.5">{card.subtitle}</p>
+                          <p className="font-bold text-[#1a1a2e] text-lg leading-snug">{cardTitle}</p>
+                          <p className="text-sm font-semibold text-[#6366f1] mt-0.5">{cardSubtitle}</p>
                         </div>
-                        {card.description && (
-                          <p className="text-sm text-gray-500 leading-relaxed flex-1">{card.description}</p>
-                        )}
                         <div className="flex items-center gap-1.5 text-sm font-semibold text-[#4338ca] group-hover:gap-2.5 transition-all">
-                          {card.ctaText ?? d.home.learnMore} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                          {cardCta} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </Link>
                     )
@@ -202,9 +218,10 @@ export default async function Home() {
           <div className={`grid ${statsGrid(stats.length)} gap-4`}>
             {stats.map((s) => {
               const StatIcon = resolveIcon(s.icon)
-              // Live count when the card is bound (or inferable) to a metric; else manual value.
               const metric = resolveMetric(s.metric, s.label)
               const display = metric ? publicStats[metric].toLocaleString("ka-GE") : s.value
+              const seedStat = seedStatById.get(s._id)
+              const statLabel = pick(s.label, s.labelEn || seedStat?.labelEn, locale)
               return (
                 <div
                   key={s._id}
@@ -215,7 +232,7 @@ export default async function Home() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-2xl font-bold text-[#3730a3] leading-none">{display}</p>
-                    <p className="text-xs text-gray-500 mt-1 leading-snug">{s.label}</p>
+                    <p className="text-xs text-gray-500 mt-1 leading-snug">{statLabel}</p>
                   </div>
                 </div>
               )
@@ -233,15 +250,18 @@ export default async function Home() {
           <div className={`grid ${featuresGrid(features.length)} gap-4`}>
             {features.map((f, idx) => {
               const FIcon = resolveIcon(f.icon)
+              const seedFeature = seedFeatureById.get(f._id)
+              const featureTitle = pick(f.title, f.titleEn || seedFeature?.titleEn, locale)
+              const featureBody  = pick(f.body,  f.bodyEn  || seedFeature?.bodyEn,  locale)
               return (
                 <div key={f._id} className="bg-[#f7f7ff] border border-[#e0e0ff] rounded-2xl px-5 py-6 flex flex-col items-center text-center gap-3">
                   <div className="shrink-0 w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
                     <FIcon className="h-6 w-6 text-[#6366f1]" />
                   </div>
                   <p className="font-bold text-[#3730a3] text-sm leading-snug">
-                    {idx + 1}. {f.title}
+                    {idx + 1}. {featureTitle}
                   </p>
-                  <p className="text-xs text-gray-500 leading-relaxed">{f.body}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">{featureBody}</p>
                 </div>
               )
             })}
@@ -250,89 +270,30 @@ export default async function Home() {
       )}
 
       {/* ── PRICING ── */}
-      {sections.pricing !== false && plans.length > 0 && (
-        <section className="container mx-auto px-4 py-16 md:py-20 max-w-5xl">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#1a1a2e] mb-12">
-            {pricingHeading}
-          </h2>
-          <div className={`grid gap-6 ${pricingGrid(plans.length)} items-start`}>
-            {plans.map((p) => (
-              <div
-                key={p._id}
-                className={[
-                  "relative rounded-2xl border bg-white flex flex-col p-7",
-                  p.highlighted
-                    ? "border-[#6366f1] shadow-lg shadow-indigo-100"
-                    : "border-[#e5e7eb]",
-                ].join(" ")}
-              >
-                {p.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-[#6366f1] text-white text-xs font-semibold px-4 py-1.5 rounded-full whitespace-nowrap">
-                      {p.badge}
-                    </span>
-                  </div>
-                )}
-
-                <p className={["font-bold text-base mb-4", p.highlighted ? "text-[#4338ca]" : "text-[#3730a3]"].join(" ")}>
-                  {p.name}
-                </p>
-
-                <div className="flex items-end gap-1 mb-6">
-                  <span className="text-5xl font-bold text-[#1a1a2e] leading-none">{p.price}</span>
-                  <span className="text-lg font-semibold text-[#1a1a2e] mb-0.5">₾</span>
-                  <span className="text-sm text-gray-400 mb-1">{d.home.perMonth}</span>
-                </div>
-
-                <ul className="space-y-3 text-sm flex-1 mb-8">
-                  {p.items.map((item, ii) => (
-                    <li key={ii} className="flex gap-2.5 items-start">
-                      <Check className="h-4 w-4 shrink-0 mt-0.5 text-[#6366f1]" />
-                      <span className="text-gray-700 leading-snug">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {p.plan ? (
-                  <UpgradeButton
-                    plan={p.plan}
-                    label={p.ctaText}
-                    className={[
-                      "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60",
-                      p.highlighted
-                        ? "bg-[#4338ca] hover:bg-[#3730a3] text-white"
-                        : "border border-[#c7d2fe] text-[#4338ca] hover:bg-[#ededff]",
-                    ].join(" ")}
-                  />
-                ) : (
-                  <Link
-                    href={p.ctaHref}
-                    className={[
-                      "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors",
-                      p.highlighted
-                        ? "bg-[#4338ca] hover:bg-[#3730a3] text-white"
-                        : "border border-[#c7d2fe] text-[#4338ca] hover:bg-[#ededff]",
-                    ].join(" ")}
-                  >
-                    {p.ctaText}
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+      {sections.pricing !== false && (
+        <PricingSection
+          initialPlans={dbPlans}
+          locale={locale}
+          strings={{
+            popular: d.pricing.popular,
+            join: d.pricing.join,
+            start: d.pricing.start,
+            perMonth: d.home.perMonth,
+          }}
+          heading={pricingHeading}
+        />
       )}
 
       {/* ── CTA ── */}
       {sections.cta !== false && (
         <section className="container mx-auto px-4 py-20 text-center max-w-2xl">
-          <h2 className="text-3xl font-bold">{ctaSection.title || d.home.ctaTitle}</h2>
-          <p className="mt-3 text-muted-foreground">{ctaSection.subtitle || d.home.ctaSubtitle}</p>
+          <h2 className="text-3xl font-bold">{ctaTitle}</h2>
+          <p className="mt-3 text-muted-foreground">{ctaSubtitle}</p>
           <Link
-            href={ctaSection.buttonHref || seed.ctaSection.buttonHref}
+            href={ctaButtonHref}
             className={buttonVariants({ size: "lg", className: "mt-6" })}
           >
-            {ctaSection.buttonText || d.home.ctaButton}
+            {ctaButtonText}
           </Link>
         </section>
       )}

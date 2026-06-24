@@ -14,10 +14,16 @@ export type PlanData = {
   currency: string
   period: string
   consultations: number
+  includeDocGeneration: boolean
   docGeneration: number
+  includeDocReview: boolean
   docReview: number
   features: string[]
   featuresEn: string[]
+  featuresDocGeneration: string[]
+  featuresDocGenerationEn: string[]
+  featuresDocReview: string[]
+  featuresDocReviewEn: string[]
   isFree: boolean
   highlighted: boolean
   visible: boolean
@@ -38,10 +44,14 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     description: "სცადე როგორ მუშაობს", descriptionEn: "Try how it works",
     priceMinor: 0, currency: "GEL", period: "month",
     consultations: PLAN_LIMITS.free.consultations,
+    includeDocGeneration: false,
     docGeneration: PLAN_LIMITS.free.docGeneration,
+    includeDocReview: false,
     docReview: PLAN_LIMITS.free.docReview,
     features: ["9 კონსულტაცია AI იურისტთან", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა"],
     featuresEn: ["9 AI lawyer consultations", "Official source citations", "View question history"],
+    featuresDocGeneration: [], featuresDocGenerationEn: [],
+    featuresDocReview: [], featuresDocReviewEn: [],
     isFree: true, highlighted: false, visible: true, active: true, order: 0,
   },
   {
@@ -49,10 +59,14 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     description: "ყველაზე პოპულარული", descriptionEn: "Most popular",
     priceMinor: 1900, currency: "GEL", period: "month",
     consultations: PLAN_LIMITS.standard.consultations,
+    includeDocGeneration: true,
     docGeneration: PLAN_LIMITS.standard.docGeneration,
+    includeDocReview: true,
     docReview: PLAN_LIMITS.standard.docReview,
-    features: ["29 კონსულტაცია AI იურისტთან", "19 შაბლონის გენერირება", "9 დოკუმენტის შემოწმება", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა"],
-    featuresEn: ["29 AI lawyer consultations", "19 template generations", "9 document reviews", "Official source citations", "View question history"],
+    features: ["29 კონსულტაცია AI იურისტთან", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა"],
+    featuresEn: ["29 AI lawyer consultations", "Official source citations", "View question history"],
+    featuresDocGeneration: ["19 შაბლონის გენერირება"], featuresDocGenerationEn: ["19 template generations"],
+    featuresDocReview: ["9 დოკუმენტის შემოწმება"], featuresDocReviewEn: ["9 document reviews"],
     isFree: false, highlighted: true, visible: true, active: true, order: 1,
   },
   {
@@ -60,15 +74,23 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     description: "ხშირი მომხმარებლისთვის", descriptionEn: "For frequent users",
     priceMinor: 9900, currency: "GEL", period: "month",
     consultations: PLAN_LIMITS.premium.consultations,
+    includeDocGeneration: true,
     docGeneration: PLAN_LIMITS.premium.docGeneration,
+    includeDocReview: true,
     docReview: PLAN_LIMITS.premium.docReview,
-    features: ["შეუზღუდავი კონსულტაცია AI იურისტთან", "შეუზღუდავი შაბლონის გენერირება", "99 დოკუმენტის/ხელშეკრულების შემოწმება", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა", "გაფართოებული იურიდიული ანალიზი"],
-    featuresEn: ["Unlimited AI lawyer consultations", "Unlimited template generations", "99 document/contract reviews", "Official source citations", "View question history", "Advanced legal analysis"],
+    features: ["შეუზღუდავი კონსულტაცია AI იურისტთან", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა", "გაფართოებული იურიდიული ანალიზი"],
+    featuresEn: ["Unlimited AI lawyer consultations", "Official source citations", "View question history", "Advanced legal analysis"],
+    featuresDocGeneration: ["შეუზღუდავი შაბლონის გენერირება"], featuresDocGenerationEn: ["Unlimited template generations"],
+    featuresDocReview: ["99 დოკუმენტის/ხელშეკრულების შემოწმება"], featuresDocReviewEn: ["99 document/contract reviews"],
     isFree: false, highlighted: false, visible: true, active: true, order: 2,
   },
 ]
 
 function toData(d: PlanDoc): PlanData {
+  // Fall back to DEFAULT_PLANS text when DB doc is missing the field (pre-schema documents).
+  const def = DEFAULT_PLANS.find((p) => p.key === d.key)
+  const defGen = def?.includeDocGeneration ?? true
+  const defRev = def?.includeDocReview ?? true
   return {
     id: String(d._id),
     key: d.key,
@@ -80,10 +102,16 @@ function toData(d: PlanDoc): PlanData {
     currency: d.currency ?? "GEL",
     period: d.period ?? "month",
     consultations: d.consultations ?? 0,
+    includeDocGeneration: d.includeDocGeneration == null ? defGen : d.includeDocGeneration,
     docGeneration: d.docGeneration ?? 0,
+    includeDocReview: d.includeDocReview == null ? defRev : d.includeDocReview,
     docReview: d.docReview ?? 0,
     features: d.features ?? [],
     featuresEn: d.featuresEn ?? [],
+    featuresDocGeneration: d.featuresDocGeneration?.length ? d.featuresDocGeneration : (def?.featuresDocGeneration ?? []),
+    featuresDocGenerationEn: d.featuresDocGenerationEn?.length ? d.featuresDocGenerationEn : (def?.featuresDocGenerationEn ?? []),
+    featuresDocReview: d.featuresDocReview?.length ? d.featuresDocReview : (def?.featuresDocReview ?? []),
+    featuresDocReviewEn: d.featuresDocReviewEn?.length ? d.featuresDocReviewEn : (def?.featuresDocReviewEn ?? []),
     isFree: !!d.isFree,
     highlighted: !!d.highlighted,
     visible: d.visible !== false,
@@ -95,12 +123,8 @@ function toData(d: PlanDoc): PlanData {
 /** Ensure the collection has at least the default plans. Idempotent. */
 export async function ensurePlansSeeded(): Promise<void> {
   await dbConnect()
-  const count = await Plan.estimatedDocumentCount()
-  if (count === 0) {
-    await Plan.insertMany(DEFAULT_PLANS)
-    return
-  }
-  // Sync all content fields from DEFAULT_PLANS so code changes take effect without manual DB edits
+  // Upsert each default plan: sync content fields always, set toggle/visibility
+  // fields only on first creation so admin changes are preserved.
   await Promise.all(
     DEFAULT_PLANS.map((def) =>
       Plan.updateOne(
@@ -115,8 +139,22 @@ export async function ensurePlansSeeded(): Promise<void> {
             docReview: def.docReview,
             features: def.features,
             featuresEn: def.featuresEn,
+            featuresDocGeneration: def.featuresDocGeneration,
+            featuresDocGenerationEn: def.featuresDocGenerationEn,
+            featuresDocReview: def.featuresDocReview,
+            featuresDocReviewEn: def.featuresDocReviewEn,
           },
-        }
+          $setOnInsert: {
+            includeDocGeneration: def.includeDocGeneration,
+            includeDocReview: def.includeDocReview,
+            isFree: def.isFree,
+            highlighted: def.highlighted,
+            visible: def.visible,
+            active: def.active,
+            order: def.order,
+          },
+        },
+        { upsert: true }
       )
     )
   )
@@ -156,8 +194,8 @@ export async function getPlanLimits(key: string): Promise<PlanLimits> {
   if (plan) {
     return {
       consultations: plan.consultations,
-      docGeneration: plan.docGeneration,
-      docReview: plan.docReview,
+      docGeneration: plan.includeDocGeneration ? plan.docGeneration : 0,
+      docReview: plan.includeDocReview ? plan.docReview : 0,
     }
   }
   const f = PLAN_LIMITS.free

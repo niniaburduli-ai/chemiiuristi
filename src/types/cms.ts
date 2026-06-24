@@ -27,9 +27,12 @@ export interface NavMenuData { items: NavItem[]; status: CMSStatus }
 export interface HomePageServiceCard {
   _id: string
   title: string
+  titleEn?: string
   subtitle: string
+  subtitleEn?: string
   description?: string
   ctaText?: string
+  ctaTextEn?: string
   href: string
   icon: string        // lucide icon name e.g. "MessageSquare"
   comingSoon: boolean
@@ -40,6 +43,7 @@ export interface HomePageServiceCard {
 export interface HomePageStatCard {
   _id: string
   label: string
+  labelEn?: string
   value: string       // manual display value (used when no metric bound), e.g. "19+"
   icon: string        // lucide icon name
   metric?: string     // bind to a live count: users|consultations|documents|reviews|uploads
@@ -50,7 +54,9 @@ export interface HomePageStatCard {
 export interface HomePageFeature {
   _id: string
   title: string
+  titleEn?: string
   body: string
+  bodyEn?: string
   icon: string
   order: number
   visible: boolean
@@ -80,7 +86,9 @@ export interface HomePageData {
   }
   hero: {
     title: string
+    titleEn?: string
     subtitle: string
+    subtitleEn?: string
     ctaText: string
     ctaHref: string
     imageUrl: string
@@ -88,15 +96,21 @@ export interface HomePageData {
   }
   serviceCards: HomePageServiceCard[]
   statsHeading: string
+  statsHeadingEn?: string
   stats: HomePageStatCard[]
   featuresHeading: string
+  featuresHeadingEn?: string
   features: HomePageFeature[]
   pricingHeading: string
+  pricingHeadingEn?: string
   plans: HomePagePlan[]
   ctaSection: {
     title: string
+    titleEn?: string
     subtitle: string
+    subtitleEn?: string
     buttonText: string
+    buttonTextEn?: string
     buttonHref: string
   }
   status: CMSStatus

@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils"
 import type {
   HomePageData, HomePageServiceCard, HomePageStatCard, HomePageFeature, HomePagePlan,
 } from "@/types/cms"
-import type { Locale } from "@/lib/i18n/config"
 
 // Generates a valid MongoDB ObjectId-compatible hex string (24 chars)
 function uid(): string {
@@ -31,15 +30,15 @@ function moveItem<T extends { order: number }>(arr: T[], i: number, dir: -1 | 1)
 
 const EMPTY: HomePageData = {
   sections: { hero: true, stats: true, features: true, pricing: true, cta: true },
-  hero: { title: "", subtitle: "", ctaText: "", ctaHref: "", imageUrl: "", imagePubId: "" },
+  hero: { title: "", titleEn: "", subtitle: "", subtitleEn: "", ctaText: "", ctaHref: "", imageUrl: "", imagePubId: "" },
   serviceCards: [],
-  statsHeading: "",
+  statsHeading: "", statsHeadingEn: "",
   stats: [],
-  featuresHeading: "",
+  featuresHeading: "", featuresHeadingEn: "",
   features: [],
-  pricingHeading: "",
+  pricingHeading: "", pricingHeadingEn: "",
   plans: [],
-  ctaSection: { title: "", subtitle: "", buttonText: "", buttonHref: "" },
+  ctaSection: { title: "", titleEn: "", subtitle: "", subtitleEn: "", buttonText: "", buttonTextEn: "", buttonHref: "" },
   status: "draft",
 }
 
@@ -104,7 +103,44 @@ function DeleteBtn({ onClick }: { onClick: () => void }) {
   )
 }
 
-export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
+/** Two-column KA + EN input pair */
+function BiInput({
+  label, kaValue, enValue,
+  onKa, onEn, textarea = false,
+}: {
+  label: string
+  kaValue: string
+  enValue: string
+  onKa: (v: string) => void
+  onEn: (v: string) => void
+  textarea?: boolean
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs">{label}</Label>
+      <div className="grid grid-cols-2 gap-1.5">
+        <div>
+          <span className="text-[10px] text-muted-foreground font-medium">🇬🇪 KA</span>
+          {textarea ? (
+            <Textarea rows={2} value={kaValue} onChange={(e) => onKa(e.target.value)} />
+          ) : (
+            <Input value={kaValue} onChange={(e) => onKa(e.target.value)} />
+          )}
+        </div>
+        <div>
+          <span className="text-[10px] text-muted-foreground font-medium">🇬🇧 EN</span>
+          {textarea ? (
+            <Textarea rows={2} value={enValue} onChange={(e) => onEn(e.target.value)} />
+          ) : (
+            <Input value={enValue} onChange={(e) => onEn(e.target.value)} />
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function HomePageForm() {
   const [data, setData] = useState<HomePageData>(EMPTY)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState("")
@@ -112,18 +148,18 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
   useEffect(() => {
     let active = true
     ;(async () => {
-      const r = await fetch(`/api/admin/cms/homepage?locale=${locale}`)
+      const r = await fetch("/api/admin/cms/homepage")
       const { data: d } = await r.json()
       if (active && d) setData({ ...EMPTY, ...d })
     })()
     return () => { active = false }
-  }, [locale])
+  }, [])
 
   async function save(status: HomePageData["status"]) {
     setSaving(true)
     setMsg("")
     try {
-      const res = await fetch(`/api/admin/cms/homepage?locale=${locale}`, {
+      const res = await fetch("/api/admin/cms/homepage", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, status }),
@@ -148,7 +184,7 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
       ...p,
       serviceCards: [
         ...p.serviceCards,
-        { _id: uid(), title: "", subtitle: "", href: "", icon: "", comingSoon: false, visible: true, order: p.serviceCards.length },
+        { _id: uid(), title: "", titleEn: "", subtitle: "", subtitleEn: "", ctaText: "", ctaTextEn: "", href: "", icon: "", comingSoon: false, visible: true, order: p.serviceCards.length },
       ],
     }))
   }
@@ -173,7 +209,7 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
   function addStat() {
     setData((p) => ({
       ...p,
-      stats: [...p.stats, { _id: uid(), label: "", value: "0", icon: "", visible: true, order: p.stats.length }],
+      stats: [...p.stats, { _id: uid(), label: "", labelEn: "", value: "0", icon: "", visible: true, order: p.stats.length }],
     }))
   }
 
@@ -197,7 +233,7 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
   function addFeature() {
     setData((p) => ({
       ...p,
-      features: [...p.features, { _id: uid(), title: "", body: "", icon: "", order: p.features.length, visible: true }],
+      features: [...p.features, { _id: uid(), title: "", titleEn: "", body: "", bodyEn: "", icon: "", order: p.features.length, visible: true }],
     }))
   }
 
@@ -272,7 +308,7 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
   const sec = data.sections
 
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="space-y-8 max-w-3xl">
       <h2 className="text-lg font-semibold">მთავარი გვერდი</h2>
 
       {/* ── Section visibility overview ── */}
@@ -297,8 +333,23 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
           onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, hero: !p.sections.hero } }))}
         />
 
+        <BiInput
+          label="Title"
+          kaValue={data.hero.title}
+          enValue={data.hero.titleEn ?? ""}
+          onKa={(v) => setData((p) => ({ ...p, hero: { ...p.hero, title: v } }))}
+          onEn={(v) => setData((p) => ({ ...p, hero: { ...p.hero, titleEn: v } }))}
+        />
+        <BiInput
+          label="Subtitle"
+          kaValue={data.hero.subtitle}
+          enValue={data.hero.subtitleEn ?? ""}
+          onKa={(v) => setData((p) => ({ ...p, hero: { ...p.hero, subtitle: v } }))}
+          onEn={(v) => setData((p) => ({ ...p, hero: { ...p.hero, subtitleEn: v } }))}
+        />
+
         <div className="grid gap-3 sm:grid-cols-2">
-          {(["title", "subtitle", "ctaText", "ctaHref"] as const).map((k) => (
+          {(["ctaText", "ctaHref"] as const).map((k) => (
             <div key={k}>
               <Label className="text-xs">{k}</Label>
               <Input
@@ -335,24 +386,39 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
                 isFirst={i === 0}
                 isLast={i === data.serviceCards.length - 1}
               />
-              <div className="flex-1 grid gap-2 sm:grid-cols-2">
-                <div>
-                  <Label className="text-xs">Icon (lucide name)</Label>
-                  <Input value={card.icon} onChange={(e) => updCard(i, { icon: e.target.value })} />
+              <div className="flex-1 space-y-2">
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div>
+                    <Label className="text-xs">Icon (lucide name)</Label>
+                    <Input value={card.icon} onChange={(e) => updCard(i, { icon: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Href</Label>
+                    <Input value={card.href} onChange={(e) => updCard(i, { href: e.target.value })} />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs">Title</Label>
-                  <Input value={card.title} onChange={(e) => updCard(i, { title: e.target.value })} />
-                </div>
-                <div>
-                  <Label className="text-xs">Subtitle</Label>
-                  <Input value={card.subtitle} onChange={(e) => updCard(i, { subtitle: e.target.value })} />
-                </div>
-                <div>
-                  <Label className="text-xs">Href</Label>
-                  <Input value={card.href} onChange={(e) => updCard(i, { href: e.target.value })} />
-                </div>
-                <div className="flex items-center gap-2 sm:col-span-2">
+                <BiInput
+                  label="Title"
+                  kaValue={card.title}
+                  enValue={card.titleEn ?? ""}
+                  onKa={(v) => updCard(i, { title: v })}
+                  onEn={(v) => updCard(i, { titleEn: v })}
+                />
+                <BiInput
+                  label="Subtitle"
+                  kaValue={card.subtitle}
+                  enValue={card.subtitleEn ?? ""}
+                  onKa={(v) => updCard(i, { subtitle: v })}
+                  onEn={(v) => updCard(i, { subtitleEn: v })}
+                />
+                <BiInput
+                  label="CTA Text"
+                  kaValue={card.ctaText ?? ""}
+                  enValue={card.ctaTextEn ?? ""}
+                  onKa={(v) => updCard(i, { ctaText: v })}
+                  onEn={(v) => updCard(i, { ctaTextEn: v })}
+                />
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id={`cs-${card._id}`}
@@ -382,10 +448,13 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
           onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, stats: !p.sections.stats } }))}
         />
 
-        <div>
-          <Label className="text-xs">სექციის სათაური</Label>
-          <Input value={data.statsHeading} onChange={(e) => upd("statsHeading", e.target.value)} />
-        </div>
+        <BiInput
+          label="სექციის სათაური"
+          kaValue={data.statsHeading}
+          enValue={data.statsHeadingEn ?? ""}
+          onKa={(v) => upd("statsHeading", v)}
+          onEn={(v) => upd("statsHeadingEn", v)}
+        />
 
         <div className="space-y-2">
           {data.stats.map((s, i) => (
@@ -396,38 +465,43 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
                 isFirst={i === 0}
                 isLast={i === data.stats.length - 1}
               />
-              <div className="flex-1 grid gap-2 sm:grid-cols-2">
-                <div>
-                  <Label className="text-xs">Icon (lucide name)</Label>
-                  <Input value={s.icon} onChange={(e) => updStat(i, { icon: e.target.value })} />
+              <div className="flex-1 space-y-2">
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div>
+                    <Label className="text-xs">Icon (lucide name)</Label>
+                    <Input value={s.icon} onChange={(e) => updStat(i, { icon: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">ცოცხალი მაჩვენებელი (Live metric)</Label>
+                    <select
+                      value={s.metric ?? ""}
+                      onChange={(e) => updStat(i, { metric: e.target.value })}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                    >
+                      <option value="">— ხელით (manual value) —</option>
+                      <option value="users">რეგისტრირებული მომხმარებლები</option>
+                      <option value="consultations">დასმული კითხვები</option>
+                      <option value="documents">გამოყენებული შაბლონები</option>
+                      <option value="reviews">დამუშავებული დოკუმენტები</option>
+                      <option value="uploads">ატვირთული ფაილები</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">{'Value (e.g. "19+") — when manual'}</Label>
+                    <Input
+                      value={s.value}
+                      disabled={!!s.metric}
+                      onChange={(e) => updStat(i, { value: e.target.value })}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs">Label</Label>
-                  <Input value={s.label} onChange={(e) => updStat(i, { label: e.target.value })} />
-                </div>
-                <div>
-                  <Label className="text-xs">ცოცხალი მაჩვენებელი (Live metric)</Label>
-                  <select
-                    value={s.metric ?? ""}
-                    onChange={(e) => updStat(i, { metric: e.target.value })}
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                  >
-                    <option value="">— ხელით (manual value) —</option>
-                    <option value="users">რეგისტრირებული მომხმარებლები</option>
-                    <option value="consultations">დასმული კითხვები</option>
-                    <option value="documents">გამოყენებული შაბლონები</option>
-                    <option value="reviews">დამუშავებული დოკუმენტები</option>
-                    <option value="uploads">ატვირთული ფაილები</option>
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-xs">{'Value (e.g. "19+") — when manual'}</Label>
-                  <Input
-                    value={s.value}
-                    disabled={!!s.metric}
-                    onChange={(e) => updStat(i, { value: e.target.value })}
-                  />
-                </div>
+                <BiInput
+                  label="Label"
+                  kaValue={s.label}
+                  enValue={s.labelEn ?? ""}
+                  onKa={(v) => updStat(i, { label: v })}
+                  onEn={(v) => updStat(i, { labelEn: v })}
+                />
               </div>
               <div className="flex flex-col gap-1 shrink-0">
                 <Vis value={s.visible} onChange={(v) => updStat(i, { visible: v })} />
@@ -449,10 +523,13 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
           onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, features: !p.sections.features } }))}
         />
 
-        <div>
-          <Label className="text-xs">სექციის სათაური</Label>
-          <Input value={data.featuresHeading} onChange={(e) => upd("featuresHeading", e.target.value)} />
-        </div>
+        <BiInput
+          label="სექციის სათაური"
+          kaValue={data.featuresHeading}
+          enValue={data.featuresHeadingEn ?? ""}
+          onKa={(v) => upd("featuresHeading", v)}
+          onEn={(v) => upd("featuresHeadingEn", v)}
+        />
 
         <div className="space-y-2">
           {data.features.map((f, i) => (
@@ -464,21 +541,24 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
                 isLast={i === data.features.length - 1}
               />
               <div className="flex-1 space-y-2">
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <div>
-                    <Label className="text-xs">Icon (lucide name)</Label>
-                    <Input value={f.icon} onChange={(e) => updFeature(i, { icon: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Title</Label>
-                    <Input value={f.title} onChange={(e) => updFeature(i, { title: e.target.value })} />
-                  </div>
+                <div>
+                  <Label className="text-xs">Icon (lucide name)</Label>
+                  <Input value={f.icon} onChange={(e) => updFeature(i, { icon: e.target.value })} />
                 </div>
-                <Textarea
-                  rows={2}
-                  placeholder="Description"
-                  value={f.body}
-                  onChange={(e) => updFeature(i, { body: e.target.value })}
+                <BiInput
+                  label="Title"
+                  kaValue={f.title}
+                  enValue={f.titleEn ?? ""}
+                  onKa={(v) => updFeature(i, { title: v })}
+                  onEn={(v) => updFeature(i, { titleEn: v })}
+                />
+                <BiInput
+                  label="Description"
+                  kaValue={f.body}
+                  enValue={f.bodyEn ?? ""}
+                  onKa={(v) => updFeature(i, { body: v })}
+                  onEn={(v) => updFeature(i, { bodyEn: v })}
+                  textarea
                 />
               </div>
               <div className="flex flex-col gap-1 shrink-0">
@@ -501,10 +581,13 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
           onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, pricing: !p.sections.pricing } }))}
         />
 
-        <div>
-          <Label className="text-xs">სექციის სათაური</Label>
-          <Input value={data.pricingHeading} onChange={(e) => upd("pricingHeading", e.target.value)} />
-        </div>
+        <BiInput
+          label="სექციის სათაური"
+          kaValue={data.pricingHeading}
+          enValue={data.pricingHeadingEn ?? ""}
+          onKa={(v) => upd("pricingHeading", v)}
+          onEn={(v) => upd("pricingHeadingEn", v)}
+        />
 
         <p className="rounded-md border border-dashed bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
           ფასები და პაკეტები იმართება „გეგმები&quot; ტაბიდან — ეს სექცია ავტომატურად ასახავს მათ. აქ მხოლოდ სათაურსა და ხილვადობას აკონტროლებ.
@@ -572,15 +655,11 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
                 </div>
               </div>
 
-              {/* Bullet items */}
               <div className="space-y-1.5 pl-8 border-t pt-3">
                 <Label className="text-xs">Feature bullets</Label>
                 {plan.items.map((item, ii) => (
                   <div key={ii} className="flex gap-2">
-                    <Input
-                      value={item}
-                      onChange={(e) => updPlanItem(pi, ii, e.target.value)}
-                    />
+                    <Input value={item} onChange={(e) => updPlanItem(pi, ii, e.target.value)} />
                     <DeleteBtn onClick={() => delPlanItem(pi, ii)} />
                   </div>
                 ))}
@@ -603,16 +682,33 @@ export function HomePageForm({ locale = "ka" }: { locale?: Locale }) {
           visible={sec.cta}
           onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, cta: !p.sections.cta } }))}
         />
-        <div className="grid gap-3 sm:grid-cols-2">
-          {(["title", "subtitle", "buttonText", "buttonHref"] as const).map((k) => (
-            <div key={k}>
-              <Label className="text-xs">{k}</Label>
-              <Input
-                value={data.ctaSection[k]}
-                onChange={(e) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, [k]: e.target.value } }))}
-              />
-            </div>
-          ))}
+        <BiInput
+          label="Title"
+          kaValue={data.ctaSection.title}
+          enValue={data.ctaSection.titleEn ?? ""}
+          onKa={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, title: v } }))}
+          onEn={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, titleEn: v } }))}
+        />
+        <BiInput
+          label="Subtitle"
+          kaValue={data.ctaSection.subtitle}
+          enValue={data.ctaSection.subtitleEn ?? ""}
+          onKa={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, subtitle: v } }))}
+          onEn={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, subtitleEn: v } }))}
+        />
+        <BiInput
+          label="Button text"
+          kaValue={data.ctaSection.buttonText}
+          enValue={data.ctaSection.buttonTextEn ?? ""}
+          onKa={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, buttonText: v } }))}
+          onEn={(v) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, buttonTextEn: v } }))}
+        />
+        <div>
+          <Label className="text-xs">Button href</Label>
+          <Input
+            value={data.ctaSection.buttonHref}
+            onChange={(e) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, buttonHref: e.target.value } }))}
+          />
         </div>
       </section>
 

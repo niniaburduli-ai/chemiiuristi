@@ -34,7 +34,14 @@ export default async function PricingPage() {
           const isPaid = !p.isFree && p.priceMinor > 0 && p.active;
           const name = pick(p.name, p.nameEn, locale);
           const desc = pick(p.description, p.descriptionEn, locale);
-          const features = pickArr(p.features, p.featuresEn, locale);
+          const baseFeatures = pickArr(p.features, p.featuresEn, locale);
+          const genFeatures = p.includeDocGeneration
+            ? pickArr(p.featuresDocGeneration, p.featuresDocGenerationEn, locale)
+            : [];
+          const revFeatures = p.includeDocReview
+            ? pickArr(p.featuresDocReview, p.featuresDocReviewEn, locale)
+            : [];
+          const features = [...baseFeatures, ...genFeatures, ...revFeatures];
           return (
             <Card
               key={p.id}

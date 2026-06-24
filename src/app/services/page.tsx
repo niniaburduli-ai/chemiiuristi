@@ -1,7 +1,11 @@
+export const dynamic = "force-dynamic"
+
 import Link from "next/link"
 import { MessageSquare, FileText, FolderOpen, ArrowRight, Check } from "lucide-react"
 import { getLocale } from "@/lib/i18n/locale"
 import { getDict } from "@/lib/i18n/dictionaries"
+import { getHomePage } from "@/lib/cms"
+import { getHomeSeed } from "@/lib/homepage-defaults"
 
 type ServiceData = {
   id: string
@@ -105,7 +109,13 @@ function getServices(locale: "ka" | "en"): ServiceData[] {
 export default async function ServicesPage() {
   const locale = await getLocale()
   const d = getDict(locale)
-  const SERVICES = getServices(locale)
+  const seed = getHomeSeed()
+  const cmsPage = await getHomePage()
+  const cmsCards = cmsPage?.serviceCards ?? seed.serviceCards
+  const visibleHrefs = new Set(
+    cmsCards.filter((c) => c.visible !== false).map((c) => c.href),
+  )
+  const SERVICES = getServices(locale).filter((s) => visibleHrefs.has(s.href))
 
   return (
     <div className="container mx-auto px-4 py-14 max-w-5xl">

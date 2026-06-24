@@ -11,8 +11,8 @@ import { FooterForm } from "./FooterForm"
 import { LegalNoticesForm } from "./LegalNoticesForm"
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/config"
 
-// Sections whose content is per-locale editable.
-const LOCALIZED: CMSSection[] = ["site-config", "nav", "homepage", "footer"]
+// Sections whose content is per-locale editable (homepage uses bilingual fields in single doc).
+const LOCALIZED: CMSSection[] = ["site-config", "nav", "footer"]
 
 export function CMSPanel() {
   const [section, setSection] = useState<CMSSection>("site-config")
@@ -46,7 +46,7 @@ export function CMSPanel() {
         )}
         {section === "site-config" && <SiteConfigForm locale={locale} />}
         {section === "nav" && <NavMenuForm locale={locale} />}
-        {section === "homepage" && <HomePageForm locale={locale} />}
+        {section === "homepage" && <HomePageForm />}
         {section === "about" && <AboutPageForm />}
         {section === "faq" && <FAQForm />}
         {section === "blog" && <BlogPanel />}

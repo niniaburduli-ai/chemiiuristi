@@ -104,12 +104,10 @@ export async function getNavMenu(locale: Locale = "ka"): Promise<NavMenuData> {
   } catch { return fallback }
 }
 
-export async function getHomePage(locale: Locale = "ka"): Promise<HomePageData | null> {
+export async function getHomePage(): Promise<HomePageData | null> {
   try {
     await dbConnect()
-    const doc = locale === "en"
-      ? await HomePage.findOne({ status: "published", locale: "en" }).lean()
-      : await HomePage.findOne({ status: "published", locale: { $ne: "en" } }).lean()
+    const doc = await HomePage.findOne({ status: "published", locale: { $ne: "en" } }).lean()
     if (!doc) return null
     return toPlain(doc as unknown as HomePageData)
   } catch { return null }

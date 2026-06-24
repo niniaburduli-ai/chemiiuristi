@@ -6,6 +6,7 @@ import { Footer } from "@/components/site/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getThemeConfig, buildThemeCss } from "@/lib/theme";
+import { getLocale } from "@/lib/i18n/locale";
 
 const notoSans = Noto_Sans_Georgian({
   variable: "--font-noto-sans",
@@ -28,11 +29,12 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const themeCss = buildThemeCss(await getThemeConfig());
+  const [themeConfig, locale] = await Promise.all([getThemeConfig(), getLocale()]);
+  const themeCss = buildThemeCss(themeConfig);
 
   return (
     <html
-      lang="ka"
+      lang={locale}
       suppressHydrationWarning
       className={`${notoSans.variable} ${notoSerif.variable} h-full antialiased`}
     >

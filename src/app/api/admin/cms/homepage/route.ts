@@ -4,28 +4,24 @@ import { getAdminSession } from "@/lib/admin"
 import { dbConnect } from "@/lib/db"
 import { HomePage } from "@/lib/models/HomePage"
 import { HOME_SEED } from "@/lib/homepage-defaults"
-import { reqLocale, localeFilter } from "@/lib/cms-admin"
 
 export const runtime = "nodejs"
 
-export async function GET(req: NextRequest) {
+const KA_FILTER = { locale: { $ne: "en" } }
+
+export async function GET(_req: NextRequest) {
   const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  const locale = reqLocale(req)
   await dbConnect()
 
-  let raw = await HomePage.findOne(localeFilter(locale)).lean() as Record<string, unknown> | null
-  // Prefill the EN editor from KA when no EN doc exists yet.
-  if (!raw && locale === "en") {
-    raw = await HomePage.findOne({ locale: { $ne: "en" } }).lean() as Record<string, unknown> | null
-  }
+  let raw = await HomePage.findOne(KA_FILTER).lean() as Record<string, unknown> | null
 
   if (!raw) {
-    const created = await HomePage.create({ ...HOME_SEED, status: "draft", locale })
+    const created = await HomePage.create({ ...HOME_SEED, status: "draft", locale: "ka" })
     return NextResponse.json({ data: created.toObject() })
   }
 
-  // Backfill new fields that didn't exist in previous schema versions
+  // Backfill fields that didn't exist in previous schema versions
   const data = {
     ...raw,
     sections: (raw.sections as object | undefined) ?? HOME_SEED.sections,
@@ -33,11 +29,14 @@ export async function GET(req: NextRequest) {
       ? raw.serviceCards
       : HOME_SEED.serviceCards,
     statsHeading: (raw.statsHeading as string | undefined) || HOME_SEED.statsHeading,
+    statsHeadingEn: (raw.statsHeadingEn as string | undefined) || HOME_SEED.statsHeadingEn,
     stats: (raw.stats as unknown[] | undefined)?.length
       ? raw.stats
       : HOME_SEED.stats,
     featuresHeading: (raw.featuresHeading as string | undefined) || HOME_SEED.featuresHeading,
+    featuresHeadingEn: (raw.featuresHeadingEn as string | undefined) || HOME_SEED.featuresHeadingEn,
     pricingHeading: (raw.pricingHeading as string | undefined) || HOME_SEED.pricingHeading,
+    pricingHeadingEn: (raw.pricingHeadingEn as string | undefined) || HOME_SEED.pricingHeadingEn,
     plans: (raw.plans as unknown[] | undefined)?.length
       ? raw.plans
       : HOME_SEED.plans,
@@ -49,14 +48,12 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  const locale = reqLocale(req)
   const body = await req.json()
-  // Never let an inbound _id clobber the per-locale upsert target.
   delete (body as Record<string, unknown>)._id
   await dbConnect()
   const doc = await HomePage.findOneAndUpdate(
-    localeFilter(locale),
-    { $set: { ...body, locale } },
+    KA_FILTER,
+    { $set: { ...body, locale: "ka" } },
     { upsert: true, new: true }
   ).lean()
   revalidatePath("/")

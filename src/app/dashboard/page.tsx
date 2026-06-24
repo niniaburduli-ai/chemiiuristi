@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { getPlanByKey } from "@/lib/plans-db";
+import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 
@@ -64,23 +65,31 @@ export default async function DashboardPage() {
   const d = getDict(locale);
 
   await dbConnect();
-  const [user, sub] = await Promise.all([
+  const [user, sub, flags] = await Promise.all([
     User.findById(session.user.id).select("-passwordHash").lean(),
     Subscription.findOne({ userId: session.user.id }).lean(),
+    getFeatureFlags(),
   ]);
   if (!user) redirect("/login");
 
-  const history = await Consultation.find({ userId: session.user.id })
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .lean();
+  const plan = user.plan ?? "free";
+  const [history, planData] = await Promise.all([
+    Consultation.find({ userId: session.user.id })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean(),
+    getPlanByKey(plan),
+  ]);
 
-  const plan = (user.plan ?? "free") as Plan;
-  const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+  const consultLimit = planData?.consultations ?? 9;
+  const showGenerate = flags.generate && planData ? planData.includeDocGeneration : false;
+  const showReview = flags.review && planData ? planData.includeDocReview : false;
+  const genLimit = showGenerate ? (planData?.docGeneration ?? 0) : 0;
+  const reviewLimit = showReview ? (planData?.docReview ?? 0) : 0;
 
-  const consultUsed = Math.max(0, limits.consultations - (user.consultationsRemaining ?? 0));
-  const docGenUsed = Math.max(0, limits.docGeneration - (user.docGenerationRemaining ?? 0));
-  const reviewUsed = Math.max(0, limits.docReview - (user.docReviewRemaining ?? 0));
+  const consultUsed = Math.max(0, consultLimit - (user.consultationsRemaining ?? 0));
+  const docGenUsed = showGenerate ? Math.max(0, genLimit - (user.docGenerationRemaining ?? 0)) : 0;
+  const reviewUsed = showReview ? Math.max(0, reviewLimit - (user.docReviewRemaining ?? 0)) : 0;
 
   const subStatus = sub?.status ?? null;
   const dateLocale = locale === "en" ? "en-GB" : "ka-GE";
@@ -119,36 +128,40 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/generate" className="block">
-          <Card className="hover:border-primary/50 transition-colors h-full">
-            <CardHeader className="pb-2">
-              <CardDescription>{d.dashboard.document}</CardDescription>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileText className="h-4 w-4" /> {d.dashboard.generation}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {d.dashboard.remaining} {user.docGenerationRemaining ?? 0}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/review" className="block">
-          <Card className="hover:border-primary/50 transition-colors h-full">
-            <CardHeader className="pb-2">
-              <CardDescription>{d.dashboard.review}</CardDescription>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Search className="h-4 w-4" /> {d.dashboard.analysisLabel}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {d.dashboard.remaining} {user.docReviewRemaining ?? 0}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        {showGenerate && (
+          <Link href="/generate" className="block">
+            <Card className="hover:border-primary/50 transition-colors h-full">
+              <CardHeader className="pb-2">
+                <CardDescription>{d.dashboard.document}</CardDescription>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> {d.dashboard.generation}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {d.dashboard.remaining} {user.docGenerationRemaining ?? 0}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+        {showReview && (
+          <Link href="/review" className="block">
+            <Card className="hover:border-primary/50 transition-colors h-full">
+              <CardHeader className="pb-2">
+                <CardDescription>{d.dashboard.review}</CardDescription>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Search className="h-4 w-4" /> {d.dashboard.analysisLabel}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {d.dashboard.remaining} {user.docReviewRemaining ?? 0}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
       </div>
 
       {/* My Plan & Usage */}
@@ -182,22 +195,26 @@ export default async function DashboardPage() {
             usedLabel={d.dashboard.usedLabel}
             leftLabel={d.dashboard.leftLabel}
             used={consultUsed}
-            total={limits.consultations}
+            total={consultLimit}
           />
-          <UsageRow
-            label={d.dashboard.docGeneration}
-            usedLabel={d.dashboard.usedLabel}
-            leftLabel={d.dashboard.leftLabel}
-            used={docGenUsed}
-            total={limits.docGeneration}
-          />
-          <UsageRow
-            label={d.dashboard.docReview}
-            usedLabel={d.dashboard.usedLabel}
-            leftLabel={d.dashboard.leftLabel}
-            used={reviewUsed}
-            total={limits.docReview}
-          />
+          {showGenerate && (
+            <UsageRow
+              label={d.dashboard.docGeneration}
+              usedLabel={d.dashboard.usedLabel}
+              leftLabel={d.dashboard.leftLabel}
+              used={docGenUsed}
+              total={genLimit}
+            />
+          )}
+          {showReview && (
+            <UsageRow
+              label={d.dashboard.docReview}
+              usedLabel={d.dashboard.usedLabel}
+              leftLabel={d.dashboard.leftLabel}
+              used={reviewUsed}
+              total={reviewLimit}
+            />
+          )}
           {plan === "free" && (
             <p className="text-xs text-muted-foreground mt-3">
               {d.dashboard.upgradePrompt}{" "}
@@ -222,26 +239,30 @@ export default async function DashboardPage() {
             </CardHeader>
           </Card>
         </Link>
-        <Link href="/dashboard/documents">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <FileText className="h-4 w-4" /> {d.dashboard.generatedDocs}
-              </CardTitle>
-              <CardDescription>{d.dashboard.downloadView}</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href="/dashboard/reviews">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <FileCheck className="h-4 w-4" /> {d.dashboard.reviewResults}
-              </CardTitle>
-              <CardDescription>{d.dashboard.analysisHistory}</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
+        {showGenerate && (
+          <Link href="/dashboard/documents">
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> {d.dashboard.generatedDocs}
+                </CardTitle>
+                <CardDescription>{d.dashboard.downloadView}</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        )}
+        {showReview && (
+          <Link href="/dashboard/reviews">
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileCheck className="h-4 w-4" /> {d.dashboard.reviewResults}
+                </CardTitle>
+                <CardDescription>{d.dashboard.analysisHistory}</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        )}
       </div>
 
       {/* Recent consultations */}
