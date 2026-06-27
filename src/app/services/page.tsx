@@ -6,6 +6,8 @@ import { getLocale } from "@/lib/i18n/locale"
 import { getDict } from "@/lib/i18n/dictionaries"
 import { getHomePage } from "@/lib/cms"
 import { getHomeSeed } from "@/lib/homepage-defaults"
+import { PageHero } from "@/components/site/PageHero"
+import { AnimateIn } from "@/components/site/AnimateIn"
 
 type ServiceData = {
   id: string
@@ -118,75 +120,81 @@ export default async function ServicesPage() {
   const SERVICES = getServices(locale).filter((s) => visibleHrefs.has(s.href))
 
   return (
-    <div className="container mx-auto px-4 py-14 max-w-5xl">
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold text-[#1a1a2e] tracking-tight">{d.services.title}</h1>
-        <p className="text-lg text-gray-500 mt-2 max-w-2xl">{d.services.subtitle}</p>
-      </div>
+    <div>
+      <PageHero title={d.services.title} subtitle={d.services.subtitle} />
 
-      <div className="flex flex-col gap-8">
-        {SERVICES.map((s) => {
-          const Icon = s.icon
-          const card = (
-            <div
-              className={[
-                "rounded-2xl border p-8 flex flex-col sm:flex-row gap-8 transition-all",
-                s.comingSoon
-                  ? "bg-[#f7f7ff] border-[#e0e0ff] opacity-70"
-                  : "bg-white border-[#e0e0ff] hover:shadow-lg hover:-translate-y-0.5 group",
-              ].join(" ")}
-            >
-              <div className="shrink-0">
-                <div className="w-16 h-16 rounded-2xl bg-[#ededff] flex items-center justify-center">
-                  <Icon className={["h-8 w-8", s.comingSoon ? "text-[#a5b4fc]" : "text-[#6366f1]"].join(" ")} />
-                </div>
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div>
-                    <h2 className={["text-2xl font-bold leading-snug", s.comingSoon ? "text-[#6b7280]" : "text-[#1a1a2e]"].join(" ")}>
-                      {s.title}
-                    </h2>
-                    <p className={["text-sm font-semibold mt-0.5", s.comingSoon ? "text-[#a5b4fc]" : "text-[#6366f1]"].join(" ")}>
-                      {s.subtitle}
-                    </p>
+      <div className="container mx-auto px-4 py-14 max-w-5xl">
+        <div className="flex flex-col gap-6">
+          {SERVICES.map((s, idx) => {
+            const Icon = s.icon
+            if (s.comingSoon) {
+              return (
+                <AnimateIn key={s.id} delay={idx * 100}>
+                  <div className="border-t-[3px] border-t-border bg-card border border-border rounded-2xl p-8 flex flex-col sm:flex-row gap-8 opacity-60">
+                    <div className="shrink-0">
+                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <Icon className="h-8 w-8 text-primary/30" />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div>
+                          <h2 className="text-2xl font-bold leading-snug text-foreground">{s.title}</h2>
+                          <p className="text-sm font-semibold mt-0.5 text-primary/50">{s.subtitle}</p>
+                        </div>
+                        <span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground border border-border rounded-full px-3 py-1 shrink-0">
+                          {d.services.comingSoon}
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground mt-3 leading-relaxed">{s.description}</p>
+                      <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
+                        {s.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <Check className="h-4 w-4 shrink-0 mt-0.5 text-primary/30" />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  {s.comingSoon && (
-                    <span className="text-[10px] font-semibold tracking-widest uppercase text-gray-400 border border-gray-200 rounded-full px-3 py-1 shrink-0">
-                      {d.services.comingSoon}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-gray-500 mt-3 leading-relaxed">{s.description}</p>
-
-                <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
-                  {s.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                      <Check className={["h-4 w-4 shrink-0 mt-0.5", s.comingSoon ? "text-[#a5b4fc]" : "text-[#6366f1]"].join(" ")} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {!s.comingSoon && (
-                  <div className="mt-6">
-                    <Link
-                      href={s.href}
-                      className="inline-flex items-center gap-2 bg-[#4338ca] hover:bg-[#3730a3] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
-                    >
-                      {s.cta}
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
+                </AnimateIn>
+              )
+            }
+            return (
+              <AnimateIn key={s.id} delay={idx * 100}>
+                <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-8 flex flex-col sm:flex-row gap-8 card-hover group">
+                  <div className="shrink-0">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <Icon className="h-8 w-8 text-primary" />
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-          )
-
-          return <div key={s.id}>{card}</div>
-        })}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-2xl font-bold leading-snug text-foreground">{s.title}</h2>
+                    <p className="text-sm font-semibold mt-0.5 text-primary">{s.subtitle}</p>
+                    <p className="text-muted-foreground mt-3 leading-relaxed">{s.description}</p>
+                    <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
+                      {s.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-6">
+                      <Link
+                        href={s.href}
+                        className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold px-5 py-2.5 rounded-xl btn-hover"
+                      >
+                        {s.cta}
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </AnimateIn>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
