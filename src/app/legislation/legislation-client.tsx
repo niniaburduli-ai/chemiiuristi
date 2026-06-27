@@ -72,14 +72,14 @@ export function LegislationClient({ locale }: { locale: Locale }) {
                 href={doc.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-4 bg-[#f7f7ff] border border-[#e0e0ff] rounded-2xl px-6 py-7 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="flex items-start gap-4 bg-card border border-border rounded-2xl px-6 py-7 card-hover transition-all"
               >
-                <div className="shrink-0 w-12 h-12 rounded-full bg-[#ededff] flex items-center justify-center">
-                  <BookOpen className="h-6 w-6 text-[#6366f1]" />
+                <div className="shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#3730a3] leading-snug">{doc.title[locale]}</p>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{doc.description[locale]}</p>
+                  <p className="font-bold text-primary leading-snug">{doc.title[locale]}</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{doc.description[locale]}</p>
                   <Badge variant="secondary" className="mt-3 text-xs">
                     {categories.find((c) => c.id === doc.tagId)?.label ?? doc.tagId}
                   </Badge>
