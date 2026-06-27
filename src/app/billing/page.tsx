@@ -63,11 +63,11 @@ export default async function BillingPage() {
     .lean();
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-3xl">
+    <div className="container mx-auto px-4 py-10 max-w-3xl animate-fade-up">
       <h1 className="text-3xl font-bold mb-2">{d.billing.title}</h1>
       <p className="text-muted-foreground mb-8">{d.billing.subtitle}</p>
 
-      <Card className="mb-6">
+      <Card className="mb-6 border-t-[3px] border-t-primary rounded-2xl">
         <CardHeader>
           <div className="flex justify-between items-start flex-wrap gap-2">
             <div>
@@ -95,7 +95,7 @@ export default async function BillingPage() {
             </div>
           )}
           <div className="mt-6 flex gap-2 flex-wrap">
-            <Link href="/pricing" className={buttonVariants()}>
+            <Link href="/pricing" className={buttonVariants() + " btn-hover"}>
               {isPaid ? d.billing.changePlan : d.billing.choosePlan}
             </Link>
             {isPaid && status !== "canceled" && <CancelSubscriptionButton locale={locale} />}
@@ -103,7 +103,7 @@ export default async function BillingPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-2xl border-t-[3px] border-t-primary">
         <CardHeader>
           <CardTitle>{d.billing.paymentHistory}</CardTitle>
         </CardHeader>

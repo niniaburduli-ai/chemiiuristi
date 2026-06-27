@@ -203,10 +203,12 @@
 
 /* ── Card hover micro-interaction ────────────────────────────────────────── */
 .card-hover {
-  transition: border-color 200ms ease-out;
+  transition: transform 250ms ease-out, box-shadow 250ms ease-out, border-color 250ms ease-out;
 }
 .card-hover:hover {
-  border-color: var(--primary);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 32px oklch(0.366 0.165 264 / 0.12);
+  border-color: oklch(0.366 0.165 264 / 0.35);
 }
 
 /* ── Button hover micro-interaction ─────────────────────────────────────── */
@@ -233,6 +235,24 @@
   transition: width 200ms ease-out;
 }
 .footer-link:hover::after {
+  width: 100%;
+}
+
+/* ── Header nav link underline ───────────────────────────────────────────── */
+.header-link {
+  position: relative;
+}
+.header-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: oklch(0.366 0.165 264);
+  transition: width 200ms ease-out;
+}
+.header-link:hover::after {
   width: 100%;
 }
 

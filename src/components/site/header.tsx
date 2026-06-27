@@ -26,11 +26,11 @@ export async function Header() {
   const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-sm transition-shadow">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex flex-col leading-tight shrink-0">
-          <span className="text-lg font-bold text-primary tracking-wide">
+        <Link href="/" className="flex flex-col leading-tight shrink-0 group">
+          <span className="text-lg font-bold text-primary tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80">
             {siteName}
           </span>
           <span className="text-xs text-muted-foreground font-normal">
@@ -39,14 +39,14 @@ export async function Header() {
         </Link>
 
         {/* Nav */}
-        <nav className="hidden md:flex items-center gap-5 text-sm">
+        <nav className="hidden md:flex items-center gap-6 text-sm">
           {navItems.map((n) => (
             <Link
               key={n._id}
               href={n.href}
               target={n.isExternal ? "_blank" : undefined}
               rel={n.isExternal ? "noopener noreferrer" : undefined}
-              className="text-foreground/70 hover:text-foreground font-medium transition-colors"
+              className="text-foreground/70 hover:text-foreground font-medium transition-colors header-link pb-0.5"
             >
               {n.label}
             </Link>
@@ -62,14 +62,14 @@ export async function Header() {
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                  className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}
                 >
                   {d.header.admin}
                 </Link>
               )}
               <Link
                 href="/profile"
-                className={buttonVariants({ variant: "ghost", size: "sm" })}
+                className={buttonVariants({ variant: "ghost", size: "sm" }) + " btn-hover"}
               >
                 <User2 className="h-4 w-4 sm:mr-1.5" />
                 <span className="hidden sm:inline">{user.name ?? user.email}</span>
@@ -80,13 +80,13 @@ export async function Header() {
             <>
               <Link
                 href="/login"
-                className={buttonVariants({ variant: "outline", size: "sm" })}
+                className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}
               >
                 {d.header.signIn}
               </Link>
               <Link
                 href="/register"
-                className={buttonVariants({ size: "sm" })}
+                className={buttonVariants({ size: "sm" }) + " btn-hover"}
               >
                 {d.header.signUp}
               </Link>

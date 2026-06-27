@@ -100,13 +100,13 @@ export default async function DashboardPage() {
   const planLabel = plan === "standard" ? d.dashboard.standard : d.dashboard.free;
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-5xl">
+    <div className="container mx-auto px-4 py-10 max-w-5xl animate-fade-up">
       <div className="flex items-end justify-between mb-8 flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-bold">{d.dashboard.greeting} {user.name}</h1>
           <p className="text-muted-foreground mt-1">{d.dashboard.subtitle}</p>
         </div>
-        <Link href="/chat" className={buttonVariants()}>
+        <Link href="/chat" className={buttonVariants() + " btn-hover"}>
           <MessagesSquare className="mr-2 h-4 w-4" /> {d.dashboard.newConsultation}
         </Link>
       </div>
@@ -114,58 +114,46 @@ export default async function DashboardPage() {
       {/* Quick actions */}
       <div className="grid gap-4 sm:grid-cols-3 mb-8">
         <Link href="/chat" className="block">
-          <Card className="hover:border-primary/50 transition-colors h-full">
-            <CardHeader className="pb-2">
-              <CardDescription>{d.dashboard.consultation}</CardDescription>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <MessagesSquare className="h-4 w-4" /> {d.dashboard.aiLawyer}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {d.dashboard.remaining} {user.consultationsRemaining ?? 0}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.consultation}</p>
+            <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+              <MessagesSquare className="h-4 w-4 text-primary" /> {d.dashboard.aiLawyer}
+            </p>
+            <p className="text-sm text-muted-foreground mt-auto">
+              {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.consultationsRemaining ?? 0}</span>
+            </p>
+          </div>
         </Link>
         {showGenerate && (
           <Link href="/generate" className="block">
-            <Card className="hover:border-primary/50 transition-colors h-full">
-              <CardHeader className="pb-2">
-                <CardDescription>{d.dashboard.document}</CardDescription>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="h-4 w-4" /> {d.dashboard.generation}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {d.dashboard.remaining} {user.docGenerationRemaining ?? 0}
-                </p>
-              </CardContent>
-            </Card>
+            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.document}</p>
+              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <FileText className="h-4 w-4 text-primary" /> {d.dashboard.generation}
+              </p>
+              <p className="text-sm text-muted-foreground mt-auto">
+                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docGenerationRemaining ?? 0}</span>
+              </p>
+            </div>
           </Link>
         )}
         {showReview && (
           <Link href="/review" className="block">
-            <Card className="hover:border-primary/50 transition-colors h-full">
-              <CardHeader className="pb-2">
-                <CardDescription>{d.dashboard.review}</CardDescription>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Search className="h-4 w-4" /> {d.dashboard.analysisLabel}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {d.dashboard.remaining} {user.docReviewRemaining ?? 0}
-                </p>
-              </CardContent>
-            </Card>
+            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.review}</p>
+              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <Search className="h-4 w-4 text-primary" /> {d.dashboard.analysisLabel}
+              </p>
+              <p className="text-sm text-muted-foreground mt-auto">
+                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docReviewRemaining ?? 0}</span>
+              </p>
+            </div>
           </Link>
         )}
       </div>
 
       {/* My Plan & Usage */}
-      <Card className="mb-8">
+      <Card className="mb-8 border-t-[3px] border-t-primary rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
@@ -184,7 +172,7 @@ export default async function DashboardPage() {
                 )}
               </CardDescription>
             </div>
-            <Link href="/billing" className={buttonVariants({ variant: "outline", size: "sm" })}>
+            <Link href="/billing" className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}>
               <CreditCard className="mr-2 h-4 w-4" /> {d.dashboard.manage}
             </Link>
           </div>
@@ -230,43 +218,37 @@ export default async function DashboardPage() {
       {/* History links */}
       <div className="grid gap-4 sm:grid-cols-3 mb-8">
         <Link href="/dashboard/consultations">
-          <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <MessagesSquare className="h-4 w-4" /> {d.dashboard.consultHistory}
-              </CardTitle>
-              <CardDescription>{d.dashboard.allQnA}</CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="bg-card border border-border rounded-2xl p-5 card-hover cursor-pointer flex flex-col gap-2">
+            <p className="font-bold text-base flex items-center gap-2">
+              <MessagesSquare className="h-4 w-4 text-primary" /> {d.dashboard.consultHistory}
+            </p>
+            <p className="text-sm text-muted-foreground">{d.dashboard.allQnA}</p>
+          </div>
         </Link>
         {showGenerate && (
           <Link href="/dashboard/documents">
-            <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileText className="h-4 w-4" /> {d.dashboard.generatedDocs}
-                </CardTitle>
-                <CardDescription>{d.dashboard.downloadView}</CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="bg-card border border-border rounded-2xl p-5 card-hover cursor-pointer flex flex-col gap-2">
+              <p className="font-bold text-base flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" /> {d.dashboard.generatedDocs}
+              </p>
+              <p className="text-sm text-muted-foreground">{d.dashboard.downloadView}</p>
+            </div>
           </Link>
         )}
         {showReview && (
           <Link href="/dashboard/reviews">
-            <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileCheck className="h-4 w-4" /> {d.dashboard.reviewResults}
-                </CardTitle>
-                <CardDescription>{d.dashboard.analysisHistory}</CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="bg-card border border-border rounded-2xl p-5 card-hover cursor-pointer flex flex-col gap-2">
+              <p className="font-bold text-base flex items-center gap-2">
+                <FileCheck className="h-4 w-4 text-primary" /> {d.dashboard.reviewResults}
+              </p>
+              <p className="text-sm text-muted-foreground">{d.dashboard.analysisHistory}</p>
+            </div>
           </Link>
         )}
       </div>
 
       {/* Recent consultations */}
-      <Card>
+      <Card className="rounded-2xl border-t-[3px] border-t-primary">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>{d.dashboard.recentConsultations}</CardTitle>
