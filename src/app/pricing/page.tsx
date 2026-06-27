@@ -22,7 +22,7 @@ export default async function PricingPage() {
   return (
     <div className="container mx-auto px-4 py-16 animate-fade-up">
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold">{d.pricing.title}</h1>
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight">{d.pricing.title}</h1>
         <p className="mt-4 text-muted-foreground">{d.pricing.subtitle}</p>
       </div>
 
