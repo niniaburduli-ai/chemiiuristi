@@ -39,11 +39,12 @@ export default async function AboutPage() {
   return (
     <div>
       <section className="bg-primary">
-        <div className="container mx-auto px-4 py-12 md:py-16 max-w-3xl">
-          <p className="text-5xl md:text-6xl font-bold animate-fade-up leading-tight">
-            <span className="text-white">ჩემი იურისტი</span>
-            <br />
-            <span className="text-gold">პლატფორმა, რომელიც იურიდიულ დახმარებას ხელმისაწვდომს და მარტივს ხდის ყველასთვის.</span>
+        <div className="container mx-auto px-4 py-12 md:py-16 max-w-5xl">
+          <h1 className="text-5xl md:text-6xl font-bold text-white animate-fade-up leading-tight">
+            ჩემი იურისტი
+          </h1>
+          <p className="text-xl font-semibold text-gold mt-3 animate-fade-up delay-150 leading-snug max-w-2xl">
+            პლატფორმა, რომელიც იურიდიულ დახმარებას ხელმისაწვდომს და მარტივს ხდის ყველასთვის.
           </p>
         </div>
       </section>
