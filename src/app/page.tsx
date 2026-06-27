@@ -136,10 +136,10 @@ export default async function Home() {
 
           <div className="relative container mx-auto px-4">
             <div className="flex flex-col justify-center min-h-[560px] py-12 lg:py-16 max-w-[620px]">
-              <h1 className="text-[58px] sm:text-[68px] lg:text-[76px] font-bold text-white leading-none tracking-tight mb-5 whitespace-nowrap animate-fade-up">
+              <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight mb-5 animate-fade-up">
                 {heroTitle}
               </h1>
-              <p className="text-xl md:text-2xl font-semibold text-gold leading-snug animate-fade-up delay-150">
+              <p className="text-xl font-semibold text-gold leading-snug animate-fade-up delay-150">
                 {heroSubtitle}
               </p>
             </div>
