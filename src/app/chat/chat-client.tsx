@@ -139,7 +139,7 @@ export function ChatClient({ locale }: { locale: Locale }) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="mb-6 flex flex-col gap-3">
+      <div className="mb-6 flex flex-col gap-3 animate-fade-up">
         <p className="font-semibold text-base">{d.chat.greeting}</p>
         <p className="text-sm text-muted-foreground">{d.chat.intro1}</p>
         <p className="text-sm text-muted-foreground">{d.chat.intro2}</p>
@@ -159,7 +159,7 @@ export function ChatClient({ locale }: { locale: Locale }) {
                 </div>
               )}
             </div>
-            <Card className="flex-1">
+            <Card className={["flex-1", m.role === "assistant" ? "border-t-[3px] border-t-primary" : ""].filter(Boolean).join(" ")}>
               <CardContent className="py-3">
                 {m.content ? (
                   <p className="text-sm whitespace-pre-wrap">{m.content}</p>
@@ -210,7 +210,7 @@ export function ChatClient({ locale }: { locale: Locale }) {
       </div>
 
       <form
-        className="sticky bottom-4 flex flex-col gap-2"
+        className="sticky bottom-4 flex flex-col gap-2 bg-background/95 backdrop-blur-sm rounded-2xl border border-border p-3 shadow-sm"
         onSubmit={(e) => {
           e.preventDefault();
           send(input);
