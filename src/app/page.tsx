@@ -122,16 +122,25 @@ export default async function Home() {
       {/* ── HERO ── */}
       {sections.hero !== false && (
         <section className="relative overflow-hidden bg-slate-900">
-          {/* Statue — high contrast kills background artifacts; sepia+hue push lines to gold matching text */}
-          <div className="absolute inset-y-0 right-0 w-full lg:w-[62%] flex items-end justify-center pointer-events-none select-none animate-float-in">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/kartlis_deda_5.png"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-auto object-contain mix-blend-screen"
-              style={{ filter: "invert(1) sepia(1) saturate(4.8) hue-rotate(12deg) contrast(2.4) brightness(1.0)" }}
-            />
+          {/* Statue is static; the scale mechanism is a separate overlay layer so only it can swing */}
+          <div className="absolute inset-y-0 right-0 w-full lg:w-[62%] flex items-end justify-center pointer-events-none select-none">
+            <div className="relative h-full" style={{ aspectRatio: "900 / 1371" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/kartlis_deda_5.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/kartlis_deda_scale.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute animate-scale-sway object-contain"
+                style={{ left: "52.78%", top: "20.57%", width: "46.67%", height: "20.42%" }}
+              />
+            </div>
           </div>
 
           <div className="relative container mx-auto px-4">
