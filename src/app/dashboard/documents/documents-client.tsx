@@ -164,7 +164,8 @@ export function DocumentsClient({
         ...prev,
       ]);
       toast.success("ანალიზი დასრულდა");
-    } catch {
+    } catch (err) {
+      console.error("[analyze] fetch error:", err);
       setError("სერვისთან კავშირი ვერ დამყარდა");
     } finally {
       setLoading(false);

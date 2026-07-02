@@ -17,7 +17,6 @@ const ALLOWED_MIMES = new Set([
   "text/plain",
   "text/markdown",
   "text/x-markdown",
-  "application/octet-stream", // fallback — extension checked separately
 ]);
 const ALLOWED_EXTS = new Set([".pdf", ".docx", ".txt", ".md", ".text"]);
 
@@ -106,17 +105,8 @@ export async function POST(req: Request) {
   }
 
   await dbConnect();
-  const user = await User.findById(session.user.id).lean();
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-  const isAdmin = user.role === "admin";
-  if (!isAdmin && (user.docReviewRemaining ?? 0) <= 0) {
-    return NextResponse.json(
-      { error: "Document review quota exceeded. Please upgrade your plan." },
-      { status: 403 }
-    );
-  }
+  // Role is stored in the JWT session token — no extra DB round-trip needed here
+  const isAdmin = session.user.role === "admin";
 
   const ct = req.headers.get("content-type") ?? "";
   let text = "";
@@ -156,7 +146,22 @@ export async function POST(req: Request) {
 
   text = text.replace(/\s+/g, " ").trim().slice(0, MAX_TEXT);
   if (!text) {
-    return NextResponse.json({ error: "No document text provided" }, { status: 400 });
+    return NextResponse.json({ error: "დოკუმენტის ტექსტი ვერ მოიძებნა" }, { status: 400 });
+  }
+
+  // Atomic quota deduction — do this BEFORE the AI call
+  if (!isAdmin) {
+    const updated = await User.findOneAndUpdate(
+      { _id: session.user.id, docReviewRemaining: { $gt: 0 } },
+      { $inc: { docReviewRemaining: -1 } },
+      { new: true, lean: true }
+    );
+    if (!updated) {
+      return NextResponse.json(
+        { error: "კვოტა ამოიწურა. გთხოვთ, განაახლოთ გეგმა." },
+        { status: 403 }
+      );
+    }
   }
 
   let raw: string;
@@ -168,7 +173,7 @@ export async function POST(req: Request) {
   } catch (err) {
     return NextResponse.json(
       {
-        error: "AI service unavailable",
+        error: "AI სერვისი მიუწვდომელია",
         detail: String(err instanceof Error ? err.message : err),
       },
       { status: 502 }
@@ -177,7 +182,7 @@ export async function POST(req: Request) {
 
   const { summary, findings, recommendations, riskScore } = parseReviewResponse(raw);
 
-  const reviewCreate = DocumentReview.create({
+  const review = await DocumentReview.create({
     userId: session.user.id,
     fileName,
     summary,
@@ -185,17 +190,10 @@ export async function POST(req: Request) {
     recommendations,
     riskScore,
   });
-  const saveOps: Promise<unknown>[] = [reviewCreate];
-  if (!isAdmin) {
-    saveOps.push(
-      User.findByIdAndUpdate(session.user.id, { $inc: { docReviewRemaining: -1 } })
-    );
-  }
-  const [review] = await Promise.all(saveOps);
 
   return NextResponse.json(
     {
-      id: String((review as { _id: unknown })._id),
+      id: String(review._id),
       fileName,
       summary,
       findings: findings ?? [],
