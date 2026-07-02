@@ -7,6 +7,7 @@ const DocumentReviewSchema = new Schema(
     summary: { type: String, required: true },
     findings: { type: [String], default: [] },
     recommendations: { type: [String], default: [] },
+    riskScore: { type: Number, min: 0, max: 100 },
   },
   { timestamps: true }
 );
