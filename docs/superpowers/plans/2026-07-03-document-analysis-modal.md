@@ -1260,10 +1260,15 @@ Run: `npm run dev`, open `http://localhost:3000`. Confirm:
 - The "AI ასისტენტი" (chat) and "შაბლონები" (templates) cards look and behave exactly as before (chat navigates to `/chat`; templates still shows "მალე"/coming-soon).
 - The "დოკუმენტები" card now looks like an active card (not greyed out) and clicking it opens the modal instead of navigating.
 
+**Two real issues surfaced during this check on the live dev server, both fixed as part of this task:**
+
+1. **RSC function-prop crash.** Passing `resolveIcon` and `pick` (plain functions) as props from the server component `page.tsx` into the `"use client"` `ServiceCards` component crashed with "Functions cannot be passed directly to Client Components." Fix: extracted `ICON_MAP`/`resolveIcon` into a new shared `src/lib/icon-map.ts`, and had `ServiceCards` import `resolveIcon` and `pick` (from `@/lib/i18n/loc`) directly instead of receiving them as props. `page.tsx` also now imports `resolveIcon` from the new module instead of defining it locally. `ServiceCards`'s prop list drops `resolveIcon`/`pick` entirely.
+2. **Stale CMS data overriding the seed.** `getHomePage()` in `src/lib/cms.ts` reads a real, already-published `HomePage` document from MongoDB (this app is well past the "Phase 1 mock data" state `plan.md` describes) — `allServiceCards` in `page.tsx` uses `cmsData?.serviceCards ?? seed.serviceCards`, so editing `homepage-defaults.ts` alone has zero effect on the live site once a CMS document exists. The live "Documents" card already had `comingSoon: false` (an admin had pre-enabled it) but `href` was still the placeholder `"/docs"`. Fix, following the existing precedent in the same function (`INFORMAL_CARD_SUBTITLES`/`INFORMAL_CARD_CTA` already normalize other stale CMS strings on read): added a normalization step in `getHomePage()` that rewrites `href: "/docs"` to `"/review"` and forces `comingSoon: false` for that card, read-time only, no DB write. `ServiceCards`'s `card.href === "/review"` check now matches correctly for both the seed default and existing live CMS data.
+
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/lib/homepage-defaults.ts src/components/site/service-cards.tsx src/app/page.tsx
+git add src/lib/homepage-defaults.ts src/components/site/service-cards.tsx src/app/page.tsx src/lib/icon-map.ts src/lib/cms.ts
 git commit -m "feat: wire homepage Documents card to open the analysis modal"
 ```
 
