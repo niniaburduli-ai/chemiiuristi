@@ -172,6 +172,7 @@ export async function POST(req: Request) {
     summary: analysis.summary,
     findings: analysis.findings,
     recommendations: analysis.recommendations,
+    sourceText: text,
   });
   if (!isAdmin) {
     await User.findByIdAndUpdate(session.user.id, { $inc: { docReviewRemaining: -1 } });
