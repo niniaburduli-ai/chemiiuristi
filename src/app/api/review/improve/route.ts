@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         { role: "user", content: userMessage },
       ],
       undefined,
-      4000
+      16000
     );
   } catch (err) {
     return NextResponse.json(
