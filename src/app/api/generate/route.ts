@@ -8,6 +8,7 @@ import { callOpenRouterChat } from "@/lib/ai-call";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 const SYSTEM = `შენ ხარ ქართული იურიდიული დოკუმენტების გენერატორი.
 შექმენი სრული, პროფესიონალური ქართული იურიდიული დოკუმენტი მომხმარებლის აღწერილობის მიხედვით.
@@ -54,10 +55,14 @@ export async function POST(req: Request) {
 
   let content: string;
   try {
-    content = await callOpenRouterChat([
-      { role: "system", content: SYSTEM },
-      { role: "user", content: userMsg },
-    ]);
+    content = await callOpenRouterChat(
+      [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: userMsg },
+      ],
+      undefined,
+      16000
+    );
   } catch (err) {
     return NextResponse.json(
       {
