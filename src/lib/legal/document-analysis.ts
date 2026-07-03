@@ -1,6 +1,7 @@
 import "pdf-parse/worker";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
+import { createScheduler, createWorker } from "tesseract.js";
 
 export const RISK_CATEGORIES = [
   "liability",
@@ -42,6 +43,58 @@ export function extensionOf(fileName: string): string {
 
 export function isSupportedExtension(ext: string): ext is SupportedExtension {
   return (SUPPORTED_EXTENSIONS as readonly string[]).includes(ext);
+}
+
+export const MAX_IMAGES = 10;
+export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+export const IMAGE_EXTENSIONS = ["jpg", "jpeg"] as const;
+export type ImageExtension = (typeof IMAGE_EXTENSIONS)[number];
+
+export function isImageExtension(ext: string): ext is ImageExtension {
+  return (IMAGE_EXTENSIONS as readonly string[]).includes(ext);
+}
+
+export const OCR_CONCURRENCY = 3;
+
+export async function extractTextFromImages(
+  images: { name: string; buffer: Buffer }[]
+): Promise<{ combinedText: string; succeededCount: number; failedCount: number }> {
+  const poolSize = Math.min(OCR_CONCURRENCY, images.length);
+  const scheduler = createScheduler();
+  const workers = await Promise.all(
+    Array.from({ length: poolSize }, () => createWorker("kat"))
+  );
+  workers.forEach((worker) => scheduler.addWorker(worker));
+
+  const results: (string | null)[] = new Array(images.length).fill(null);
+  try {
+    await Promise.all(
+      images.map(async (image, i) => {
+        try {
+          const { data } = await scheduler.addJob("recognize", image.buffer);
+          results[i] = data.text;
+        } catch {
+          results[i] = null;
+        }
+      })
+    );
+  } finally {
+    await scheduler.terminate();
+  }
+
+  const succeededCount = results.filter((text) => text !== null).length;
+  const failedCount = images.length - succeededCount;
+
+  if (succeededCount === 0) {
+    throw new Error("All images failed OCR");
+  }
+
+  const combinedText = results
+    .map((text, i) => (text === null ? null : `--- გვერდი ${i + 1} ---\n\n${text}`))
+    .filter((chunk): chunk is string => chunk !== null)
+    .join("\n\n");
+
+  return { combinedText, succeededCount, failedCount };
 }
 
 export async function extractDocumentText(fileName: string, buffer: Buffer): Promise<string> {
