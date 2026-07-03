@@ -24,18 +24,23 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     )
   }
 
-  await dbConnect()
-  // If key changes, ensure no collision with a different plan.
-  if (parsed.data.key) {
-    const clash = await Plan.findOne({ key: parsed.data.key, _id: { $ne: id } }).lean()
-    if (clash) return NextResponse.json({ error: "ასეთი key უკვე არსებობს" }, { status: 409 })
-  }
+  try {
+    await dbConnect()
+    // If key changes, ensure no collision with a different plan.
+    if (parsed.data.key) {
+      const clash = await Plan.findOne({ key: parsed.data.key, _id: { $ne: id } }).lean()
+      if (clash) return NextResponse.json({ error: "ასეთი key უკვე არსებობს" }, { status: 409 })
+    }
 
-  const doc = await Plan.findByIdAndUpdate(id, { $set: parsed.data }, { new: true }).lean()
-  if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  revalidatePath("/pricing")
-  revalidatePath("/")
-  return NextResponse.json({ data: { id } })
+    const doc = await Plan.findByIdAndUpdate(id, { $set: parsed.data }, { new: true }).lean()
+    if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    revalidatePath("/pricing")
+    revalidatePath("/")
+    return NextResponse.json({ data: { id } })
+  } catch (err) {
+    console.error("[admin/plans] update failed:", { id, err })
+    return NextResponse.json({ error: "შენახვა ვერ მოხერხდა" }, { status: 500 })
+  }
 }
 
 export async function DELETE(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -44,16 +49,21 @@ export async function DELETE(_req: NextRequest, ctx: { params: Promise<{ id: str
   const { id } = await ctx.params
   if (!isValidObjectId(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 })
 
-  await dbConnect()
-  const doc = await Plan.findById(id).lean()
-  if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  // Keep a free fallback plan intact.
-  if (doc.isFree || doc.key === "free") {
-    return NextResponse.json({ error: "უფასო გეგმის წაშლა შეუძლებელია" }, { status: 400 })
-  }
+  try {
+    await dbConnect()
+    const doc = await Plan.findById(id).lean()
+    if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    // Keep a free fallback plan intact.
+    if (doc.isFree || doc.key === "free") {
+      return NextResponse.json({ error: "უფასო გეგმის წაშლა შეუძლებელია" }, { status: 400 })
+    }
 
-  await Plan.findByIdAndDelete(id)
-  revalidatePath("/pricing")
-  revalidatePath("/")
-  return NextResponse.json({ ok: true })
+    await Plan.findByIdAndDelete(id)
+    revalidatePath("/pricing")
+    revalidatePath("/")
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error("[admin/plans] delete failed:", { id, err })
+    return NextResponse.json({ error: "წაშლა ვერ მოხერხდა" }, { status: 500 })
+  }
 }

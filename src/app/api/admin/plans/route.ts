@@ -57,12 +57,17 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  await dbConnect()
-  const exists = await Plan.findOne({ key: parsed.data.key }).lean()
-  if (exists) return NextResponse.json({ error: "ასეთი key უკვე არსებობს" }, { status: 409 })
+  try {
+    await dbConnect()
+    const exists = await Plan.findOne({ key: parsed.data.key }).lean()
+    if (exists) return NextResponse.json({ error: "ასეთი key უკვე არსებობს" }, { status: 409 })
 
-  const doc = await Plan.create(parsed.data)
-  revalidatePath("/pricing")
-  revalidatePath("/")
-  return NextResponse.json({ data: { id: String(doc._id) } })
+    const doc = await Plan.create(parsed.data)
+    revalidatePath("/pricing")
+    revalidatePath("/")
+    return NextResponse.json({ data: { id: String(doc._id) } })
+  } catch (err) {
+    console.error("[admin/plans] create failed:", { key: parsed.data.key, err })
+    return NextResponse.json({ error: "შენახვა ვერ მოხერხდა" }, { status: 500 })
+  }
 }

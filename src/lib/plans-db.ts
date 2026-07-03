@@ -37,7 +37,7 @@ export type PlanLimits = {
   docReview: number
 }
 
-/** Seed defaults the first time the collection is empty. DB is source of truth after. */
+/** Seed defaults only when a plan is first created. DB is source of truth after that. */
 const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
   {
     key: "free", name: "საბაზისო პაკეტი", nameEn: "Basic Plan",
@@ -120,40 +120,19 @@ function toData(d: PlanDoc): PlanData {
   }
 }
 
-/** Ensure the collection has at least the default plans. Idempotent. */
+/**
+ * Ensure the collection has at least the default plans. Idempotent, and only
+ * ever touches a plan on its FIRST insert — every field is $setOnInsert, so a
+ * saved admin edit is never overwritten by a later seed call (this runs on
+ * every getPlans(), i.e. every page load).
+ */
 export async function ensurePlansSeeded(): Promise<void> {
   await dbConnect()
-  // Upsert each default plan: sync content fields always, set toggle/visibility
-  // fields only on first creation so admin changes are preserved.
   await Promise.all(
     DEFAULT_PLANS.map((def) =>
       Plan.updateOne(
         { key: def.key },
-        {
-          $set: {
-            name: def.name, nameEn: def.nameEn,
-            description: def.description, descriptionEn: def.descriptionEn,
-            priceMinor: def.priceMinor,
-            consultations: def.consultations,
-            includeDocGeneration: def.includeDocGeneration,
-            docGeneration: def.docGeneration,
-            includeDocReview: def.includeDocReview,
-            docReview: def.docReview,
-            features: def.features,
-            featuresEn: def.featuresEn,
-            featuresDocGeneration: def.featuresDocGeneration,
-            featuresDocGenerationEn: def.featuresDocGenerationEn,
-            featuresDocReview: def.featuresDocReview,
-            featuresDocReviewEn: def.featuresDocReviewEn,
-          },
-          $setOnInsert: {
-            isFree: def.isFree,
-            highlighted: def.highlighted,
-            visible: def.visible,
-            active: def.active,
-            order: def.order,
-          },
-        },
+        { $setOnInsert: def },
         { upsert: true }
       )
     )
@@ -166,7 +145,11 @@ export async function getPlans(): Promise<PlanData[]> {
     await ensurePlansSeeded()
     const docs = await Plan.find().sort({ order: 1, priceMinor: 1 }).lean<PlanDoc[]>()
     return docs.map(toData)
-  } catch {
+  } catch (err) {
+    // Falls back to hardcoded defaults so the pricing page never breaks, but
+    // this means any saved admin edit is invisible until the DB is reachable
+    // again — log loudly so that isn't mistaken for a lost save.
+    console.error("[plans-db] getPlans DB read failed, serving hardcoded defaults:", err)
     return DEFAULT_PLANS.map((p, i) => ({ ...p, id: `default-${i}` }))
   }
 }
