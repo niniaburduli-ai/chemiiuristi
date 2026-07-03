@@ -73,7 +73,6 @@ export async function POST(req: Request) {
           );
         }
       }
-      fileName = `${images.length} ფოტოს დოკუმენტი`;
       let ocr: { combinedText: string; succeededCount: number; failedCount: number };
       try {
         ocr = await extractTextFromImages(
@@ -93,6 +92,7 @@ export async function POST(req: Request) {
           { status: 400 }
         );
       }
+      fileName = `${ocr.succeededCount} ფოტოს დოკუმენტი`;
       text = ocr.combinedText;
       skippedImages = ocr.failedCount;
     } else if (file && file.size > 0) {

@@ -5,9 +5,9 @@ const RiskFindingSchema = new Schema(
   {
     category: { type: String, enum: [...RISK_CATEGORIES], required: true },
     severity: { type: String, enum: [...RISK_SEVERITIES], required: true },
-    title: { type: String, required: true },
-    explanation: { type: String, required: true },
-    recommendation: { type: String, required: true },
+    title: { type: String, default: "" },
+    explanation: { type: String, default: "" },
+    recommendation: { type: String, default: "" },
   },
   { _id: false }
 );

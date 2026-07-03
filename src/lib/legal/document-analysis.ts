@@ -91,7 +91,8 @@ export async function extractTextFromImages(
         try {
           const { data } = await scheduler.addJob("recognize", image.buffer);
           results[i] = data.text;
-        } catch {
+        } catch (err) {
+          console.warn(`OCR failed for image ${i} (${images[i].name}):`, err);
           results[i] = null;
         }
       })
