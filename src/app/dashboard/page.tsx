@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MessagesSquare, FileText, CreditCard, Clock, Search, FileCheck } from "lucide-react";
+import { MessagesSquare, FileText, CreditCard, Search, FileCheck } from "lucide-react";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
-import { Consultation } from "@/lib/models/consultation";
 import { Subscription } from "@/lib/models/subscription";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -15,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { getPlanByKey } from "@/lib/plans-db";
 import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
@@ -74,13 +72,7 @@ export default async function DashboardPage() {
   if (!user) redirect("/login");
 
   const plan = user.plan ?? "free";
-  const [history, planData] = await Promise.all([
-    Consultation.find({ userId: session.user.id })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .lean(),
-    getPlanByKey(plan),
-  ]);
+  const planData = await getPlanByKey(plan);
 
   const consultLimit = planData?.consultations ?? 9;
   const showGenerate = flags.generate && planData ? planData.includeDocGeneration : false;
@@ -121,51 +113,8 @@ export default async function DashboardPage() {
       </section>
       <div className="container mx-auto px-4 py-16 max-w-5xl">
 
-      {/* Quick actions */}
+      {/* 1. Package limits (used / remaining) */}
       <AnimateIn delay={0}>
-      <div className="grid gap-4 sm:grid-cols-3 mb-8">
-        <Link href="/chat" className="block">
-          <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.consultation}</p>
-            <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-              <MessagesSquare className="h-4 w-4 text-primary" /> {d.dashboard.aiLawyer}
-            </p>
-            <p className="text-sm text-muted-foreground mt-auto">
-              {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.consultationsRemaining ?? 0}</span>
-            </p>
-          </div>
-        </Link>
-        {showGenerate && (
-          <Link href="/generate" className="block">
-            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.document}</p>
-              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-                <FileText className="h-4 w-4 text-primary" /> {d.dashboard.generation}
-              </p>
-              <p className="text-sm text-muted-foreground mt-auto">
-                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docGenerationRemaining ?? 0}</span>
-              </p>
-            </div>
-          </Link>
-        )}
-        {showReview && (
-          <Link href="/review" className="block">
-            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.review}</p>
-              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-                <Search className="h-4 w-4 text-primary" /> {d.dashboard.analysisLabel}
-              </p>
-              <p className="text-sm text-muted-foreground mt-auto">
-                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docReviewRemaining ?? 0}</span>
-              </p>
-            </div>
-          </Link>
-        )}
-      </div>
-      </AnimateIn>
-
-      {/* My Plan & Usage */}
-      <AnimateIn delay={80}>
       <Card className="mb-8 border-t-[3px] border-t-primary rounded-2xl">
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -229,7 +178,50 @@ export default async function DashboardPage() {
       </Card>
       </AnimateIn>
 
-      {/* History links */}
+      {/* 2. Services (Consultation, Documents, Templates/Review) */}
+      <AnimateIn delay={80}>
+      <div className="grid gap-4 sm:grid-cols-3 mb-8">
+        <Link href="/chat" className="block">
+          <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.consultation}</p>
+            <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+              <MessagesSquare className="h-4 w-4 text-primary" /> {d.dashboard.aiLawyer}
+            </p>
+            <p className="text-sm text-muted-foreground mt-auto">
+              {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.consultationsRemaining ?? 0}</span>
+            </p>
+          </div>
+        </Link>
+        {showGenerate && (
+          <Link href="/generate" className="block">
+            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.document}</p>
+              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <FileText className="h-4 w-4 text-primary" /> {d.dashboard.generation}
+              </p>
+              <p className="text-sm text-muted-foreground mt-auto">
+                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docGenerationRemaining ?? 0}</span>
+              </p>
+            </div>
+          </Link>
+        )}
+        {showReview && (
+          <Link href="/review" className="block">
+            <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{d.dashboard.review}</p>
+              <p className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <Search className="h-4 w-4 text-primary" /> {d.dashboard.analysisLabel}
+              </p>
+              <p className="text-sm text-muted-foreground mt-auto">
+                {d.dashboard.remaining} <span className="font-semibold text-foreground">{user.docReviewRemaining ?? 0}</span>
+              </p>
+            </div>
+          </Link>
+        )}
+      </div>
+      </AnimateIn>
+
+      {/* 3. Consultation History | Generated Documents | Review Results */}
       <AnimateIn delay={160}>
       <div className="grid gap-4 sm:grid-cols-3 mb-8">
         <Link href="/dashboard/consultations">
@@ -261,59 +253,6 @@ export default async function DashboardPage() {
           </Link>
         )}
       </div>
-      </AnimateIn>
-
-      {/* Recent consultations */}
-      <AnimateIn delay={240}>
-      <Card className="rounded-2xl border-t-[3px] border-t-primary">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>{d.dashboard.recentConsultations}</CardTitle>
-            <CardDescription>{d.dashboard.latest5}</CardDescription>
-          </div>
-          <Link
-            href="/dashboard/consultations"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            {d.dashboard.viewAll}
-          </Link>
-        </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-6 text-center">
-              {d.dashboard.noHistory}{" "}
-              <Link href="/chat" className="underline">
-                {d.dashboard.startHere}
-              </Link>
-              .
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {history.map((h, i) => {
-                const id = String((h as { _id: unknown })._id);
-                const created = (h as { createdAt?: Date }).createdAt;
-                return (
-                  <div key={id}>
-                    <Link
-                      href={`/dashboard/consultations#${id}`}
-                      className="flex items-start justify-between gap-4 py-2 hover:bg-muted/40 -mx-2 px-2 rounded"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{h.question}</div>
-                      </div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1 shrink-0">
-                        <Clock className="h-3 w-3" />
-                        {created ? new Date(created).toLocaleDateString(dateLocale) : ""}
-                      </div>
-                    </Link>
-                    {i < history.length - 1 && <Separator />}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
       </AnimateIn>
     </div>
     </div>
