@@ -1,11 +1,23 @@
 import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
+import { RISK_CATEGORIES, RISK_SEVERITIES } from "@/lib/legal/document-analysis";
+
+const RiskFindingSchema = new Schema(
+  {
+    category: { type: String, enum: [...RISK_CATEGORIES], required: true },
+    severity: { type: String, enum: [...RISK_SEVERITIES], required: true },
+    title: { type: String, required: true },
+    explanation: { type: String, required: true },
+    recommendation: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const DocumentReviewSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     fileName: { type: String, default: "document" },
     summary: { type: String, required: true },
-    findings: { type: [String], default: [] },
+    findings: { type: [RiskFindingSchema], default: [] },
     recommendations: { type: [String], default: [] },
   },
   { timestamps: true }
