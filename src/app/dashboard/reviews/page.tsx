@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { RiskFindingCard, isStructuredFinding } from "@/components/site/risk-finding-card";
 
 export const dynamic = "force-dynamic";
 
@@ -80,16 +81,20 @@ export default async function ReviewsPage() {
                   {findings.length > 0 && (
                     <div>
                       <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> ნაპოვნი პრობლემები
+                        <AlertCircle className="h-3 w-3" /> ნაპოვნი რისკები
                       </p>
-                      <ul className="space-y-1">
-                        {findings.map((f, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
-                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="space-y-2">
+                        {findings.map((f, i) =>
+                          isStructuredFinding(f) ? (
+                            <RiskFindingCard key={i} finding={f} locale="ka" />
+                          ) : (
+                            <div key={i} className="text-sm flex items-start gap-2">
+                              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
+                              {String(f)}
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
                   )}
 
