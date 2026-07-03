@@ -22,12 +22,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import type { RiskFinding } from "@/lib/legal/document-analysis";
+import { RiskFindingCard } from "@/components/site/risk-finding-card";
 
 type ReviewResult = {
   id: string;
   fileName: string;
   summary: string;
-  findings: string[];
+  findings: RiskFinding[];
   recommendations: string[];
 };
 
@@ -194,16 +196,13 @@ export function ReviewClient() {
               <div>
                 <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3 text-destructive" />
-                  ნაპოვნი პრობლემები ({result.findings.length})
+                  ნაპოვნი რისკები ({result.findings.length})
                 </p>
-                <ul className="space-y-1.5">
+                <div className="space-y-3">
                   {result.findings.map((f, i) => (
-                    <li key={i} className="text-sm flex items-start gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                      {f}
-                    </li>
+                    <RiskFindingCard key={i} finding={f} locale="ka" />
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
