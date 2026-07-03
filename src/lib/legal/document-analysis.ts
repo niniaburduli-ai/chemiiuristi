@@ -61,9 +61,27 @@ export async function extractTextFromImages(
 ): Promise<{ combinedText: string; succeededCount: number; failedCount: number }> {
   const poolSize = Math.min(OCR_CONCURRENCY, images.length);
   const scheduler = createScheduler();
-  const workers = await Promise.all(
+  const workerResults = await Promise.allSettled(
     Array.from({ length: poolSize }, () => createWorker("kat"))
   );
+
+  // Separate successful workers from failures to avoid leaking on partial failure
+  const workers: Awaited<ReturnType<typeof createWorker>>[] = [];
+  let creationError: Error | null = null;
+  for (const result of workerResults) {
+    if (result.status === "fulfilled") {
+      workers.push(result.value);
+    } else if (!creationError) {
+      creationError = result.reason as Error;
+    }
+  }
+
+  // If any worker creation failed, terminate successful ones and throw
+  if (creationError) {
+    await Promise.all(workers.map((w) => w.terminate()));
+    throw creationError;
+  }
+
   workers.forEach((worker) => scheduler.addWorker(worker));
 
   const results: (string | null)[] = new Array(images.length).fill(null);
