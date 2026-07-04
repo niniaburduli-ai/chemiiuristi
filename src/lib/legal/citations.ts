@@ -75,6 +75,36 @@ export function buildLegalBasis(
   return [...groups.values()];
 }
 
+export type DocumentLegalBasisGroup = { lawName: string; articles: string[] };
+
+/**
+ * Parse the document generator's freeform "law name line, then dash-prefixed
+ * article lines" legal-basis block (see SYSTEM prompt in
+ * app/api/generate/route.ts) into groups for the dedicated sources panel.
+ * Best-effort only — this text is model-authored prose, not grounded chunks.
+ */
+export function parseDocumentLegalBasis(raw: string): DocumentLegalBasisGroup[] {
+  const groups: DocumentLegalBasisGroup[] = [];
+  let current: DocumentLegalBasisGroup | null = null;
+  for (const line of raw.split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t) continue;
+    if (/^[-•*]/.test(t)) {
+      const article = t.replace(/^[-•*]\s*/, "").trim();
+      if (!article) continue;
+      if (!current) {
+        current = { lawName: "", articles: [] };
+        groups.push(current);
+      }
+      current.articles.push(article);
+    } else {
+      current = { lawName: t.replace(/:\s*$/, "").trim(), articles: [] };
+      groups.push(current);
+    }
+  }
+  return groups.filter((g) => g.lawName || g.articles.length > 0);
+}
+
 export type ArticleGroup = { article: string; points: string[] };
 
 /**

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { FileText, Download, Copy, ArrowLeft, Loader2, Pencil, Eye, Maximize2 } from "lucide-react";
+import { FileText, Download, Copy, ArrowLeft, Loader2, Pencil, Eye, Maximize2, BookOpen, AlertTriangle } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -16,12 +16,21 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { renderMarkdownBold } from "@/lib/markdown-bold";
+import { parseDocumentLegalBasis } from "@/lib/legal/citations";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportAsDocx, exportAsPdf } from "@/lib/export-document";
+import { estimatePageCount } from "@/lib/page-count";
 
 const DOC_TYPES = [
   { value: "complaint", label: "საჩივარი" },
@@ -42,42 +51,69 @@ const COMMON_FIELDS: QuestionField[] = [
 
 const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   complaint: [
-    { key: "respondent", label: "ვის ეხება საჩივარი", type: "text", required: true },
     { key: "yourName", label: "შენი სახელი და გვარი", type: "text", required: true },
+    { key: "yourId", label: "შენი პირადი ნომერი", type: "text", required: true },
+    { key: "yourAddress", label: "შენი მისამართი", type: "text", required: true },
+    { key: "respondent", label: "ვის ეხება საჩივარი", type: "text", required: true },
     { key: "amount", label: "თანხა/ზიანი (ასეთის არსებობისას)", type: "text" },
+    { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა) — თანხის მოთხოვნისას", type: "text" },
+    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვას ითხოვ)", type: "text" },
     { key: "incidentDate", label: "მოვლენის თარიღი", type: "date" },
   ],
   "rental-agreement": [
-    { key: "landlord", label: "გამქირავებელი", type: "text", required: true },
-    { key: "tenant", label: "დამქირავებელი", type: "text", required: true },
+    { key: "landlord", label: "გამქირავებელი (სახელი, გვარი)", type: "text", required: true },
+    { key: "landlordId", label: "გამქირავებლის პირადი ნომერი", type: "text", required: true },
+    { key: "landlordAddress", label: "გამქირავებლის მისამართი", type: "text", required: true },
+    { key: "landlordPhone", label: "გამქირავებლის ტელეფონი", type: "text" },
+    { key: "tenant", label: "დამქირავებელი (სახელი, გვარი)", type: "text", required: true },
+    { key: "tenantId", label: "დამქირავებლის პირადი ნომერი", type: "text", required: true },
+    { key: "tenantAddress", label: "დამქირავებლის მისამართი", type: "text", required: true },
+    { key: "tenantPhone", label: "დამქირავებლის ტელეფონი", type: "text" },
     { key: "address", label: "ბინის მისამართი", type: "text", required: true },
-    { key: "rent", label: "ქირის ოდენობა", type: "text" },
-    { key: "duration", label: "ხელშეკრულების ვადა", type: "text" },
+    { key: "rent", label: "ქირის ოდენობა", type: "text", required: true },
+    { key: "paymentMethod", label: "ქირის გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", type: "text", required: true },
+    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვაა)", type: "text" },
+    { key: "duration", label: "ხელშეკრულების ვადა", type: "text", required: true },
   ],
   "employment-contract": [
     { key: "employer", label: "დამსაქმებელი", type: "text", required: true },
+    { key: "employerId", label: "დამსაქმებლის საიდენტიფიკაციო/პირადი ნომერი", type: "text", required: true },
+    { key: "employerAddress", label: "დამსაქმებლის მისამართი", type: "text", required: true },
     { key: "employee", label: "თანამშრომელი", type: "text", required: true },
-    { key: "position", label: "პოზიცია", type: "text" },
-    { key: "salary", label: "ხელფასი", type: "text" },
-    { key: "startDate", label: "დაწყების თარიღი", type: "date" },
+    { key: "employeeId", label: "თანამშრომლის პირადი ნომერი", type: "text", required: true },
+    { key: "employeeAddress", label: "თანამშრომლის მისამართი", type: "text", required: true },
+    { key: "position", label: "პოზიცია", type: "text", required: true },
+    { key: "salary", label: "ხელფასი", type: "text", required: true },
+    { key: "salaryPaymentMethod", label: "ხელფასის გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", type: "text", required: true },
+    { key: "bankAccount", label: "თანამშრომლის საბანკო ანგარიშის № (თუ გადარიცხვაა)", type: "text" },
+    { key: "startDate", label: "დაწყების თარიღი", type: "date", required: true },
   ],
   "power-of-attorney": [
     { key: "principal", label: "მინდობელი", type: "text", required: true },
+    { key: "idNumber", label: "მინდობელის პირადი ნომერი", type: "text", required: true },
+    { key: "principalAddress", label: "მინდობელის მისამართი", type: "text", required: true },
     { key: "agent", label: "მინდობილი პირი", type: "text", required: true },
-    { key: "scope", label: "მინდობის ფარგლები", type: "textarea" },
-    { key: "idNumber", label: "პირადი ნომერი", type: "text" },
+    { key: "agentId", label: "მინდობილი პირის პირადი ნომერი", type: "text", required: true },
+    { key: "agentAddress", label: "მინდობილი პირის მისამართი", type: "text", required: true },
+    { key: "scope", label: "მინდობის ფარგლები", type: "textarea", required: true },
   ],
   "demand-letter": [
+    { key: "yourName", label: "შენი სახელი და გვარი", type: "text", required: true },
+    { key: "yourAddress", label: "შენი მისამართი", type: "text", required: true },
     { key: "recipient", label: "ადრესატი", type: "text", required: true },
     { key: "amount", label: "მოთხოვნილი თანხა", type: "text" },
-    { key: "reason", label: "მოთხოვნის საფუძველი", type: "textarea" },
-    { key: "deadline", label: "ვადა", type: "text" },
+    { key: "paymentMethod", label: "გადახდის სასურველი მეთოდი (ნაღდი/საბანკო გადარიცხვა)", type: "text" },
+    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვას ითხოვ)", type: "text" },
+    { key: "reason", label: "მოთხოვნის საფუძველი", type: "textarea", required: true },
+    { key: "deadline", label: "ვადა", type: "text", required: true },
   ],
   "termination-notice": [
     { key: "employer", label: "დამსაქმებელი", type: "text", required: true },
     { key: "employee", label: "თანამშრომელი", type: "text", required: true },
-    { key: "reason", label: "საფუძველი", type: "text" },
-    { key: "lastDay", label: "ბოლო სამუშაო დღე", type: "date" },
+    { key: "employeeId", label: "თანამშრომლის პირადი ნომერი", type: "text", required: true },
+    { key: "employeeAddress", label: "თანამშრომლის მისამართი", type: "text", required: true },
+    { key: "reason", label: "საფუძველი", type: "text", required: true },
+    { key: "lastDay", label: "ბოლო სამუშაო დღე", type: "date", required: true },
   ],
 };
 
@@ -90,7 +126,7 @@ export function GenerateClient() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [extra, setExtra] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ id: string; title: string; content: string } | null>(null);
+  const [result, setResult] = useState<{ id: string; title: string; content: string; legalBasis?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -110,6 +146,7 @@ export function GenerateClient() {
   const details = buildDetails();
   const missingRequired = fields.filter((f) => f.required && !answers[f.key]?.trim());
   const wordCount = result ? result.content.trim().split(/\s+/).filter(Boolean).length : 0;
+  const pageCount = result ? estimatePageCount(result.content) : 0;
 
   function setAnswer(key: string, value: string) {
     setAnswers((prev) => ({ ...prev, [key]: value }));
@@ -146,17 +183,6 @@ export function GenerateClient() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function downloadTxt() {
-    if (!result) return;
-    const blob = new Blob([result.content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${result.title}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   function copy() {
@@ -203,6 +229,11 @@ export function GenerateClient() {
             AI ქმნის სრულ ქართულ იურიდიულ დოკუმენტს
           </p>
         </div>
+      </div>
+
+      <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 mb-6 text-sm text-amber-700 dark:text-amber-400">
+        <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+        <p>ხელშეკრულება შეინახება ისტორიაში 1 თვის ვადით, რის შემდეგაც ავტომატურად წაიშლება.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[380px_1fr] items-start">
@@ -300,58 +331,100 @@ export function GenerateClient() {
         </Card>
 
         {result ? (
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-3 flex-wrap">
-                <div>
-                  <CardTitle className="text-base">{result.title}</CardTitle>
-                  <CardDescription>
-                    დოკუმენტი შეიქმნა და შენახულია ანგარიშში · {wordCount} სიტყვა
-                  </CardDescription>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div>
+                    <CardTitle className="text-base">{result.title}</CardTitle>
+                    <CardDescription>
+                      დოკუმენტი შეიქმნა და შენახულია ანგარიშში · {wordCount} სიტყვა · ~{pageCount} გვერდი
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
+                      {editing ? (
+                        <><Eye className="h-4 w-4 mr-1" /> მზა ტექსტი</>
+                      ) : (
+                        <><Pencil className="h-4 w-4 mr-1" /> რედაქტირება</>
+                      )}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={copy}>
+                      <Copy className="h-4 w-4 mr-1" /> კოპირება
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button variant="outline" size="sm">
+                            <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
+                          </Button>
+                        }
+                      />
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title)}>
+                          Word (.docx)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title)}>
+                          PDF (.pdf)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
+                      <Maximize2 className="h-4 w-4 mr-1" /> სრულ ეკრანზე
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
-                    {editing ? (
-                      <><Eye className="h-4 w-4 mr-1" /> მზა ტექსტი</>
-                    ) : (
-                      <><Pencil className="h-4 w-4 mr-1" /> რედაქტირება</>
-                    )}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={copy}>
-                    <Copy className="h-4 w-4 mr-1" /> კოპირება
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={downloadTxt}>
-                    <Download className="h-4 w-4 mr-1" /> .txt
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                    <Maximize2 className="h-4 w-4 mr-1" /> სრულ ეკრანზე
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {editing ? (
-                <Textarea
-                  value={result.content}
-                  onChange={(e) => {
-                    const next = e.target.value;
-                    setResult((prev) => (prev ? { ...prev, content: next } : prev));
-                    scheduleSave(next);
-                  }}
-                  onBlur={() => {
-                    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-                    saveContent(result.content);
-                  }}
-                  className="min-h-[70vh] font-mono text-sm"
-                />
-              ) : (
-                <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
-                  {renderMarkdownBold(normalizeSpacing(result.content))}
-                </div>
-              )}
-              {saving && <p className="text-xs text-muted-foreground mt-2">ინახება...</p>}
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                {editing ? (
+                  <Textarea
+                    value={result.content}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setResult((prev) => (prev ? { ...prev, content: next } : prev));
+                      scheduleSave(next);
+                    }}
+                    onBlur={() => {
+                      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+                      saveContent(result.content);
+                    }}
+                    className="min-h-[70vh] font-mono text-sm"
+                  />
+                ) : (
+                  <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
+                    {renderMarkdownBold(normalizeSpacing(result.content))}
+                  </div>
+                )}
+                {saving && <p className="text-xs text-muted-foreground mt-2">ინახება...</p>}
+              </CardContent>
+            </Card>
+
+            {result.legalBasis?.trim() && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" /> სამართლებრივი საფუძვლები და წყაროები
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {parseDocumentLegalBasis(result.legalBasis).map((g, i) => (
+                    <div key={`${g.lawName}|${i}`} className="space-y-1">
+                      {g.lawName && <p className="text-sm font-medium">{g.lawName}</p>}
+                      {g.articles.length > 0 && (
+                        <ul className="ml-1 space-y-0.5">
+                          {g.articles.map((a, j) => (
+                            <li key={j} className="text-xs text-muted-foreground">
+                              {a}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+          </div>
         ) : (
           <Card className="flex items-center justify-center min-h-[300px] border-dashed">
             <CardContent className="text-center text-muted-foreground text-sm py-12">
@@ -373,9 +446,23 @@ export function GenerateClient() {
                 {renderMarkdownBold(normalizeSpacing(result.content))}
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" size="sm" onClick={downloadTxt}>
-                  <Download className="h-4 w-4 mr-1" /> .txt
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title)}>
+                      Word (.docx)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title)}>
+                      PDF (.pdf)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </>
           )}

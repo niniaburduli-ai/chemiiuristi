@@ -5,24 +5,41 @@ import { User } from "@/lib/models/user";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { GenerateDocSchema, DOC_TYPES } from "@/lib/validators";
 import { callOpenRouterChat } from "@/lib/ai-call";
-import { verifyLegalCitations } from "@/lib/legal/openrouter";
+import { verifyLegalCitations, STRICT_BREVITY_RULE } from "@/lib/legal/openrouter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 90;
 
-const SYSTEM = `შენ ხარ ქართული იურიდიული დოკუმენტების გენერატორი.
-შექმენი სრული, პროფესიონალური ქართული იურიდიული დოკუმენტი მომხმარებლის აღწერილობის მიხედვით.
-გამოიყენე ოფიციალური ქართული სამართლებრივი ენა.
-იყავი მაქსიმალურად ლაკონური — ყოველგვარი ზედმეტი ფრაზის, გამეორების ან შესავალი წინადადების გარეშე, მხოლოდ საჭირო სამართლებრივი შინაარსი მარტივი და გასაგები ენით.
-მნიშვნელოვანი მონაცემები (სახელები, თარიღები, თანხები, პირადი ნომრები), რომლებიც მომხმარებელმა მიუთითა, გამოკვეთე **მუქი შრიფტით** (markdown-ის ** სინტაქსით).
-თუ კონკრეტული მონაცემი უცნობია და მომხმარებელს არ მიუთითებია, დატოვე [ბრეკეტებში].
-დოკუმენტი უნდა იყოს კომპაქტური: სექციებს შორის მაქსიმუმ ერთი ცარიელი ხაზი, ზედმეტი დაშორებების გარეშე.
-დოკუმენტი უნდა იყოს სრული, სტრუქტურირებული და გამოყენებადი შაბლონი.
+/** Separates the document body from the trailing legal-basis block (stripped
+ * server-side; never shown inside the document text — see the dedicated
+ * sources panel on /generate). */
+const CITATIONS_DELIM = "###წყაროები###";
 
-დოკუმენტის ყველაზე ბოლოს, ძირითადი ტექსტისგან ერთი ცარიელი ხაზით გამოყოფილი, დაამატე სექცია სათაურით:
-**სამართლებრივი საფუძვლები და წყაროები**
-ჩამოთვალე იმ საქართველოს კანონმდებლობის აქტების (კანონი, კოდექსი) დასახელებები და კონკრეტული მუხლები (საჭიროებისას პუნქტით), რომლებსაც დოკუმენტი ეფუძნება — იმავე სტილით, რაც კონსულტაციის ფუნქციაშია გამოყენებული: დააჯგუფე მუხლები კანონის დასახელების მიხედვით, თითო კანონი ცალკე სტრიქონზე, შემდეგ მისი მუხლები ჩამონათვლის სახით (მაგ. „მუხლი 10, პუნქტი 2"). არ გამოიგონო მუხლის ნომერი — მიუთითე მხოლოდ ის ნორმები, რომლებიც რეალურად შეესაბამება დოკუმენტის შინაარსს შენი ცოდნით.`;
+const SYSTEM = `შენ ხარ ქართული იურიდიული დოკუმენტების გენერატორი.
+შექმენი სრული, პროფესიონალური ქართული იურიდიული დოკუმენტი მომხმარებლის მიერ მოწოდებული დეტალების საფუძველზე.
+გამოიყენე ოფიციალური ქართული სამართლებრივი ენა.
+${STRICT_BREVITY_RULE}
+
+ფორმატირება (მკაცრად დაიცავი):
+- დოკუმენტი არის ჩვეულებრივი ტექსტი, არა markdown ფაილი — არასოდეს გამოიყენო სათაურის სიმბოლოები # ## ### ან სხვა markdown სინტაქსი.
+- დოკუმენტის სათაური დაწერე ჩვეულებრივ ტექსტად პირველ სტრიქონზე (მაგ. „ქირავნობის ხელშეკრულება"), # სიმბოლოს გარეშე.
+- სექციები დანომრე ჩვეულებრივი ციფრებით (1., 2., 1.1. და ა.შ.), # ან ## სიმბოლოების გარეშე.
+- სექციის ნომერი და სრული სათაური ერთად, მთლიანად, დაწერე **მუქი შრიფტით** (მაგ. **4. ქირა და გადახდის წესი**).
+- მონაცემების გამოსაკვეთად (სახელი, თარიღი, თანხა, პირადი ნომერი, მისამართი) გამოიყენე მხოლოდ **მუქი შრიფტი** (markdown-ის ** სინტაქსით) — სხვა markdown სინტაქსი დაუშვებელია.
+- დოკუმენტი უნდა იყოს კომპაქტური: სექციებს შორის მაქსიმუმ ერთი ცარიელი ხაზი, ზედმეტი დაშორებების გარეშე.
+
+მონაცემები (კრიტიკულია):
+- გამოიყენე ზუსტად ის მონაცემები, რომლებიც მომხმარებელმა დეტალებში მოგაწოდა.
+- არასოდეს დატოვო ცარიელი ველი, ფრჩხილები [ ] ან სხვა placeholder ტექსტში. თუ რომელიმე დამატებითი დეტალი (მაგ. ტელეფონი, ელფოსტა) დეტალებში საერთოდ არ არის მოწოდებული — უბრალოდ არ ჩართო ეს დეტალი დოკუმენტში, ნაცვლად ცარიელი placeholder-ის დაწერისა.
+- დოკუმენტი უნდა იყოს სრულად შევსებული, დასრულებული და პირდაპირ გამოსაყენებელი, ყოველგვარი ხელით შესავსები ველის გარეშე.
+
+დოკუმენტის ტექსტის დასრულების შემდეგ, ცალკე სტრიქონზე დაწერე ზუსტად: ${CITATIONS_DELIM}
+შემდეგ, იმ ტექსტის შემდეგ, ჩამოთვალე საქართველოს კანონმდებლობის ის მუხლები, რომლებსაც დოკუმენტი ეფუძნება, შემდეგი ფორმატით:
+<კანონის/კოდექსის სრული დასახელება>:
+- მუხლი <N>, პუნქტი <M> (საჭიროებისას)
+- მუხლი <N2>
+თითოეული კანონი დაწერე ცალკე ბლოკად, ერთი ცარიელი ხაზით გამოყოფილი. არ გამოიგონო მუხლის ნომერი — მიუთითე მხოლოდ ის ნორმები, რომლებიც რეალურად შეესაბამება დოკუმენტის შინაარსს შენი ცოდნით. ეს სექცია არასოდეს უნდა გამოჩნდეს ${CITATIONS_DELIM}-მდე, მხოლოდ მის შემდეგ.`;
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -61,9 +78,9 @@ export async function POST(req: Request) {
   const typeName = DOC_TYPES[parsed.data.type];
   const userMsg = `დოკუმენტის ტიპი: ${typeName}\n\nდეტალები:\n${parsed.data.details}`;
 
-  let content: string;
+  let raw: string;
   try {
-    content = await callOpenRouterChat(
+    raw = await callOpenRouterChat(
       [
         { role: "system", content: SYSTEM },
         { role: "user", content: userMsg },
@@ -81,16 +98,22 @@ export async function POST(req: Request) {
     );
   }
 
-  // Safe to replace everything after the marker: the SYSTEM prompt explicitly
-  // requires this section to be the document's last section.
-  const CITATIONS_MARKER = "**სამართლებრივი საფუძვლები და წყაროები**";
-  const markerIndex = content.indexOf(CITATIONS_MARKER);
-  if (markerIndex !== -1) {
-    const citationsSection = content.slice(markerIndex + CITATIONS_MARKER.length);
+  // The model is instructed to print the delimiter on its own line right
+  // after the document body — everything after it is the legal-basis block,
+  // kept out of the saved/rendered document content (see the dedicated
+  // sources panel on /generate).
+  const delimIndex = raw.indexOf(CITATIONS_DELIM);
+  const body_ = (delimIndex === -1 ? raw : raw.slice(0, delimIndex)).trim();
+  // Defense in depth: strip stray leading "#"/"##" heading markers in case the
+  // model doesn't fully comply with the no-markdown-headers instruction.
+  const content = body_.replace(/^#{1,6}\s*/gm, "");
+  const citationsSection =
+    delimIndex === -1 ? "" : raw.slice(delimIndex + CITATIONS_DELIM.length).trim();
+
+  let legalBasis = citationsSection;
+  if (citationsSection) {
     const verified = await verifyLegalCitations(typeName, citationsSection);
-    if (verified) {
-      content = content.slice(0, markerIndex + CITATIONS_MARKER.length) + "\n" + verified;
-    }
+    if (verified) legalBasis = verified;
   }
 
   const title = `${typeName} — ${new Date().toISOString().slice(0, 10)}`;
@@ -100,6 +123,7 @@ export async function POST(req: Request) {
     title,
     type: parsed.data.type,
     content,
+    legalBasis,
   });
   const saveOps: Promise<unknown>[] = [docCreate];
   if (!isAdmin) {
@@ -108,7 +132,7 @@ export async function POST(req: Request) {
   const [doc] = await Promise.all(saveOps);
 
   return NextResponse.json(
-    { id: String((doc as { _id: unknown })._id), title, content },
+    { id: String((doc as { _id: unknown })._id), title, content, legalBasis },
     { status: 201 }
   );
 }

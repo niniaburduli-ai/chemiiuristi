@@ -2,6 +2,7 @@ import "pdf-parse/worker";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import { createScheduler, createWorker } from "tesseract.js";
+import { STRICT_BREVITY_RULE } from "./openrouter";
 
 export const RISK_CATEGORIES = [
   "liability",
@@ -135,6 +136,7 @@ export async function extractDocumentText(fileName: string, buffer: Buffer): Pro
 }
 
 export const ANALYSIS_SYSTEM_PROMPT = `შენ ხარ ქართული იურიდიული დოკუმენტების რისკ-ანალიტიკოსი.
+${STRICT_BREVITY_RULE}
 გაანალიზე მოწოდებული დოკუმენტი და დააბრუნე მხოლოდ JSON, ზუსტად ამ ფორმატით, დამატებითი ტექსტის ან ახსნის გარეშე:
 
 {
@@ -154,7 +156,6 @@ export const ANALYSIS_SYSTEM_PROMPT = `შენ ხარ ქართული
 წესები:
 - გამოავლინე 2-დან 8-მდე კონკრეტული რისკი, დოკუმენტის რეალურ შინაარსზე დაყრდნობით.
 - category და severity მნიშვნელობები ზუსტად ზემოთ ჩამოთვლილთაგან უნდა იყოს, სხვა მნიშვნელობა დაუშვებელია.
-- იყავი მაქსიმალურად მოკლე და კონკრეტული — ახსენი მხოლოდ არსებითი, ზედმეტი სიტყვების ან გამეორების გარეშე.
 - უპასუხე ქართულ ენაზე, მხოლოდ JSON ობიექტით — არც ერთი დამატებითი სიტყვა ჯსონის გარეთ.`;
 
 function coerceCategory(value: unknown): RiskCategory {
@@ -224,6 +225,7 @@ export interface DocumentRevision extends DocumentImprovementResult {
 }
 
 export const IMPROVEMENT_SYSTEM_PROMPT = `შენ ხარ ქართული იურიდიული დოკუმენტების რედაქტორი.
+${STRICT_BREVITY_RULE}
 მოგეწოდება ხელშეკრულების ტექსტი და მასში გამოვლენილი რისკები. შენი ამოცანაა შეასწორო დოკუმენტი ამ რისკების გათვალისწინებით და დააბრუნო მხოლოდ JSON, ზუსტად ამ ფორმატით, დამატებითი ტექსტის ან ახსნის გარეშე:
 
 {
@@ -248,7 +250,6 @@ export const IMPROVEMENT_SYSTEM_PROMPT = `შენ ხარ ქართულ
 - findings ასახავდეს შესწორებული ტექსტის რისკებს, არა თავდაპირველისას.
 - category და severity მნიშვნელობები ზუსტად ზემოთ ჩამოთვლილთაგან უნდა იყოს, სხვა მნიშვნელობა დაუშვებელია.
 - თუ დამატებითი შეკითხვა არ გჭირდება, დააბრუნე ცარიელი "questions": [].
-- იყავი მაქსიმალურად მოკლე და კონკრეტული — ახსენი მხოლოდ არსებითი, ზედმეტი სიტყვების ან გამეორების გარეშე.
 - უპასუხე ქართულ ენაზე, მხოლოდ JSON ობიექტით — არც ერთი დამატებითი სიტყვა ჯსონის გარეთ.`;
 
 export function buildImprovementUserMessage(input: {

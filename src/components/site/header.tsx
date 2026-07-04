@@ -69,7 +69,7 @@ export async function Header() {
                 </Link>
               )}
               <Link
-                href="/profile"
+                href="/dashboard"
                 className={buttonVariants({ variant: "ghost", size: "sm" }) + " btn-hover"}
               >
                 <User2 className="h-4 w-4 sm:mr-1.5" />

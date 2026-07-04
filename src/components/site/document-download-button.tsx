@@ -1,7 +1,14 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, FileText, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportAsDocx, exportAsPdf } from "@/lib/export-document";
 
 export function DocumentDownloadButton({
   content,
@@ -10,19 +17,23 @@ export function DocumentDownloadButton({
   content: string;
   filename: string;
 }) {
-  function download() {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   return (
-    <Button variant="outline" size="sm" onClick={download} className="shrink-0">
-      <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="outline" size="sm" className="shrink-0">
+            <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
+          </Button>
+        }
+      />
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => exportAsDocx(content, filename)}>
+          <FileText className="h-4 w-4 mr-2" /> Word (.docx)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => exportAsPdf(content, filename)}>
+          <File className="h-4 w-4 mr-2" /> PDF (.pdf)
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

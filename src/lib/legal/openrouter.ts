@@ -30,6 +30,14 @@ export const FAST_MODEL =
   process.env.OPENROUTER_MODEL ||
   "openai/gpt-4o-mini";
 
+/**
+ * Shared strict-brevity instruction, reused verbatim by the generate/review/
+ * improve prompts (each a separate feature/quota) so all three cut filler
+ * and token spend the same way without duplicating the wording.
+ */
+export const STRICT_BREVITY_RULE =
+  "მკაცრი ლაკონურობა ტოკენების დაზოგვისთვის: არავითარი შესავალი ფრაზა, თავაზიანობა, გამეორება ან დასკვნითი შეჯამება. მხოლოდ პირდაპირი, კონკრეტული შინაარსი — თითოეული წინადადება ახალ ინფორმაციას უნდა ატარებდეს.";
+
 export const NOT_FOUND_MSG =
   "პასუხი ვერ მოიძებნა დამტკიცებულ იურიდიულ წყაროებში.";
 
@@ -406,19 +414,23 @@ export async function searchWebContext(
 const VERIFY_CITATIONS_SYSTEM = [
   "შენ ხარ ქართული სამართლის ფაქტების შემმოწმებელი.",
   "მოგეწოდება დოკუმენტის ტიპი და მისი \"სამართლებრივი საფუძვლები და წყაროები\" სექციის ტექსტი.",
-  "ვებ ძიების გამოყენებით შეამოწმე თითოეული მასში მითითებული კანონი/კოდექსი და მუხლი — რეალურად არსებობს თუ არა.",
+  "დოკუმენტს შეიძლება ერთდროულად ეხებოდეს რამდენიმე კანონი/კოდექსი (მაგ. სამოქალაქო კოდექსი, შრომის კოდექსი, საგადასახადო კოდექსი, ადმინისტრაციულ სამართალდარღვევათა კოდექსი, მომხმარებლის უფლებების დაცვის კანონი, კონსტიტუცია) — ვებ ძიებით ერთდროულად შეამოწმე ყველა შესაბამისი კანონი, არ შემოიფარგლო მხოლოდ ერთით.",
+  "თითოეული მოწოდებული მუხლისთვის შეამოწმე, რეალურად არსებობს თუ არა ხსენებულ კანონში/კოდექსში.",
+  "თუ დოკუმენტის ტიპისთვის აშკარად რელევანტური, სხვა კანონის მუხლი ვერ იპოვე თავდაპირველ სიაში, მაგრამ ვებ ძიებით დაადასტურე მისი არსებობა და პირდაპირი შესაბამისობა — დაამატე ის ახალ ბლოკად ამ კანონის ქვეშ.",
   "დააბრუნე მხოლოდ შესწორებული სექცია, ზუსტად იმავე ფორმატით: კანონის დასახელება ცალკე სტრიქონზე, შემდეგ მისი მუხლები ჩამონათვლის სახით.",
   "წაშალე ნებისმიერი მუხლი, რომლის არსებობასაც ვერ ადასტურებ.",
-  "არასოდეს დაამატო ახალი მუხლი, რომელიც თავდაპირველ სიაში არ იყო.",
+  "არასოდეს გამოიგონო მუხლი ან კანონი — მხოლოდ ვებ ძიებით დადასტურებული დამატება დაშვებულია.",
   "დააბრუნე მხოლოდ ტექსტი, დამატებითი ახსნის ან კომენტარის გარეშე.",
 ].join("\n");
 
 /**
  * Web-search fact-check for a document generator's freeform "Legal Basis"
  * section: confirms each cited article actually exists, strips any that
- * can't be confirmed, never adds new ones. Same fail-open contract as
- * searchWebContext — returns null on any failure so callers can leave the
- * original AI-drafted citations untouched.
+ * can't be confirmed, and may append confirmed provisions from OTHER
+ * relevant Georgian codes the drafting model missed (checked simultaneously,
+ * not one law at a time). Same fail-open contract as searchWebContext —
+ * returns null on any failure so callers can leave the original AI-drafted
+ * citations untouched.
  */
 export async function verifyLegalCitations(
   docTypeName: string,
@@ -432,7 +444,7 @@ export async function verifyLegalCitations(
   const body: Record<string, unknown> = {
     model,
     temperature: 0.2,
-    max_tokens: 600,
+    max_tokens: 700,
     messages: [
       { role: "system", content: VERIFY_CITATIONS_SYSTEM },
       {
@@ -444,7 +456,9 @@ export async function verifyLegalCitations(
   if (!model.endsWith(":online")) {
     const webPlugin: Record<string, unknown> = {
       id: "web",
-      max_results: WEB_MAX_RESULTS(),
+      // Multiple codes are checked in one pass here, so allow more results
+      // than the single-law default used by searchWebContext.
+      max_results: Math.max(WEB_MAX_RESULTS(), 8),
     };
     const engine = process.env.OPENROUTER_WEB_ENGINE?.trim();
     if (engine) webPlugin.engine = engine;
