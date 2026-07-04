@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { FileText, Download, Copy, ArrowLeft, Loader2 } from "lucide-react";
+import { FileText, Download, Copy, ArrowLeft, Loader2, Pencil, Eye } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -81,6 +81,9 @@ export function GenerateClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; title: string; content: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fields = QUESTION_SCHEMAS[type] ?? [];
 
@@ -142,6 +145,27 @@ export function GenerateClient() {
     if (!result) return;
     navigator.clipboard.writeText(result.content);
     toast.success("კოპირებულია");
+  }
+
+  async function saveContent(newContent: string) {
+    if (!result) return;
+    setSaving(true);
+    try {
+      await fetch(`/api/generate/${result.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newContent }),
+      });
+    } catch {
+      toast.error("ცვლილება ვერ შენახულა");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function scheduleSave(newContent: string) {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => saveContent(newContent), 1000);
   }
 
   return (
@@ -254,6 +278,13 @@ export function GenerateClient() {
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
+                    {editing ? (
+                      <><Eye className="h-4 w-4 mr-1" /> მზა ტექსტი</>
+                    ) : (
+                      <><Pencil className="h-4 w-4 mr-1" /> რედაქტირება</>
+                    )}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={copy}>
                     <Copy className="h-4 w-4 mr-1" /> კოპირება
                   </Button>
@@ -264,9 +295,26 @@ export function GenerateClient() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
-                {renderMarkdownBold(normalizeSpacing(result.content))}
-              </div>
+              {editing ? (
+                <Textarea
+                  value={result.content}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setResult((prev) => (prev ? { ...prev, content: next } : prev));
+                    scheduleSave(next);
+                  }}
+                  onBlur={() => {
+                    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+                    saveContent(result.content);
+                  }}
+                  className="min-h-[70vh] font-mono text-sm"
+                />
+              ) : (
+                <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
+                  {renderMarkdownBold(normalizeSpacing(result.content))}
+                </div>
+              )}
+              {saving && <p className="text-xs text-muted-foreground mt-2">ინახება...</p>}
             </CardContent>
           </Card>
         ) : (
