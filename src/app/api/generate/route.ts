@@ -5,10 +5,11 @@ import { User } from "@/lib/models/user";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { GenerateDocSchema, DOC_TYPES } from "@/lib/validators";
 import { callOpenRouterChat } from "@/lib/ai-call";
+import { verifyLegalCitations } from "@/lib/legal/openrouter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 const SYSTEM = `შენ ხარ ქართული იურიდიული დოკუმენტების გენერატორი.
 შექმენი სრული, პროფესიონალური ქართული იურიდიული დოკუმენტი მომხმარებლის აღწერილობის მიხედვით.
@@ -73,6 +74,16 @@ export async function POST(req: Request) {
       },
       { status: 502 }
     );
+  }
+
+  const CITATIONS_MARKER = "**სამართლებრივი საფუძვლები და წყაროები**";
+  const markerIndex = content.indexOf(CITATIONS_MARKER);
+  if (markerIndex !== -1) {
+    const citationsSection = content.slice(markerIndex + CITATIONS_MARKER.length);
+    const verified = await verifyLegalCitations(typeName, citationsSection);
+    if (verified) {
+      content = content.slice(0, markerIndex + CITATIONS_MARKER.length) + "\n" + verified;
+    }
   }
 
   const title = `${typeName} — ${new Date().toISOString().slice(0, 10)}`;
