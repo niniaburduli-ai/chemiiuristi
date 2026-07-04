@@ -33,44 +33,49 @@ const DOC_TYPES = [
 ];
 
 type FieldType = "text" | "textarea" | "date";
-type QuestionField = { key: string; label: string; type: FieldType };
+type QuestionField = { key: string; label: string; type: FieldType; required?: boolean };
+
+const COMMON_FIELDS: QuestionField[] = [
+  { key: "city", label: "ქალაქი", type: "text", required: true },
+  { key: "docDate", label: "დოკუმენტის თარიღი", type: "date", required: true },
+];
 
 const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   complaint: [
-    { key: "respondent", label: "ვის ეხება საჩივარი", type: "text" },
-    { key: "yourName", label: "შენი სახელი და გვარი", type: "text" },
+    { key: "respondent", label: "ვის ეხება საჩივარი", type: "text", required: true },
+    { key: "yourName", label: "შენი სახელი და გვარი", type: "text", required: true },
     { key: "amount", label: "თანხა/ზიანი (ასეთის არსებობისას)", type: "text" },
     { key: "incidentDate", label: "მოვლენის თარიღი", type: "date" },
   ],
   "rental-agreement": [
-    { key: "landlord", label: "გამქირავებელი", type: "text" },
-    { key: "tenant", label: "დამქირავებელი", type: "text" },
-    { key: "address", label: "ბინის მისამართი", type: "text" },
+    { key: "landlord", label: "გამქირავებელი", type: "text", required: true },
+    { key: "tenant", label: "დამქირავებელი", type: "text", required: true },
+    { key: "address", label: "ბინის მისამართი", type: "text", required: true },
     { key: "rent", label: "ქირის ოდენობა", type: "text" },
     { key: "duration", label: "ხელშეკრულების ვადა", type: "text" },
   ],
   "employment-contract": [
-    { key: "employer", label: "დამსაქმებელი", type: "text" },
-    { key: "employee", label: "თანამშრომელი", type: "text" },
+    { key: "employer", label: "დამსაქმებელი", type: "text", required: true },
+    { key: "employee", label: "თანამშრომელი", type: "text", required: true },
     { key: "position", label: "პოზიცია", type: "text" },
     { key: "salary", label: "ხელფასი", type: "text" },
     { key: "startDate", label: "დაწყების თარიღი", type: "date" },
   ],
   "power-of-attorney": [
-    { key: "principal", label: "მინდობელი", type: "text" },
-    { key: "agent", label: "მინდობილი პირი", type: "text" },
+    { key: "principal", label: "მინდობელი", type: "text", required: true },
+    { key: "agent", label: "მინდობილი პირი", type: "text", required: true },
     { key: "scope", label: "მინდობის ფარგლები", type: "textarea" },
     { key: "idNumber", label: "პირადი ნომერი", type: "text" },
   ],
   "demand-letter": [
-    { key: "recipient", label: "ადრესატი", type: "text" },
+    { key: "recipient", label: "ადრესატი", type: "text", required: true },
     { key: "amount", label: "მოთხოვნილი თანხა", type: "text" },
     { key: "reason", label: "მოთხოვნის საფუძველი", type: "textarea" },
     { key: "deadline", label: "ვადა", type: "text" },
   ],
   "termination-notice": [
-    { key: "employer", label: "დამსაქმებელი", type: "text" },
-    { key: "employee", label: "თანამშრომელი", type: "text" },
+    { key: "employer", label: "დამსაქმებელი", type: "text", required: true },
+    { key: "employee", label: "თანამშრომელი", type: "text", required: true },
     { key: "reason", label: "საფუძველი", type: "text" },
     { key: "lastDay", label: "ბოლო სამუშაო დღე", type: "date" },
   ],
@@ -92,7 +97,7 @@ export function GenerateClient() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
-  const fields = QUESTION_SCHEMAS[type] ?? [];
+  const fields = [...COMMON_FIELDS, ...(QUESTION_SCHEMAS[type] ?? [])];
 
   function buildDetails(): string {
     const lines = fields
@@ -103,6 +108,7 @@ export function GenerateClient() {
   }
 
   const details = buildDetails();
+  const missingRequired = fields.filter((f) => f.required && !answers[f.key]?.trim());
   const wordCount = result ? result.content.trim().split(/\s+/).filter(Boolean).length : 0;
 
   function setAnswer(key: string, value: string) {
@@ -267,11 +273,17 @@ export function GenerateClient() {
               <p className="text-xs text-muted-foreground">{details.length} / 2000 სიმბოლო</p>
             </div>
 
+            {missingRequired.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                შესავსებია: {missingRequired.map((f) => f.label).join(", ")}
+              </p>
+            )}
+
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
 
-            <Button onClick={generate} disabled={loading} className="w-full">
+            <Button onClick={generate} disabled={loading || missingRequired.length > 0} className="w-full">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
