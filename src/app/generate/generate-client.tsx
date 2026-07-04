@@ -117,6 +117,11 @@ export function GenerateClient() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setEditing(false);
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -158,11 +163,14 @@ export function GenerateClient() {
     if (!result) return;
     setSaving(true);
     try {
-      await fetch(`/api/generate/${result.id}`, {
+      const res = await fetch(`/api/generate/${result.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newContent }),
       });
+      if (!res.ok) {
+        toast.error("ცვლილება ვერ შენახულა");
+      }
     } catch {
       toast.error("ცვლილება ვერ შენახულა");
     } finally {
@@ -210,6 +218,11 @@ export function GenerateClient() {
                   setAnswers({});
                   setExtra("");
                   setResult(null);
+                  setEditing(false);
+                  if (saveTimerRef.current) {
+                    clearTimeout(saveTimerRef.current);
+                    saveTimerRef.current = null;
+                  }
                 }}
                 className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
