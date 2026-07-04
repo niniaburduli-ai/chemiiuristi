@@ -267,7 +267,7 @@ export function GenerateClient() {
           <Card className="flex items-center justify-center min-h-[300px] border-dashed">
             <CardContent className="text-center text-muted-foreground text-sm py-12">
               <FileText className="h-8 w-8 mx-auto mb-3 opacity-40" />
-              შეავსე დეტალები და დააჭირე „შექმენი დოკუმენტი"
+              შეავსე დეტალები და დააჭირე „შექმენი დოკუმენტი”
             </CardContent>
           </Card>
         )}
