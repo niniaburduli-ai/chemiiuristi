@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FileText, Download, Copy, ArrowLeft, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -24,25 +25,77 @@ const DOC_TYPES = [
   { value: "termination-notice", label: "სამსახურიდან გათავისუფლება" },
 ];
 
-const PLACEHOLDER: Record<string, string> = {
-  complaint: "მაგ: ვმოსჩივი ბანკს, რომელმაც 1000 ლარი ჩამომაჭრა. ბანკი: TBC. ჩემი სახელი: გიორგი ბერიძე.",
-  "rental-agreement": "მაგ: ვაქირავებ ბინას: 2 ოთახი, თბილისი, ვაკე. ქირა: 800 ლ/თვე. 12 თვიანი ხელშეკრულება.",
-  "employment-contract": "მაგ: პოზიცია: პროგრამისტი. კომპანია: ABC LLC. ხელფასი: 3000 ლ. სამუშაო: 9-18, ორშ-პარ.",
-  "power-of-attorney": "მაგ: ვანდობ ავტომობილის გაყიდვის უფლებას. მინდობილი: ნინო ახვლედიანი, პ/ნ 123.",
-  "demand-letter": "მაგ: ვითხოვ 2000 ლარის დაბრუნებას კონტრაქტის შეუსრულებლობის გამო. ვადა: 10 სამუშაო დღე.",
-  "termination-notice": "მაგ: ვათავისუფლებ თანამშრომელს შტატების შემცირების გამო. ბოლო სამუშაო დღე: 2026-07-01.",
+type FieldType = "text" | "textarea" | "date";
+type QuestionField = { key: string; label: string; type: FieldType };
+
+const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
+  complaint: [
+    { key: "respondent", label: "ვის ეხება საჩივარი", type: "text" },
+    { key: "yourName", label: "შენი სახელი და გვარი", type: "text" },
+    { key: "amount", label: "თანხა/ზიანი (ასეთის არსებობისას)", type: "text" },
+    { key: "incidentDate", label: "მოვლენის თარიღი", type: "date" },
+  ],
+  "rental-agreement": [
+    { key: "landlord", label: "გამქირავებელი", type: "text" },
+    { key: "tenant", label: "დამქირავებელი", type: "text" },
+    { key: "address", label: "ბინის მისამართი", type: "text" },
+    { key: "rent", label: "ქირის ოდენობა", type: "text" },
+    { key: "duration", label: "ხელშეკრულების ვადა", type: "text" },
+  ],
+  "employment-contract": [
+    { key: "employer", label: "დამსაქმებელი", type: "text" },
+    { key: "employee", label: "თანამშრომელი", type: "text" },
+    { key: "position", label: "პოზიცია", type: "text" },
+    { key: "salary", label: "ხელფასი", type: "text" },
+    { key: "startDate", label: "დაწყების თარიღი", type: "date" },
+  ],
+  "power-of-attorney": [
+    { key: "principal", label: "მინდობელი", type: "text" },
+    { key: "agent", label: "მინდობილი პირი", type: "text" },
+    { key: "scope", label: "მინდობის ფარგლები", type: "textarea" },
+    { key: "idNumber", label: "პირადი ნომერი", type: "text" },
+  ],
+  "demand-letter": [
+    { key: "recipient", label: "ადრესატი", type: "text" },
+    { key: "amount", label: "მოთხოვნილი თანხა", type: "text" },
+    { key: "reason", label: "მოთხოვნის საფუძველი", type: "textarea" },
+    { key: "deadline", label: "ვადა", type: "text" },
+  ],
+  "termination-notice": [
+    { key: "employer", label: "დამსაქმებელი", type: "text" },
+    { key: "employee", label: "თანამშრომელი", type: "text" },
+    { key: "reason", label: "საფუძველი", type: "text" },
+    { key: "lastDay", label: "ბოლო სამუშაო დღე", type: "date" },
+  ],
 };
 
 export function GenerateClient() {
   const [type, setType] = useState("complaint");
-  const [details, setDetails] = useState("");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [extra, setExtra] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; title: string; content: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const fields = QUESTION_SCHEMAS[type] ?? [];
+
+  function buildDetails(): string {
+    const lines = fields
+      .map((f) => (answers[f.key]?.trim() ? `${f.label}: ${answers[f.key].trim()}` : null))
+      .filter((line): line is string => line !== null);
+    if (extra.trim()) lines.push(extra.trim());
+    return lines.join("\n");
+  }
+
+  const details = buildDetails();
+
+  function setAnswer(key: string, value: string) {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+  }
+
   async function generate() {
-    if (!details.trim()) {
-      toast.error("შეიყვანე დოკუმენტის დეტალები");
+    if (details.trim().length < 10) {
+      toast.error("შეავსე მინიმუმ ერთი ველი დეტალური ინფორმაციით");
       return;
     }
     setLoading(true);
@@ -86,7 +139,7 @@ export function GenerateClient() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-2xl">
+    <div className="container mx-auto px-4 py-10 max-w-6xl">
       <div className="flex items-center gap-3 mb-8">
         <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "icon" })}>
           <ArrowLeft className="h-4 w-4" />
@@ -101,93 +154,124 @@ export function GenerateClient() {
         </div>
       </div>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-base">დოკუმენტის ტიპი და დეტალები</CardTitle>
-          <CardDescription>
-            აირჩიე ტიპი და აღწერე, ვინ არიან მხარეები, რა სიტუაციაა
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="doc-type">დოკუმენტის ტიპი</Label>
-            <select
-              id="doc-type"
-              value={type}
-              onChange={(e) => {
-                setType(e.target.value);
-                setDetails("");
-                setResult(null);
-              }}
-              className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              {DOC_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="details">დეტალები</Label>
-            <Textarea
-              id="details"
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder={PLACEHOLDER[type]}
-              className="min-h-[120px]"
-            />
-            <p className="text-xs text-muted-foreground">{details.length} / 2000 სიმბოლო</p>
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
-
-          <Button onClick={generate} disabled={loading} className="w-full">
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                იქმნება...
-              </>
-            ) : (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                შექმენი დოკუმენტი
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {result && (
-        <Card>
+      <div className="grid gap-6 lg:grid-cols-[380px_1fr] items-start">
+        <Card className="lg:sticky lg:top-4">
           <CardHeader>
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div>
-                <CardTitle className="text-base">{result.title}</CardTitle>
-                <CardDescription>
-                  დოკუმენტი შეიქმნა და შენახულია ანგარიშში
-                </CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={copy}>
-                  <Copy className="h-4 w-4 mr-1" /> კოპირება
-                </Button>
-                <Button variant="outline" size="sm" onClick={downloadTxt}>
-                  <Download className="h-4 w-4 mr-1" /> .txt
-                </Button>
-              </div>
-            </div>
+            <CardTitle className="text-base">დოკუმენტის ტიპი და დეტალები</CardTitle>
+            <CardDescription>
+              აირჩიე ტიპი და შეავსე ცნობილი დეტალები
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <pre className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[480px] overflow-y-auto">
-              {result.content}
-            </pre>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="doc-type">დოკუმენტის ტიპი</Label>
+              <select
+                id="doc-type"
+                value={type}
+                onChange={(e) => {
+                  setType(e.target.value);
+                  setAnswers({});
+                  setExtra("");
+                  setResult(null);
+                }}
+                className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {DOC_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {fields.map((f) => (
+              <div key={f.key} className="space-y-2">
+                <Label htmlFor={`field-${f.key}`}>{f.label}</Label>
+                {f.type === "textarea" ? (
+                  <Textarea
+                    id={`field-${f.key}`}
+                    value={answers[f.key] ?? ""}
+                    onChange={(e) => setAnswer(f.key, e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                ) : (
+                  <Input
+                    id={`field-${f.key}`}
+                    type={f.type}
+                    value={answers[f.key] ?? ""}
+                    onChange={(e) => setAnswer(f.key, e.target.value)}
+                  />
+                )}
+              </div>
+            ))}
+
+            <div className="space-y-2">
+              <Label htmlFor="extra">დამატებითი დეტალები</Label>
+              <Textarea
+                id="extra"
+                value={extra}
+                onChange={(e) => setExtra(e.target.value)}
+                placeholder="დაამატე ნებისმიერი სხვა მნიშვნელოვანი დეტალი"
+                className="min-h-[80px]"
+              />
+              <p className="text-xs text-muted-foreground">{details.length} / 2000 სიმბოლო</p>
+            </div>
+
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
+
+            <Button onClick={generate} disabled={loading} className="w-full">
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  იქმნება...
+                </>
+              ) : (
+                <>
+                  <FileText className="mr-2 h-4 w-4" />
+                  შექმენი დოკუმენტი
+                </>
+              )}
+            </Button>
           </CardContent>
         </Card>
-      )}
+
+        {result ? (
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <CardTitle className="text-base">{result.title}</CardTitle>
+                  <CardDescription>
+                    დოკუმენტი შეიქმნა და შენახულია ანგარიშში
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={copy}>
+                    <Copy className="h-4 w-4 mr-1" /> კოპირება
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={downloadTxt}>
+                    <Download className="h-4 w-4 mr-1" /> .txt
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <pre className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
+                {result.content}
+              </pre>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="flex items-center justify-center min-h-[300px] border-dashed">
+            <CardContent className="text-center text-muted-foreground text-sm py-12">
+              <FileText className="h-8 w-8 mx-auto mb-3 opacity-40" />
+              შეავსე დეტალები და დააჭირე „შექმენი დოკუმენტი"
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
