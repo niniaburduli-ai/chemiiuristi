@@ -1,11 +1,8 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
-import { getFeatureFlags } from "@/lib/features";
-import { ReviewClient } from "./review-client";
 
-export default async function ReviewPage() {
-  const [session, flags] = await Promise.all([auth(), getFeatureFlags()]);
-  if (!flags.review) redirect("/");
-  if (!session?.user?.id) redirect("/login?callbackUrl=/review");
-  return <ReviewClient />;
+// The document analysis flow now lives exclusively in DocumentAnalysisModal,
+// opened from the homepage and dashboard — this page is kept only so old
+// links/bookmarks land somewhere sane instead of a stale, unmaintained UI.
+export default function ReviewPage() {
+  redirect("/dashboard");
 }

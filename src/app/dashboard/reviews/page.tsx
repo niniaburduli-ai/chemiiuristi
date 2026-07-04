@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { RiskFindingCard, isStructuredFinding } from "@/components/site/risk-finding-card";
+import { ReviewModalTriggerLink } from "@/components/site/review-modal-trigger-link";
 
 export const dynamic = "force-dynamic";
 
@@ -42,9 +43,11 @@ export default async function ReviewsPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground mb-4">ჯერ დოკუმენტი არ გაქვს გაანალიზებული.</p>
-            <Link href="/review" className={buttonVariants()}>
-              დოკუმენტის ანალიზი
-            </Link>
+            <ReviewModalTriggerLink
+              label="დოკუმენტის ანალიზი"
+              locale="ka"
+              className={buttonVariants()}
+            />
           </CardContent>
         </Card>
       ) : (

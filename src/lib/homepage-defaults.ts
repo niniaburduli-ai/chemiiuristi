@@ -27,7 +27,7 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
       title: "შაბლონები", titleEn: "Templates",
       subtitle: "დოკუმენტის გენერატორი", subtitleEn: "Create a template",
       ctaText: "შექმენით დოკუმენტი", ctaTextEn: "Create document",
-      href: "/templates", icon: "FileText", comingSoon: true, visible: true, order: 1,
+      href: "/generate", icon: "FileText", comingSoon: false, visible: true, order: 1,
     },
     {
       _id: "sc-3",

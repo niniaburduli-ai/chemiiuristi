@@ -4,7 +4,6 @@ import {
   MessagesSquare,
   FileText,
   FileSearch,
-  Search,
   CreditCard,
   Clock,
   ArrowRight,
@@ -30,6 +29,8 @@ import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import { AnimateIn } from "@/components/site/AnimateIn";
+import { ReviewQuickActionCard } from "@/components/site/review-quick-action-card";
+import { ReviewModalTriggerLink } from "@/components/site/review-modal-trigger-link";
 import { DOC_TYPES } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
@@ -282,14 +283,11 @@ export default async function DashboardPage() {
               </Link>
             )}
             {showReview && (
-              <Link href="/review" className="block">
-                <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{dd.review}</p>
-                  <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-                    <Search className="h-4 w-4 text-primary" /> {dd.analysisLabel}
-                  </p>
-                </div>
-              </Link>
+              <ReviewQuickActionCard
+                reviewLabel={dd.review}
+                analysisLabel={dd.analysisLabel}
+                locale={locale}
+              />
             )}
           </div>
         </AnimateIn>
@@ -405,9 +403,11 @@ export default async function DashboardPage() {
                   {reviews.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
                       {dp.noReviews}{" "}
-                      <Link href="/review" className="underline text-primary">
-                        {dp.uploadDoc}
-                      </Link>
+                      <ReviewModalTriggerLink
+                        label={dp.uploadDoc}
+                        locale={locale}
+                        className="underline text-primary"
+                      />
                     </p>
                   ) : (
                     <div className="divide-y">
