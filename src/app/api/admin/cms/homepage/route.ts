@@ -24,7 +24,7 @@ export async function GET() {
   // Backfill fields that didn't exist in previous schema versions
   const data = {
     ...raw,
-    sections: (raw.sections as object | undefined) ?? HOME_SEED.sections,
+    sections: { ...HOME_SEED.sections, ...(raw.sections as object | undefined) },
     serviceCards: (raw.serviceCards as unknown[] | undefined)?.length
       ? raw.serviceCards
       : HOME_SEED.serviceCards,
@@ -42,6 +42,8 @@ export async function GET() {
     plans: (raw.plans as unknown[] | undefined)?.length
       ? raw.plans
       : HOME_SEED.plans,
+    faqHeading: (raw.faqHeading as string | undefined) || HOME_SEED.faqHeading,
+    faqHeadingEn: (raw.faqHeadingEn as string | undefined) || HOME_SEED.faqHeadingEn,
   }
 
   return NextResponse.json({ data })
@@ -56,7 +58,7 @@ export async function PUT(req: NextRequest) {
   const doc = await HomePage.findOneAndUpdate(
     KA_FILTER,
     { $set: { ...body, locale: "ka" } },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: "after" }
   ).lean()
   revalidatePath("/")
   revalidatePath("/services")

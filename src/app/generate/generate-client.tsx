@@ -32,7 +32,7 @@ import {
 import { exportAsDocx, exportAsPdf } from "@/lib/export-document";
 import { estimatePageCount } from "@/lib/page-count";
 
-const DOC_TYPES = [
+export const DOC_TYPES = [
   { value: "complaint", label: "საჩივარი" },
   { value: "rental-agreement", label: "ქირავნობის ხელშეკრულება" },
   { value: "employment-contract", label: "შრომის ხელშეკრულება" },
@@ -121,8 +121,10 @@ function normalizeSpacing(text: string): string {
   return text.replace(/\n{3,}/g, "\n\n");
 }
 
-export function GenerateClient() {
-  const [type, setType] = useState("complaint");
+export function GenerateClient({ initialType }: { initialType?: string } = {}) {
+  const [type, setType] = useState(
+    initialType && QUESTION_SCHEMAS[initialType] ? initialType : "complaint"
+  );
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [extra, setExtra] = useState("");
   const [loading, setLoading] = useState(false);

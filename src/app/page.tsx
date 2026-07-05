@@ -2,9 +2,9 @@ import Link from "next/link"
 import { AnimateIn } from "@/components/site/AnimateIn"
 import { PricingSection } from "@/components/site/PricingSection"
 import { ServiceCards } from "@/components/site/service-cards"
-import { getHomePage } from "@/lib/cms"
+import { getHomePage, getFAQ } from "@/lib/cms"
 import { getVisiblePlans } from "@/lib/plans-db"
-import { getFeatureFlags, isPathEnabled } from "@/lib/features"
+import { getFeatureFlags } from "@/lib/features"
 import { getPublicStats, resolveMetric } from "@/lib/stats"
 import { getLocale } from "@/lib/i18n/locale"
 import { pick } from "@/lib/i18n/loc"
@@ -33,15 +33,15 @@ export default async function Home() {
   const locale = await getLocale()
   const d = getDict(locale)
   const seed = getHomeSeed()
-  const [cmsData, flags, publicStats] = await Promise.all([
+  const [cmsData, flags, publicStats, faqData] = await Promise.all([
     getHomePage(),
     getFeatureFlags(),
     getPublicStats(),
+    getFAQ(locale),
   ])
   const dbPlans = await getVisiblePlans()
 
   // Seed lookup maps for En fallback when CMS doc predates bilingual fields
-  const seedCardById = new Map(seed.serviceCards.map((c) => [c._id, c]))
   const seedStatById = new Map(seed.stats.map((s) => [s._id, s]))
   const seedFeatureById = new Map(seed.features.map((f) => [f._id, f]))
 
@@ -51,16 +51,6 @@ export default async function Home() {
   const cmsHero = cmsData?.hero ?? seed.hero
   const heroTitle    = pick(cmsHero.title    || seed.hero.title,    cmsHero.titleEn    || seed.hero.titleEn,    locale)
   const heroSubtitle = pick(cmsHero.subtitle || seed.hero.subtitle, cmsHero.subtitleEn || seed.hero.subtitleEn, locale)
-
-  // ── Service cards ─────────────────────────────────────────────────────────────
-  const allServiceCards = (cmsData?.serviceCards ?? seed.serviceCards)
-    .sort((a, b) => a.order - b.order)
-  const visibleHrefs = new Set(
-    allServiceCards
-      .filter((c) => c.visible !== false)
-      .filter((c) => isPathEnabled(c.href, flags))
-      .map((c) => c.href),
-  )
 
   // ── Stats ─────────────────────────────────────────────────────────────────────
   const stats = (cmsData?.stats ?? seed.stats)
@@ -94,6 +84,13 @@ export default async function Home() {
   const pricingHeading = pick(
     cmsData?.pricingHeading   || seed.pricingHeading,
     cmsData?.pricingHeadingEn || seed.pricingHeadingEn,
+    locale,
+  )
+
+  // ── FAQ heading ───────────────────────────────────────────────────────────────
+  const faqHeading = pick(
+    cmsData?.faqHeading   || seed.faqHeading,
+    cmsData?.faqHeadingEn || seed.faqHeadingEn,
     locale,
   )
 
@@ -146,12 +143,9 @@ export default async function Home() {
       {/* ── SERVICE CARDS ── */}
       {sections.hero !== false && (
         <ServiceCards
-          cards={allServiceCards}
-          visibleHrefs={visibleHrefs}
-          seedCardById={seedCardById}
           cardsHeading={cardsHeading}
-          locale={locale}
           d={d}
+          flags={flags}
         />
       )}
 
@@ -226,6 +220,27 @@ export default async function Home() {
           }}
           heading={pricingHeading}
         />
+      )}
+
+      {/* ── FAQ ── */}
+      {sections.faq !== false && faqData.items.length > 0 && (
+        <section>
+          <div className="container mx-auto px-4 py-16 max-w-2xl">
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
+              {faqHeading}
+            </h2>
+            <div className="space-y-4">
+              {faqData.items.map((f, idx) => (
+                <AnimateIn key={f._id} delay={idx * 60}>
+                  <div className="bg-card border border-border rounded-2xl p-5 card-hover">
+                    <p className="font-bold text-sm">{f.question}</p>
+                    <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{f.answer}</p>
+                  </div>
+                </AnimateIn>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* ── CTA ── */}

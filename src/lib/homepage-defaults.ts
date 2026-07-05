@@ -3,7 +3,7 @@ import type { HomePageData } from "@/types/cms"
 // Single seed with both KA and EN text. Structure fields (visible, order, etc.) are shared.
 // Used by: route.ts (DB seed on first GET) + page.tsx (fallback when cms is null/draft)
 export const HOME_SEED: Omit<HomePageData, "status"> = {
-  sections: { hero: true, stats: true, features: true, pricing: true, cta: true },
+  sections: { hero: true, stats: true, features: true, pricing: true, faq: true, cta: true },
   hero: {
     title: "ჩემი იურისტი",
     titleEn: "My Lawyer",
@@ -78,6 +78,8 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
       items: ["შეუზღუდავი კონსულტაცია AI იურისტთან", "შეუზღუდავი შაბლონის გენერირება", "99 დოკუმენტის/ხელშეკრულების შემოწმება", "ოფიციალური წყაროების მითითება", "კითხვების ისტორიის ნახვა", "გაფართოებული იურიდიული ანალიზი"],
     },
   ],
+  faqHeading: "ხშირად დასმული კითხვები",
+  faqHeadingEn: "Frequently asked questions",
   ctaSection: {
     title: "მზად ხართ?",
     titleEn: "Ready?",

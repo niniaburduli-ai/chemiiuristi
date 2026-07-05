@@ -82,6 +82,7 @@ export interface HomePageData {
     stats: boolean
     features: boolean
     pricing: boolean
+    faq: boolean
     cta: boolean
   }
   hero: {
@@ -106,6 +107,8 @@ export interface HomePageData {
   pricingHeading: string
   pricingHeadingEn?: string
   plans: HomePagePlan[]
+  faqHeading: string
+  faqHeadingEn?: string
   ctaSection: {
     title: string
     titleEn?: string

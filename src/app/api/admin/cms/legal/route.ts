@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const doc = await LegalNotice.findOneAndUpdate(
       { type: body.type },
       { $set: body },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: "after" }
     ).lean()
     return NextResponse.json({ data: doc }, { status: 201 })
   } catch (err) {

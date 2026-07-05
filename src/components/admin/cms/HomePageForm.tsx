@@ -29,7 +29,7 @@ function moveItem<T extends { order: number }>(arr: T[], i: number, dir: -1 | 1)
 }
 
 const EMPTY: HomePageData = {
-  sections: { hero: true, stats: true, features: true, pricing: true, cta: true },
+  sections: { hero: true, stats: true, features: true, pricing: true, faq: true, cta: true },
   hero: { title: "", titleEn: "", subtitle: "", subtitleEn: "", ctaText: "", ctaHref: "", imageUrl: "", imagePubId: "" },
   serviceCards: [],
   cardsHeading: "", cardsHeadingEn: "",
@@ -39,6 +39,7 @@ const EMPTY: HomePageData = {
   features: [],
   pricingHeading: "", pricingHeadingEn: "",
   plans: [],
+  faqHeading: "", faqHeadingEn: "",
   ctaSection: { title: "", titleEn: "", subtitle: "", subtitleEn: "", buttonText: "", buttonTextEn: "", buttonHref: "" },
   status: "draft",
 }
@@ -315,7 +316,7 @@ export function HomePageForm() {
       {/* ── Section visibility overview ── */}
       <section className="space-y-1 rounded-lg border p-4">
         <h3 className="font-medium mb-3">სექციების ხილვადობა</h3>
-        {(["hero", "stats", "features", "pricing", "cta"] as const).map((key) => (
+        {(["hero", "stats", "features", "pricing", "faq", "cta"] as const).map((key) => (
           <div key={key} className="flex items-center justify-between rounded px-2 py-1 hover:bg-muted/40">
             <span className="text-sm text-muted-foreground">{key}</span>
             <Vis
@@ -682,6 +683,27 @@ export function HomePageForm() {
             <Plus className="mr-1 h-3 w-3" /> Add Plan
           </Button>
         </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="space-y-3 rounded-lg border p-4">
+        <SectionHeader
+          title="კითხვა-პასუხი (FAQ)"
+          visible={sec.faq}
+          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, faq: !p.sections.faq } }))}
+        />
+
+        <BiInput
+          label="სექციის სათაური"
+          kaValue={data.faqHeading}
+          enValue={data.faqHeadingEn ?? ""}
+          onKa={(v) => upd("faqHeading", v)}
+          onEn={(v) => upd("faqHeadingEn", v)}
+        />
+
+        <p className="rounded-md border border-dashed bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          კითხვები და პასუხები იმართება „კითხვა-პასუხი (FAQ)&quot; ტაბიდან — ეს სექცია ავტომატურად ასახავს გამოქვეყნებულ ჩანაწერებს. აქ მხოლოდ სათაურსა და ხილვადობას აკონტროლებ.
+        </p>
       </section>
 
       {/* ── CTA ── */}

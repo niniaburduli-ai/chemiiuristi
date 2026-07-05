@@ -2,13 +2,7 @@
 
 import { useRef, useState } from "react";
 import { FileUp, Image as ImageIcon, Loader2, Plus, Sparkles, AlertCircle, X as XIcon, Wand2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -57,15 +51,7 @@ function extOf(name: string): string {
   return idx === -1 ? "" : name.slice(idx + 1).toLowerCase();
 }
 
-export function DocumentAnalysisModal({
-  open,
-  onOpenChange,
-  locale,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  locale: Locale;
-}) {
+export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
   const t = getDict(locale).documentAnalysis;
   const [mode, setMode] = useState<Mode>("document");
   const [status, setStatus] = useState<Status>("idle");
@@ -267,20 +253,13 @@ export function DocumentAnalysisModal({
   const analyzeDisabled = mode === "document" ? !file : images.length === 0;
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        onOpenChange(next);
-        if (!next) reset();
-      }}
-    >
-      <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t.title}</DialogTitle>
-          <DialogDescription>{t.subtitle}</DialogDescription>
-        </DialogHeader>
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-bold text-foreground">{t.title}</h3>
+        <p className="text-sm text-muted-foreground">{t.subtitle}</p>
+      </div>
 
-        {(status === "idle" || status === "ready") && (
+      {(status === "idle" || status === "ready") && (
           <div className="space-y-4">
             <div className="flex rounded-lg border border-border p-1 gap-1">
               <button
@@ -600,6 +579,23 @@ export function DocumentAnalysisModal({
             </Button>
           </div>
         )}
+      </div>
+  );
+}
+
+export function DocumentAnalysisModal({
+  open,
+  onOpenChange,
+  locale,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  locale: Locale;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+        {open && <DocumentAnalysisPanel locale={locale} />}
       </DialogContent>
     </Dialog>
   );

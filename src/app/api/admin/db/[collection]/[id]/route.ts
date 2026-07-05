@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     const doc = await col.model.findByIdAndUpdate(
       id,
       { $set: sanitizeWrite(body as Record<string, unknown>, col.hidden) },
-      { new: true, runValidators: true }
+      { returnDocument: "after", runValidators: true }
     ).lean()
     if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
     revalidatePath("/", "layout")

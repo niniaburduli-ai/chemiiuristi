@@ -22,7 +22,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json()
   if (body.status === "published" && !body.publishedAt) body.publishedAt = new Date()
   await dbConnect()
-  const doc = await BlogPost.findByIdAndUpdate(id, { $set: body }, { new: true }).lean()
+  const doc = await BlogPost.findByIdAndUpdate(id, { $set: body }, { returnDocument: "after" }).lean()
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json({ data: doc })
 }

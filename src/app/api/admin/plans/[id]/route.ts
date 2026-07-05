@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
       if (clash) return NextResponse.json({ error: "ასეთი key უკვე არსებობს" }, { status: 409 })
     }
 
-    const doc = await Plan.findByIdAndUpdate(id, { $set: parsed.data }, { new: true }).lean()
+    const doc = await Plan.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: "after" }).lean()
     if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
     revalidatePath("/pricing")
     revalidatePath("/")

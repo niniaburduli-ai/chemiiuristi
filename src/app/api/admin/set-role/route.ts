@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const updated = await User.findOneAndUpdate(
     { email: parsed.data.email.toLowerCase() },
     { role: parsed.data.role },
-    { new: true, select: "email name role" }
+    { returnDocument: "after", select: "email name role" }
   ).lean();
 
   if (!updated) {

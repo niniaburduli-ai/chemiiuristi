@@ -39,7 +39,7 @@ export async function PATCH(
   const doc = await Upload.findByIdAndUpdate(
     id,
     { note: parsed.data.note },
-    { new: true }
+    { returnDocument: "after" }
   ).lean();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 

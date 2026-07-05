@@ -110,18 +110,6 @@ export default async function PricingPage() {
           );
         })}
       </div>
-
-      <div className="max-w-2xl mx-auto mt-20">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">{d.pricing.faqTitle}</h2>
-        <div className="space-y-4">
-          {d.pricing.faqs.map((f) => (
-            <div key={f.q} className="bg-card border border-border rounded-2xl p-5 card-hover">
-              <p className="font-bold text-sm">{f.q}</p>
-              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{f.a}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

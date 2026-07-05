@@ -19,7 +19,7 @@ export async function PUT(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const body = await req.json()
   await dbConnect()
-  const doc = await FAQ.findOneAndUpdate({}, { $set: { items: body.items } }, { upsert: true, new: true }).lean()
+  const doc = await FAQ.findOneAndUpdate({}, { $set: { items: body.items } }, { upsert: true, returnDocument: "after" }).lean()
   revalidatePath("/")
   return NextResponse.json({ data: doc })
 }

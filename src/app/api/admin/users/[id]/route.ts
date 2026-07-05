@@ -45,7 +45,7 @@ export async function PATCH(
   }
 
   await dbConnect();
-  const doc = await User.findByIdAndUpdate(id, { $set: parsed.data }, { new: true })
+  const doc = await User.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: "after" })
     .select("-passwordHash")
     .lean();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });

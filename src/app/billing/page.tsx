@@ -18,6 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { CancelSubscriptionButton } from "@/components/site/cancel-subscription-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
+import { pick } from "@/lib/i18n/loc";
+import { getPlans, type PlanData } from "@/lib/plans-db";
 import { PageHero } from "@/components/site/PageHero";
 
 export const dynamic = "force-dynamic";
@@ -34,15 +36,26 @@ export default async function BillingPage() {
   const d = getDict(locale);
 
   await dbConnect();
-  const user = await User.findById(session.user.id).lean();
+  const [user, plans] = await Promise.all([
+    User.findById(session.user.id).lean(),
+    getPlans(),
+  ]);
   if (!user) redirect("/login");
 
   const plan = (user.plan ?? "free") as string;
+  const planMap = new Map(plans.map((p) => [p.key, p]));
 
-  const PLAN_INFO: Record<string, { label: string; price: string }> = {
-    free: { label: d.billing.planFree, price: d.billing.priceFree },
-    standard: { label: d.billing.planStandard, price: d.billing.priceStandard },
-    premium: { label: d.billing.planPremium, price: d.billing.pricePremium },
+  const planLabel = (key: string) => {
+    const p = planMap.get(key);
+    return p ? pick(p.name, p.nameEn, locale) : key;
+  };
+  const planPrice = (p: PlanData) =>
+    p.priceMinor === 0 ? d.billing.freePlanLabel : `${fmtAmount(p.priceMinor, p.currency)} / ${d.pricing.perMonth}`;
+
+  const currentPlanData = planMap.get(plan);
+  const info = {
+    label: planLabel(plan),
+    price: currentPlanData ? planPrice(currentPlanData) : d.billing.freePlanLabel,
   };
 
   const STATUS_LABEL: Record<string, string> = {
@@ -54,7 +67,6 @@ export default async function BillingPage() {
     reversed: d.billing.statusReversed,
   };
 
-  const info = PLAN_INFO[plan] ?? PLAN_INFO.free;
   const isPaid = plan !== "free";
   const status = user.subscriptionStatus || (isPaid ? "active" : "");
 
@@ -123,7 +135,7 @@ export default async function BillingPage() {
                     <div className="flex items-center justify-between py-2 flex-wrap gap-2">
                       <div>
                         <div className="font-medium text-sm">
-                          {PLAN_INFO[p.plan]?.label ?? p.plan}
+                          {planLabel(p.plan)}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {fmtDate(p.paidAt as Date)}

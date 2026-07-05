@@ -110,7 +110,11 @@ export default async function ReviewsPage() {
                         {recommendations.map((r, i) => (
                           <li key={i} className="text-sm flex items-start gap-2">
                             <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                            {r}
+                            {typeof r === "string"
+                              ? r
+                              : (r as { recommendation?: string; title?: string }).recommendation ??
+                                (r as { title?: string }).title ??
+                                JSON.stringify(r)}
                           </li>
                         ))}
                       </ul>

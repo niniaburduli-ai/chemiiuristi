@@ -7,6 +7,7 @@ import {
   CreditCard,
   Clock,
   ArrowRight,
+  LayoutGrid,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
@@ -19,9 +20,6 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getPlanByKey } from "@/lib/plans-db";
@@ -29,71 +27,11 @@ import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import { AnimateIn } from "@/components/site/AnimateIn";
-import { ReviewQuickActionCard } from "@/components/site/review-quick-action-card";
+import { LimitsDialog, type LimitMetric } from "@/components/site/limits-dialog";
 import { ReviewModalTriggerLink } from "@/components/site/review-modal-trigger-link";
 import { DOC_TYPES } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
-
-function CreditStat({
-  label,
-  remaining,
-  total,
-  used,
-  isAdmin,
-  icon,
-  unlimitedLabel,
-  usedLabel,
-  leftLabel,
-}: {
-  label: string;
-  remaining: number;
-  total: number;
-  used: number;
-  isAdmin: boolean;
-  icon: React.ReactNode;
-  unlimitedLabel: string;
-  usedLabel: string;
-  leftLabel: string;
-}) {
-  const isUnlimited = isAdmin || total >= 9999;
-  const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
-
-  return (
-    <Card className="card-hover border-t-[3px] border-t-primary">
-      <CardHeader className="pb-2">
-        <CardDescription className="flex items-center gap-1.5 text-xs">
-          {icon}
-          {label}
-        </CardDescription>
-        <CardTitle className="text-3xl font-bold tabular-nums">
-          {isUnlimited ? (
-            <span className="text-primary">∞</span>
-          ) : (
-            <>
-              {remaining}
-              <span className="text-base font-normal text-muted-foreground">/{total}</span>
-            </>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isUnlimited ? (
-          <p className="text-xs text-muted-foreground">{unlimitedLabel}</p>
-        ) : (
-          <>
-            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-1.5">
-              <div className="h-full bg-primary transition-all rounded-full" style={{ width: `${pct}%` }} />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {usedLabel} {used} · {leftLabel} {remaining}
-            </p>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 export default async function DashboardPage() {
   const [session, locale] = await Promise.all([auth(), getLocale()]);
@@ -101,18 +39,21 @@ export default async function DashboardPage() {
 
   const d = getDict(locale);
   const dp = d.profile;
-  const dd = d.dashboard;
   const dateLocale = locale === "en" ? "en-GB" : "ka-GE";
 
   await dbConnect();
-  const [user, sub, flags, consultations, documents, reviews] = await Promise.all([
-    User.findById(session.user.id).select("-passwordHash").lean(),
-    Subscription.findOne({ userId: session.user.id }).lean(),
-    getFeatureFlags(),
-    Consultation.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
-    GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
-    DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
-  ]);
+  const [user, sub, flags, consultations, documents, reviews, consultationsCount, documentsCount, reviewsCount] =
+    await Promise.all([
+      User.findById(session.user.id).select("-passwordHash").lean(),
+      Subscription.findOne({ userId: session.user.id }).lean(),
+      getFeatureFlags(),
+      Consultation.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
+      GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
+      DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
+      Consultation.countDocuments({ userId: session.user.id }),
+      GeneratedDocument.countDocuments({ userId: session.user.id }),
+      DocumentReview.countDocuments({ userId: session.user.id }),
+    ]);
   if (!user) redirect("/login");
 
   const isAdmin = user.role === "admin";
@@ -128,10 +69,6 @@ export default async function DashboardPage() {
   const consultRemaining = user.consultationsRemaining ?? 0;
   const docGenRemaining = user.docGenerationRemaining ?? 0;
   const docReviewRemaining = user.docReviewRemaining ?? 0;
-
-  const consultUsed = Math.max(0, consultLimit - consultRemaining);
-  const docGenUsed = showGenerate ? Math.max(0, genLimit - docGenRemaining) : 0;
-  const reviewUsed = showReview ? Math.max(0, reviewLimit - docReviewRemaining) : 0;
 
   const subStatus = user.subscriptionStatus || (sub as { status?: string } | null)?.status || null;
   const periodEnd = (sub as { currentPeriodEnd?: Date } | null)?.currentPeriodEnd
@@ -157,6 +94,44 @@ export default async function DashboardPage() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const limitMetrics: LimitMetric[] = [
+    {
+      key: "consultations",
+      label: dp.questionsAsked,
+      icon: <MessagesSquare className="h-4 w-4 text-primary" />,
+      used: consultationsCount,
+      remaining: consultRemaining,
+      total: consultLimit,
+      isUnlimited: isAdmin || consultLimit >= 9999,
+    },
+    ...(showGenerate
+      ? [
+          {
+            key: "generate",
+            label: dp.documentsGenerated,
+            icon: <FileText className="h-4 w-4 text-primary" />,
+            used: documentsCount,
+            remaining: docGenRemaining,
+            total: genLimit,
+            isUnlimited: isAdmin || genLimit >= 9999,
+          },
+        ]
+      : []),
+    ...(showReview
+      ? [
+          {
+            key: "review",
+            label: dp.documentsAnalyzed,
+            icon: <FileSearch className="h-4 w-4 text-primary" />,
+            used: reviewsCount,
+            remaining: docReviewRemaining,
+            total: reviewLimit,
+            isUnlimited: isAdmin || reviewLimit >= 9999,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div>
@@ -201,49 +176,30 @@ export default async function DashboardPage() {
       </section>
 
       <div className="container mx-auto px-4 py-16 max-w-5xl">
-        {/* ── Limits ─────────────────────────────────────── */}
+        {/* ── Limits / Services ──────────────────────────── */}
         <AnimateIn delay={0}>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-            {dp.limits}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <CreditStat
-              label={dp.consultations}
-              remaining={consultRemaining}
-              total={consultLimit}
-              used={consultUsed}
-              isAdmin={isAdmin}
-              icon={<MessagesSquare className="h-3.5 w-3.5" />}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <LimitsDialog
+              metrics={limitMetrics}
+              triggerLabel={dp.limits}
+              triggerSubtitle={dp.limitsSubtitle}
+              title={dp.limits}
+              subtitle={dp.limitsDialogSubtitle}
+              remainingLabel={dp.remainingOf}
               unlimitedLabel={dp.unlimited}
-              usedLabel={dd.usedLabel}
-              leftLabel={dd.leftLabel}
             />
-            {showGenerate && (
-              <CreditStat
-                label={dp.docGeneration}
-                remaining={docGenRemaining}
-                total={genLimit}
-                used={docGenUsed}
-                isAdmin={isAdmin}
-                icon={<FileText className="h-3.5 w-3.5" />}
-                unlimitedLabel={dp.unlimited}
-                usedLabel={dd.usedLabel}
-                leftLabel={dd.leftLabel}
-              />
-            )}
-            {showReview && (
-              <CreditStat
-                label={dp.docAnalysis}
-                remaining={docReviewRemaining}
-                total={reviewLimit}
-                used={reviewUsed}
-                isAdmin={isAdmin}
-                icon={<FileSearch className="h-3.5 w-3.5" />}
-                unlimitedLabel={dp.unlimited}
-                usedLabel={dd.usedLabel}
-                leftLabel={dd.leftLabel}
-              />
-            )}
+            <Link
+              href="/services"
+              className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-6 card-hover h-full flex flex-col gap-3"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <LayoutGrid className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-foreground">{d.footer.nav.services}</p>
+                <p className="text-sm text-muted-foreground mt-1">{dp.servicesSubtitle}</p>
+              </div>
+            </Link>
           </div>
           {plan === "free" && (
             <Card className="mb-8 border-primary/30 bg-primary/5 card-hover">
@@ -259,37 +215,6 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           )}
-        </AnimateIn>
-
-        {/* ── Quick actions ──────────────────────────────── */}
-        <AnimateIn delay={80}>
-          <div className="grid gap-4 sm:grid-cols-3 mb-8">
-            <Link href="/chat" className="block">
-              <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{dd.consultation}</p>
-                <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-                  <MessagesSquare className="h-4 w-4 text-primary" /> {dd.aiLawyer}
-                </p>
-              </div>
-            </Link>
-            {showGenerate && (
-              <Link href="/generate" className="block">
-                <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3">
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{dd.document}</p>
-                  <p className="text-lg font-bold flex items-center gap-2 text-foreground">
-                    <FileText className="h-4 w-4 text-primary" /> {dd.generation}
-                  </p>
-                </div>
-              </Link>
-            )}
-            {showReview && (
-              <ReviewQuickActionCard
-                reviewLabel={dd.review}
-                analysisLabel={dd.analysisLabel}
-                locale={locale}
-              />
-            )}
-          </div>
         </AnimateIn>
 
         {/* ── Consultation history preview ───────────────── */}

@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest) {
   }
 
   await dbConnect()
-  await FeatureFlags.findOneAndUpdate({}, { $set: update }, { upsert: true, new: true })
+  await FeatureFlags.findOneAndUpdate({}, { $set: update }, { upsert: true, returnDocument: "after" })
   revalidatePath("/", "layout")
   const data = await getFeatureFlags()
   return NextResponse.json({ data })

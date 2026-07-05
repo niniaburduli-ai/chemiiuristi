@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest) {
   }
 
   await dbConnect()
-  await ThemeConfig.findOneAndUpdate({}, { $set: update }, { upsert: true, new: true })
+  await ThemeConfig.findOneAndUpdate({}, { $set: update }, { upsert: true, returnDocument: "after" })
   revalidatePath("/", "layout")
   const data = await getThemeConfig()
   return NextResponse.json({ data })

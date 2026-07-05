@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
   const doc = await SiteConfig.findOneAndUpdate(
     localeFilter(locale),
     { $set: { ...body, locale } },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: "after" }
   ).lean()
   revalidatePath("/", "layout")
   return NextResponse.json({ data: doc })
