@@ -185,7 +185,7 @@ export default async function Home() {
                 features.length > 0 &&
                 sections.stats !== false &&
                 (stats.length > 0 || feedbackCard)
-                  ? "md:grid-cols-[2fr_1fr]"
+                  ? "md:grid-cols-2"
                   : "md:grid-cols-1"
               }`}
             >
@@ -220,13 +220,13 @@ export default async function Home() {
 
               {sections.stats !== false && (stats.length > 0 || feedbackCard) && (
                 <div className={sections.features !== false && features.length > 0 ? "" : "max-w-3xl mx-auto w-full"}>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 text-center">
                     {statsHeading}
                   </h2>
                   <div
-                    className={`grid gap-4 ${
+                    className={`grid gap-3 mx-auto ${
                       sections.features !== false && features.length > 0
-                        ? "grid-cols-1"
+                        ? "grid-cols-1 max-w-md"
                         : statsGrid(stats.length + (feedbackCard ? 1 : 0))
                     }`}
                   >
@@ -237,8 +237,8 @@ export default async function Home() {
                       const statLabel = pick(s.label, s.labelEn || seedStat?.labelEn, locale)
                       return (
                         <AnimateIn key={s._id} delay={idx * 100} className="h-full">
-                          <div className="h-full bg-card border border-border rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-1.5 card-hover">
-                            <p className="text-3xl font-bold text-primary leading-none tabular-nums">{display}</p>
+                          <div className="h-full bg-card border border-border rounded-2xl p-4 flex flex-col items-center justify-center text-center space-y-1 card-hover">
+                            <p className="text-2xl font-bold text-primary leading-none tabular-nums">{display}</p>
                             <p className="text-xs text-muted-foreground leading-snug">{statLabel}</p>
                           </div>
                         </AnimateIn>
@@ -246,16 +246,16 @@ export default async function Home() {
                     })}
                     {feedbackCard && (
                       <AnimateIn delay={stats.length * 100} className="h-full">
-                        <div className="h-full bg-card border border-border rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-1.5 card-hover">
-                          <Star className="h-5 w-5 mx-auto text-gold fill-gold" />
-                          <div className="flex items-center justify-center gap-4">
+                        <div className="h-full bg-card border border-border rounded-2xl p-4 flex flex-col items-center justify-center text-center space-y-1 card-hover">
+                          <Star className="h-4 w-4 mx-auto text-gold fill-gold" />
+                          <div className="flex items-center justify-center gap-3">
                             <div>
-                              <p className="text-3xl font-bold text-primary leading-none tabular-nums">{feedbackCard.percentage}</p>
+                              <p className="text-2xl font-bold text-primary leading-none tabular-nums">{feedbackCard.percentage}</p>
                               <p className="text-xs text-muted-foreground leading-snug mt-1">{feedbackCard.percentageLabel}</p>
                             </div>
-                            <div className="w-px h-10 bg-border shrink-0" />
+                            <div className="w-px h-8 bg-border shrink-0" />
                             <div>
-                              <p className="text-3xl font-bold text-primary leading-none tabular-nums">{feedbackCard.rating}</p>
+                              <p className="text-2xl font-bold text-primary leading-none tabular-nums">{feedbackCard.rating}</p>
                               <p className="text-xs text-muted-foreground leading-snug mt-1">{feedbackCard.ratingLabel}</p>
                             </div>
                           </div>
