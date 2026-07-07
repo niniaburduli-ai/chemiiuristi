@@ -5,11 +5,14 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { PageHero } from "@/components/site/PageHero"
 import { AnimateIn } from "@/components/site/AnimateIn"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "ბლოგი | ჩემი იურისტი",
-  description: "სამართლებრივი სიახლეები და სტატიები",
-}
+export const metadata: Metadata = buildMetadata({
+  title: "ბლოგი — სამართლებრივი სიახლეები და იურიდიული რჩევები",
+  description:
+    "სამართლებრივი სიახლეები, იურიდიული რჩევები და სტატიები საქართველოს კანონმდებლობაზე, ხელშეკრულებებსა და თქვენს უფლებებზე.",
+  path: "/blog",
+})
 
 export default async function BlogPage() {
   const locale = await getLocale()

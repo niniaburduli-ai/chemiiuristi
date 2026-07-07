@@ -5,6 +5,16 @@ import { getVisiblePlans } from "@/lib/plans-db";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import { pick, pickArr } from "@/lib/i18n/loc";
+import type { Metadata } from "next";
+import { buildMetadata, KEYWORDS_KA } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "ფასები და პაკეტები — AI იურიდიული კონსულტაცია",
+  description:
+    "აირჩიეთ პაკეტი: AI იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი. უფასო პაკეტი ბარათის გარეშე.",
+  path: "/pricing",
+  keywords: ["იურიდიული კონსულტაცია ფასი", "ონლაინ იურისტი", ...KEYWORDS_KA],
+});
 
 export const dynamic = "force-dynamic";
 

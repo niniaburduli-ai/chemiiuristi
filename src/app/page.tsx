@@ -14,6 +14,8 @@ import { pick } from "@/lib/i18n/loc"
 import { getHomeSeed } from "@/lib/homepage-defaults"
 import { getDict } from "@/lib/i18n/dictionaries"
 import { resolveIcon } from "@/lib/icon-map"
+import { JsonLd } from "@/components/site/JsonLd"
+import { faqJsonLd } from "@/lib/seo"
 
 function statsGrid(n: number) {
   if (n <= 1) return "grid-cols-1"
@@ -288,6 +290,7 @@ export default async function Home() {
       {/* ── FAQ ── */}
       {sections.faq !== false && faqData.items.length > 0 && (
         <section className="bg-background overflow-hidden">
+          <JsonLd data={faqJsonLd(faqData.items.map((i) => ({ q: i.question, a: i.answer })))} />
           <div className="container mx-auto px-4 py-16">
             <div className="text-center mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-foreground">{faqHeading}</h2>
