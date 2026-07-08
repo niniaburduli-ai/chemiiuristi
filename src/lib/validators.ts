@@ -77,14 +77,7 @@ export const DOC_TYPES = {
 export type DocType = keyof typeof DOC_TYPES;
 
 export const GenerateDocSchema = z.object({
-  type: z.enum([
-    "complaint",
-    "rental-agreement",
-    "employment-contract",
-    "power-of-attorney",
-    "demand-letter",
-    "termination-notice",
-  ]),
+  type: z.enum(["complaint", "demand-letter"]),
   details: z.string().min(10).max(2000),
 });
 export type GenerateDocInput = z.infer<typeof GenerateDocSchema>;
