@@ -22,6 +22,7 @@ export async function getFeatureFlags(): Promise<FeatureFlagsData> {
       chat: doc.chat !== false,
       generate: doc.generate !== false,
       review: doc.review !== false,
+      templates: doc.templates !== false,
       legislation: doc.legislation !== false,
       blog: doc.blog !== false,
     }

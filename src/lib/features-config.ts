@@ -1,6 +1,6 @@
 /** Client-safe feature-flag constants + helpers (no DB import). */
 
-export type FeatureKey = "chat" | "generate" | "review" | "legislation" | "blog"
+export type FeatureKey = "chat" | "generate" | "review" | "templates" | "legislation" | "blog"
 
 export type FeatureFlagsData = Record<FeatureKey, boolean>
 
@@ -8,6 +8,7 @@ export const DEFAULT_FLAGS: FeatureFlagsData = {
   chat: true,
   generate: true,
   review: true,
+  templates: true,
   legislation: true,
   blog: true,
 }
@@ -20,8 +21,9 @@ export const FEATURE_DEFS: {
   paths: string[]
 }[] = [
   { key: "chat", label: "AI იურისტი (ჩატი)", description: "AI კონსულტაციის ჩატი", paths: ["/chat"] },
-  { key: "generate", label: "დოკუმენტის გენერაცია", description: "შაბლონები და დოკუმენტის შექმნა", paths: ["/generate"] },
+  { key: "generate", label: "დოკუმენტის გენერაცია", description: "საჩივრისა და მოთხოვნის AI დამუშავება", paths: ["/generate"] },
   { key: "review", label: "დოკუმენტის მიმოხილვა", description: "ატვირთული დოკუმენტის ანალიზი", paths: ["/review"] },
+  { key: "templates", label: "მზა შაბლონები", description: "სტანდარტული დოკუმენტების შევსება", paths: ["/templates"] },
   { key: "legislation", label: "კანონმდებლობა", description: "კანონმდებლობის ბაზა", paths: ["/legislation"] },
   { key: "blog", label: "ბლოგი", description: "ბლოგის გვერდი", paths: ["/blog"] },
 ]

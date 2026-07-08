@@ -9,6 +9,7 @@ const FeatureFlagsSchema = new Schema(
     chat: { type: Boolean, default: true },
     generate: { type: Boolean, default: true },
     review: { type: Boolean, default: true },
+    templates: { type: Boolean, default: true },
     legislation: { type: Boolean, default: true },
     blog: { type: Boolean, default: true },
   },
@@ -20,6 +21,7 @@ export type FeatureFlagsDoc = {
   chat: boolean
   generate: boolean
   review: boolean
+  templates: boolean
   legislation: boolean
   blog: boolean
   createdAt: Date
