@@ -7,6 +7,7 @@ const GeneratedDocumentSchema = new Schema(
     type: { type: String, required: true },
     content: { type: String, required: true },
     legalBasis: { type: String, default: "" },
+    source: { type: String, enum: ["ai", "template"], default: "ai" },
   },
   { timestamps: true }
 );
