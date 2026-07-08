@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     passwordHash,
     plan: "free",
     consultationsRemaining: 1,
+    docTemplatesRemaining: 20,
   });
 
   return NextResponse.json(

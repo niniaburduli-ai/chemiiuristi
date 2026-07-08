@@ -12,6 +12,7 @@ const UserSchema = new Schema(
     consultationsRemaining: { type: Number, default: 1 },
     docGenerationRemaining: { type: Number, default: 1 },
     docReviewRemaining: { type: Number, default: 1 },
+    docTemplatesRemaining: { type: Number, default: 20 },
     resetAt: { type: Date },
     // Flitt Payments subscription state.
     flittOrderId: { type: String, index: true },

@@ -77,6 +77,7 @@ export async function registerAction(
     passwordHash,
     plan: "free",
     consultationsRemaining: 1,
+    docTemplatesRemaining: 20,
     consentAcceptedAt: new Date(),
     consentVersion: "1.0",
   });

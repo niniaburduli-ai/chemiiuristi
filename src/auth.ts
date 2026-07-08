@@ -71,6 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           consultationsRemaining: 1,
           docGenerationRemaining: 1,
           docReviewRemaining: 1,
+          docTemplatesRemaining: 20,
           consentAcceptedAt: new Date(),
           consentVersion: "1.0",
         });
