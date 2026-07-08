@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
       DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
       Consultation.countDocuments({ userId: session.user.id }),
-      GeneratedDocument.countDocuments({ userId: session.user.id, source: "ai" }),
+      GeneratedDocument.countDocuments({ userId: session.user.id, source: { $ne: "template" } }),
       DocumentReview.countDocuments({ userId: session.user.id }),
       GeneratedDocument.countDocuments({ userId: session.user.id, source: "template" }),
     ]);
