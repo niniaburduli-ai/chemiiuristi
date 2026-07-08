@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, MessageCircle, FileText, FolderSearch } from "lucide-react";
+import { ArrowRight, MessageCircle, FileText, FolderSearch, LayoutTemplate } from "lucide-react";
 import { AnimateIn } from "@/components/site/AnimateIn";
 import type { Dict } from "@/lib/i18n/dictionaries";
 import type { FeatureFlagsData } from "@/lib/features";
@@ -16,13 +16,17 @@ export function ServiceCards({
   const items = [
     { key: "chat", icon: MessageCircle, label: d.servicesModal.aiTab, desc: d.servicesModal.aiSubtitle, enabled: flags.chat },
     { key: "review", icon: FolderSearch, label: d.documentAnalysis.title, desc: d.documentAnalysis.subtitle, enabled: flags.review },
-    { key: "generate", icon: FileText, label: d.servicesModal.templatesTab, desc: d.servicesModal.templatesHint, enabled: flags.generate },
+    { key: "templates", icon: LayoutTemplate, label: d.servicesModal.templatesTab, desc: d.servicesModal.templatesHint, enabled: flags.templates },
+    { key: "generate", icon: FileText, label: d.servicesModal.customDocsTab, desc: d.servicesModal.customDocsHint, enabled: flags.generate },
   ].filter((i) => i.enabled);
 
   if (items.length === 0) return null;
 
   const gridCols =
-    items.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : items.length === 2 ? "sm:grid-cols-2 max-w-2xl mx-auto" : "sm:grid-cols-3";
+    items.length === 1 ? "grid-cols-1 max-w-sm mx-auto" :
+    items.length === 2 ? "sm:grid-cols-2 max-w-2xl mx-auto" :
+    items.length === 3 ? "sm:grid-cols-3" :
+    "sm:grid-cols-2 lg:grid-cols-4";
 
   return (
     <section className="container mx-auto px-4 py-16">
