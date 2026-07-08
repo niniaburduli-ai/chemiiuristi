@@ -7,6 +7,7 @@ import {
   parseOrderId,
   planActivationFields,
   planDeactivationFields,
+  isSandboxCredentials,
 } from "@/lib/flitt";
 import { getPlanLimits } from "@/lib/plans-db";
 
@@ -60,6 +61,40 @@ export async function POST(req: Request) {
   const approved =
     data.order_status === "approved" && data.response_status !== "failure";
 
+  // Flitt's sandbox environment sends fully-valid, correctly-signed callbacks
+  // for test payments — a sandbox "approved" webhook is byte-for-byte
+  // indistinguishable from a live one except for which secret signed it. If
+  // that secret is Flitt's published test default, this callback can only
+  // have come from sandbox/test traffic, so it must NEVER grant real plan
+  // quota, in any environment (dev, staging, or a misconfigured production).
+  // The attempt is still recorded (tagged `sandbox: true`) so it's visible
+  // in the DB without ever touching the user's actual subscription state.
+  if (approved && plan && isSandboxCredentials()) {
+    const amount = Number(data.amount) || 0;
+    const paymentId = String(data.payment_id ?? data.order_id ?? "");
+    await Payment.updateOne(
+      { paymentId },
+      {
+        $setOnInsert: {
+          userId: user._id,
+          orderId: data.order_id ?? "",
+          paymentId,
+          plan,
+          amount,
+          currency: "GEL",
+          status: "sandbox_test",
+          sandbox: true,
+          paidAt: new Date(),
+        },
+      },
+      { upsert: true }
+    );
+    console.warn(
+      `[flitt/callback] Sandbox-signed "approved" callback for user ${user._id} (order ${data.order_id}) — recorded, real plan activation blocked.`
+    );
+    return NextResponse.json({ status: "ignored_sandbox" });
+  }
+
   if (approved && plan) {
     const limits = await getPlanLimits(plan);
     user.set({
@@ -87,9 +122,10 @@ export async function POST(req: Request) {
       { upsert: true }
     );
   } else if (
-    data.order_status === "declined" ||
-    data.order_status === "expired" ||
-    data.order_status === "reversed"
+    !isSandboxCredentials() &&
+    (data.order_status === "declined" ||
+      data.order_status === "expired" ||
+      data.order_status === "reversed")
   ) {
     user.set(planDeactivationFields(data.order_status));
   } else {

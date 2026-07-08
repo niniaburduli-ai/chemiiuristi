@@ -59,6 +59,7 @@ export async function POST() {
         amount: 0,
         currency: "GEL",
         status: "approved",
+        sandbox: true,
         paidAt: new Date(),
       },
     },

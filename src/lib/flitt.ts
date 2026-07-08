@@ -35,6 +35,18 @@ function paymentKey(): string {
   if (!k) throw new Error("FLITT_PAYMENT_KEY is not set");
   return k;
 }
+
+/**
+ * True when the configured FLITT_PAYMENT_KEY is Flitt's publicly-documented
+ * sandbox/test secret ("test") rather than a real merchant's live secret.
+ * A validly-signed sandbox callback is indistinguishable from a live one by
+ * signature alone — this is the ONLY reliable signal that a callback came
+ * through Flitt's test environment, and it must never be trusted to grant
+ * real subscription quota (see the callback route's hard gate on this).
+ */
+export function isSandboxCredentials(): boolean {
+  return process.env.FLITT_PAYMENT_KEY === "test";
+}
 function appUrl(): string {
   return (process.env.APP_URL || process.env.AUTH_URL || "http://localhost:3000").replace(/\/$/, "");
 }

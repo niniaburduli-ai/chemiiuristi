@@ -70,7 +70,9 @@ export default async function BillingPage() {
   const isPaid = plan !== "free";
   const status = user.subscriptionStatus || (isPaid ? "active" : "");
 
-  const payments = await Payment.find({ userId: session.user.id })
+  // Exclude sandbox/test-signed callbacks — never real charges, never shown
+  // as invoice history (see isSandboxCredentials() in lib/flitt.ts).
+  const payments = await Payment.find({ userId: session.user.id, sandbox: { $ne: true } })
     .sort({ paidAt: -1 })
     .limit(50)
     .lean();

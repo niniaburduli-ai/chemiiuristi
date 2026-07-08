@@ -9,7 +9,11 @@ const PaymentSchema = new Schema(
     plan: { type: String, enum: ["standard", "premium"], required: true },
     amount: { type: Number, required: true }, // minor units (1900 = 19.00 GEL)
     currency: { type: String, default: "GEL" },
-    status: { type: String, default: "approved" }, // approved | declined | reversed
+    status: { type: String, default: "approved" }, // approved | declined | reversed | sandbox_test
+    // True when this callback was signed with Flitt's sandbox/test credentials
+    // (see isSandboxCredentials() in lib/flitt.ts) — never counted as real
+    // revenue and never shown on the user's own billing/invoice history.
+    sandbox: { type: Boolean, default: false },
     paidAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
