@@ -17,6 +17,7 @@ import {
   Gavel,
   Mail,
   UserMinus,
+  LayoutTemplate,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { FeatureFlagsData } from "@/lib/features";
 import type { PlanData } from "@/lib/plans-db";
 
-type Tab = "ai" | "docs" | "templates";
+type Tab = "ai" | "docs" | "templates" | "templatesFill";
 
 type LegalBasisGroup = {
   lawName: string;
@@ -293,6 +294,26 @@ function TemplatesPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesModal"
   );
 }
 
+function TemplatesLinkPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesModal"] }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full p-10 text-center gap-4">
+      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+        <LayoutTemplate className="h-7 w-7" />
+      </div>
+      <div>
+        <h3 className="text-lg font-bold text-foreground">{sm.templatesTab}</h3>
+        <p className="text-sm text-muted-foreground mt-1 max-w-sm">{sm.templatesHint}</p>
+      </div>
+      <Link href="/templates">
+        <Button>
+          {sm.generateCta}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
 function UpgradeCard({ plan, locale, d }: { plan: PlanData | null; locale: Locale; d: ReturnType<typeof getDict> }) {
   if (!plan) return null;
   const name = pick(plan.name, plan.nameEn, locale);
@@ -331,6 +352,7 @@ export function ServicesPageClient({
     { key: "ai", label: sm.aiTab, icon: Sparkles, enabled: flags.chat },
     { key: "docs", label: d.documentAnalysis.title, icon: ScanSearch, enabled: flags.review },
     { key: "templates", label: sm.customDocsTab, icon: FileText, enabled: flags.generate },
+    { key: "templatesFill", label: sm.templatesTab, icon: LayoutTemplate, enabled: flags.templates },
   ];
   const enabledTabs = tabs.filter((t) => t.enabled);
   const [activeTab, setActiveTab] = useState<Tab>(enabledTabs[0]?.key ?? "ai");
@@ -386,6 +408,7 @@ export function ServicesPageClient({
                 </div>
               )}
               {activeTab === "templates" && flags.generate && <TemplatesPanel sm={sm} />}
+              {activeTab === "templatesFill" && flags.templates && <TemplatesLinkPanel sm={sm} />}
             </section>
           </div>
         )}
