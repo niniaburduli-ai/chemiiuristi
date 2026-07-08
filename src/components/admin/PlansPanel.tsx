@@ -62,8 +62,8 @@ const BLANK: Plan = {
 
 // Default feature texts per plan key — used to auto-populate empty fields when enabling a service.
 const DEFAULT_GEN_KA: Record<string, string> = {
-  standard: "19 შაბლonის გენერირება",
-  premium: "შეუზღუდავი შაბლonის გენერირება",
+  standard: "19 შაბლონის გენერირება",
+  premium: "შეუზღუდავი შაბლონის გენერირება",
 }
 const DEFAULT_GEN_EN: Record<string, string> = {
   standard: "19 template generations",
