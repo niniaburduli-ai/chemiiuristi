@@ -31,12 +31,16 @@ type Plan = {
   docGeneration: number
   includeDocReview: boolean
   docReview: number
+  includeDocTemplates: boolean
+  docTemplates: number
   features: string[]
   featuresEn: string[]
   featuresDocGeneration: string[]
   featuresDocGenerationEn: string[]
   featuresDocReview: string[]
   featuresDocReviewEn: string[]
+  featuresDocTemplates: string[]
+  featuresDocTemplatesEn: string[]
   isFree: boolean
   highlighted: boolean
   visible: boolean
@@ -48,9 +52,11 @@ const BLANK: Plan = {
   id: "", key: "", name: "", nameEn: "", description: "", descriptionEn: "",
   priceMinor: 0, currency: "GEL", period: "month",
   consultations: 0, includeDocGeneration: true, docGeneration: 0, includeDocReview: true, docReview: 0,
+  includeDocTemplates: true, docTemplates: 0,
   features: [], featuresEn: [],
   featuresDocGeneration: [], featuresDocGenerationEn: [],
   featuresDocReview: [], featuresDocReviewEn: [],
+  featuresDocTemplates: [], featuresDocTemplatesEn: [],
   isFree: false, highlighted: false, visible: true, active: true, order: 0,
 }
 
@@ -70,6 +76,14 @@ const DEFAULT_REV_KA: Record<string, string> = {
 const DEFAULT_REV_EN: Record<string, string> = {
   standard: "9 document reviews",
   premium: "99 document/contract reviews",
+}
+const DEFAULT_TPL_KA: Record<string, string> = {
+  standard: "50 მზა შაბლონის შევსება",
+  premium: "200 მზა შაბლონის შევსება",
+}
+const DEFAULT_TPL_EN: Record<string, string> = {
+  standard: "50 ready-made template fills",
+  premium: "200 ready-made template fills",
 }
 
 function gel(minor: number): string {
@@ -166,10 +180,13 @@ export function PlansPanel() {
                   <div className="text-muted-foreground text-xs">{p.consultations} კონს.</div>
                   <div className="flex flex-wrap gap-1 mt-1">
                     <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${p.includeDocGeneration ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"}`}>
-                      შაბლ: {p.includeDocGeneration ? "✓" : "✗"}
+                      მოთხ: {p.includeDocGeneration ? "✓" : "✗"}
                     </span>
                     <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${p.includeDocReview ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"}`}>
                       დოკ: {p.includeDocReview ? "✓" : "✗"}
+                    </span>
+                    <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${p.includeDocTemplates ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"}`}>
+                      შაბლ: {p.includeDocTemplates ? "✓" : "✗"}
                     </span>
                   </div>
                 </td>
@@ -238,6 +255,8 @@ function PlanDialog({
   const [featuresGenEnText, setFeaturesGenEnText] = useState("")
   const [featuresRevText, setFeaturesRevText] = useState("")
   const [featuresRevEnText, setFeaturesRevEnText] = useState("")
+  const [featuresTplText, setFeaturesTplText] = useState("")
+  const [featuresTplEnText, setFeaturesTplEnText] = useState("")
   const [saving, setSaving] = useState(false)
   const [syncedId, setSyncedId] = useState<string | null>(null)
 
@@ -252,6 +271,8 @@ function PlanDialog({
     setFeaturesGenEnText((plan.featuresDocGenerationEn ?? []).join("\n"))
     setFeaturesRevText((plan.featuresDocReview ?? []).join("\n"))
     setFeaturesRevEnText((plan.featuresDocReviewEn ?? []).join("\n"))
+    setFeaturesTplText((plan.featuresDocTemplates ?? []).join("\n"))
+    setFeaturesTplEnText((plan.featuresDocTemplatesEn ?? []).join("\n"))
   }
   if (!plan && syncedId !== null) setSyncedId(null)
 
@@ -271,6 +292,8 @@ function PlanDialog({
       featuresDocGenerationEn: split(featuresGenEnText),
       featuresDocReview: split(featuresRevText),
       featuresDocReviewEn: split(featuresRevEnText),
+      featuresDocTemplates: split(featuresTplText),
+      featuresDocTemplatesEn: split(featuresTplEnText),
     }
     try {
       const isNew = !form.id
@@ -338,7 +361,7 @@ function PlanDialog({
               <Input value={form.currency} onChange={(e) => set("currency", e.target.value)} />
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label>კონსულტაცია</Label>
               <Input type="number" min={0} value={form.consultations} onChange={(e) => set("consultations", Number(e.target.value))} />
@@ -379,6 +402,24 @@ function PlanDialog({
               </label>
               <Input type="number" min={0} value={form.docReview} disabled={!form.includeDocReview} onChange={(e) => set("docReview", Number(e.target.value))} className={!form.includeDocReview ? "opacity-40" : ""} />
             </div>
+            <div className="grid gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <input
+                  type="checkbox"
+                  checked={form.includeDocTemplates}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    set("includeDocTemplates", checked)
+                    if (checked && !featuresTplText.trim()) {
+                      setFeaturesTplText(DEFAULT_TPL_KA[form.key] ?? "")
+                      setFeaturesTplEnText(DEFAULT_TPL_EN[form.key] ?? "")
+                    }
+                  }}
+                />
+                შაბლ. შევს. (ჩართული)
+              </label>
+              <Input type="number" min={0} value={form.docTemplates} disabled={!form.includeDocTemplates} onChange={(e) => set("docTemplates", Number(e.target.value))} className={!form.includeDocTemplates ? "opacity-40" : ""} />
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
@@ -408,6 +449,16 @@ function PlanDialog({
             <div className="grid gap-2">
               <Label className={!form.includeDocReview ? "text-muted-foreground" : ""}>Doc Review EN {!form.includeDocReview && "(disabled)"}</Label>
               <Textarea rows={2} value={featuresRevEnText} onChange={(e) => setFeaturesRevEnText(e.target.value)} disabled={!form.includeDocReview} className={!form.includeDocReview ? "opacity-40" : ""} placeholder={"9 document reviews"} />
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label className={!form.includeDocTemplates ? "text-muted-foreground" : ""}>შაბლ. შევს. KA {!form.includeDocTemplates && "(გამორთ.)"}</Label>
+              <Textarea rows={2} value={featuresTplText} onChange={(e) => setFeaturesTplText(e.target.value)} disabled={!form.includeDocTemplates} className={!form.includeDocTemplates ? "opacity-40" : ""} placeholder={"50 მზა შაბლონის შევსება"} />
+            </div>
+            <div className="grid gap-2">
+              <Label className={!form.includeDocTemplates ? "text-muted-foreground" : ""}>Templates EN {!form.includeDocTemplates && "(disabled)"}</Label>
+              <Textarea rows={2} value={featuresTplEnText} onChange={(e) => setFeaturesTplEnText(e.target.value)} disabled={!form.includeDocTemplates} className={!form.includeDocTemplates ? "opacity-40" : ""} placeholder={"50 ready-made template fills"} />
             </div>
           </div>
           <div className="flex flex-wrap gap-4 text-sm">
