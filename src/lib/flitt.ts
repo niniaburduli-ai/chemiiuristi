@@ -186,6 +186,9 @@ export function planActivationFields(plan: PlanKey, limits: PlanLimits) {
     docReviewRemaining: limits.docReview,
     docTemplatesRemaining: limits.docTemplates,
     resetAt: new Date(Date.now() + PERIOD_MS),
+    // A real payment always wins over a prior admin comp grant — this
+    // account should count as real revenue going forward.
+    planGrantedByAdmin: false,
   };
 }
 
@@ -200,6 +203,7 @@ export function planDeactivationFields(status: string) {
     docReviewRemaining: limits.docReview,
     docTemplatesRemaining: limits.docTemplates,
     resetAt: new Date(Date.now() + PERIOD_MS),
+    planGrantedByAdmin: false,
   };
 }
 

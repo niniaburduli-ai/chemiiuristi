@@ -18,6 +18,13 @@ const UserSchema = new Schema(
     flittOrderId: { type: String, index: true },
     flittPaymentId: { type: String },
     subscriptionStatus: { type: String, default: "" }, // pending | active | declined | expired | reversed
+    // True when a non-free `plan` was set directly by an admin (support/comp
+    // account), not by a real Flitt payment — kept out of "active
+    // subscriptions"/revenue stats (see api/admin/stats) so comp accounts
+    // never inflate real numbers. Cleared to false by any real payment
+    // activation/deactivation (see planActivationFields/planDeactivationFields
+    // in lib/flitt.ts) so the account correctly counts as real once it pays.
+    planGrantedByAdmin: { type: Boolean, default: false },
     consentAcceptedAt: { type: Date },
     consentVersion: { type: String, default: "" },
   },

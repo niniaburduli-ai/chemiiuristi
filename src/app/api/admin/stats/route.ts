@@ -55,6 +55,7 @@ export async function GET() {
     totalUploads,
     adminCount,
     activeSubs,
+    adminGrantedCount,
     planAgg,
     signupRows,
     consultRows,
@@ -67,14 +68,17 @@ export async function GET() {
     DocumentReview.estimatedDocumentCount(),
     Upload.estimatedDocumentCount(),
     User.countDocuments({ role: "admin" }),
-    User.countDocuments({ subscriptionStatus: "active" }),
+    // Admin-granted (comp) plans are real feature access but never real
+    // revenue — excluded here and counted separately below.
+    User.countDocuments({ subscriptionStatus: "active", planGrantedByAdmin: { $ne: true } }),
+    User.countDocuments({ planGrantedByAdmin: true }),
     User.aggregate<{ _id: string; count: number }>([
       { $group: { _id: { $ifNull: ["$plan", "free"] }, count: { $sum: 1 } } },
     ]),
     User.aggregate<DayBucket>(dayPipeline(since)),
     Consultation.aggregate<DayBucket>(dayPipeline(since)),
     User.aggregate<{ _id: string; count: number }>([
-      { $match: { subscriptionStatus: "active" } },
+      { $match: { subscriptionStatus: "active", planGrantedByAdmin: { $ne: true } } },
       { $group: { _id: { $ifNull: ["$plan", "free"] }, count: { $sum: 1 } } },
     ]),
     getPlans(),
@@ -102,6 +106,7 @@ export async function GET() {
         uploads: totalUploads,
         admins: adminCount,
         activeSubscriptions: activeSubs,
+        adminGrantedPlans: adminGrantedCount,
       },
       monthlyRevenueMinor,
       currency: "GEL",

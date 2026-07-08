@@ -44,8 +44,16 @@ export async function PATCH(
     );
   }
 
+  // Admin-set plans are comp/support grants, not real payments — tag them so
+  // they never count as "active subscriptions" or revenue in admin stats.
+  // Only touched when `plan` is actually part of this update.
+  const update: Record<string, unknown> = { ...parsed.data };
+  if (parsed.data.plan !== undefined) {
+    update.planGrantedByAdmin = parsed.data.plan !== "free";
+  }
+
   await dbConnect();
-  const doc = await User.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: "after" })
+  const doc = await User.findByIdAndUpdate(id, { $set: update }, { returnDocument: "after" })
     .select("-passwordHash")
     .lean();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });

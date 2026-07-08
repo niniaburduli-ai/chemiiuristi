@@ -16,6 +16,7 @@ import {
   Users,
   CreditCard,
   Coins,
+  Gift,
   MessagesSquare,
   FileText,
   FileSearch,
@@ -38,6 +39,7 @@ type Stats = {
     uploads: number
     admins: number
     activeSubscriptions: number
+    adminGrantedPlans: number
   }
   monthlyRevenueMinor: number
   currency: string
@@ -124,6 +126,7 @@ export function OverviewPanel() {
         <StatCard label="მომხმარებლები" value={stats.totals.users} icon={Users} />
         <StatCard label="აქტიური გამოწერა" value={stats.totals.activeSubscriptions} icon={CreditCard} />
         <StatCard label={`თვიური შემოსავალი (${stats.currency})`} value={revenue} icon={Coins} />
+        <StatCard label="ადმინის მიერ მინიჭებული გეგმა" value={stats.totals.adminGrantedPlans} icon={Gift} />
         <StatCard label="კონსულტაციები" value={stats.totals.consultations} icon={MessagesSquare} />
         <StatCard label="დოკუმენტები" value={stats.totals.documents} icon={FileText} />
         <StatCard label="მიმოხილვები" value={stats.totals.reviews} icon={FileSearch} />
