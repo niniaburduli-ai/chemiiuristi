@@ -114,14 +114,10 @@ export const AdminUserUpdateSchema = z
   .refine((d) => Object.keys(d).length > 0, { message: "No fields to update" });
 export type AdminUserUpdateInput = z.infer<typeof AdminUserUpdateSchema>;
 
-export const FeedbackCreateSchema = z
-  .object({
-    rating: z.coerce.number().int().min(1).max(5).optional(),
-    message: z.string().trim().max(2000).optional().default(""),
-  })
-  .refine((d) => d.rating != null || d.message.length > 0, {
-    message: "Rating or message is required",
-  });
+export const FeedbackCreateSchema = z.object({
+  rating: z.coerce.number().int().min(1).max(5),
+  message: z.string().trim().max(2000).optional().default(""),
+});
 export type FeedbackCreateInput = z.infer<typeof FeedbackCreateSchema>;
 
 export const DocumentImproveSchema = z.object({
