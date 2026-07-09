@@ -73,8 +73,15 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  // Google Search Console verification (URL-prefix property, HTML-tag method).
-  verification: { google: "0VcyKMbTH9PBma4pNZkSDb9WbAilRphdOxCr_vxTFxA" },
+  // Google Search Console verification (HTML-tag method). Array = one meta tag
+  // per property: [0] old chemiadvokati.vercel.app, [1] new chemiiuristi.com.
+  // NOTE: a GSC *Domain* property verifies via DNS TXT, not this tag.
+  verification: {
+    google: [
+      "0VcyKMbTH9PBma4pNZkSDb9WbAilRphdOxCr_vxTFxA",
+      "aEu0Nrgy_PHxDm7uJW9Grcd6S_SReIM7I1rcAdlT_ZU",
+    ],
+  },
 };
 
 export default async function RootLayout({
