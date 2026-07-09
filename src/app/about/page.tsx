@@ -6,11 +6,14 @@ import { Info, Clock, Target, Users } from 'lucide-react'
 import Image from 'next/image'
 import { AnimateIn } from '@/components/site/AnimateIn'
 import { PageHero } from '@/components/site/PageHero'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'ჩვენ შესახებ | ჩემი იურისტი',
-  description: 'ჩემი იურისტი - თანამედროვე იურიდიული პლატფორმა, რომელიც სამართალს ხელმისაწვდომს ხდის ყველასთვის.',
-}
+export const metadata: Metadata = buildMetadata({
+  title: 'ჩვენ შესახებ',
+  description:
+    'ჩემი იურისტი — თანამედროვე AI იურიდიული პლატფორმა, რომელიც იურიდიულ კონსულტაციას, ხელშეკრულების შემოწმებას და გენერირებას ხელმისაწვდომს ხდის ყველასთვის.',
+  path: '/about',
+})
 
 function Paragraphs({ text }: { text: string }) {
   return (

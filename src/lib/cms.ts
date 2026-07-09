@@ -235,6 +235,27 @@ export async function getPublishedBlogPosts(locale: Locale = "ka", limit = 20): 
   } catch { return [] }
 }
 
+/** All published blog slugs (both locales) with dates — used by sitemap + static params. */
+export async function getAllPublishedSlugs(): Promise<
+  { slug: string; publishedAt: string | null; updatedAt: string | null }[]
+> {
+  try {
+    await dbConnect()
+    const docs = await BlogPost.find({ status: "published" }, { slug: 1, publishedAt: 1, updatedAt: 1 })
+      .sort({ publishedAt: -1 })
+      .lean()
+    return docs.map((d) => ({
+      slug: String(d.slug),
+      publishedAt: d.publishedAt ? new Date(d.publishedAt).toISOString() : null,
+      updatedAt: (d as { updatedAt?: Date }).updatedAt
+        ? new Date((d as { updatedAt: Date }).updatedAt).toISOString()
+        : null,
+    }))
+  } catch {
+    return []
+  }
+}
+
 export async function getBlogPost(slug: string): Promise<BlogPostData | null> {
   try {
     await dbConnect()
