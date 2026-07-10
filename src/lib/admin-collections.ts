@@ -7,7 +7,6 @@ import { Upload } from "@/lib/models/upload"
 import { Plan } from "@/lib/models/Plan"
 import { Payment } from "@/lib/models/payment"
 import { Subscription } from "@/lib/models/subscription"
-import { LegislationDoc } from "@/lib/models/legislation"
 import { SiteConfig } from "@/lib/models/SiteConfig"
 import { NavMenu } from "@/lib/models/NavMenu"
 import { HomePage } from "@/lib/models/HomePage"
@@ -42,7 +41,6 @@ export const ADMIN_COLLECTIONS: AdminCollection[] = [
   { slug: "uploads", label: "Uploads", model: Upload as unknown as Model<unknown>, hidden: [] },
   { slug: "payments", label: "Payments", model: Payment as unknown as Model<unknown>, hidden: [] },
   { slug: "subscriptions", label: "Subscriptions", model: Subscription as unknown as Model<unknown>, hidden: [] },
-  { slug: "legislation", label: "Legislation", model: LegislationDoc as unknown as Model<unknown>, hidden: [] },
   { slug: "site-config", label: "Site Config", model: SiteConfig as unknown as Model<unknown>, hidden: [] },
   { slug: "nav-menus", label: "Nav Menus", model: NavMenu as unknown as Model<unknown>, hidden: [] },
   { slug: "home-pages", label: "Home Pages", model: HomePage as unknown as Model<unknown>, hidden: [] },

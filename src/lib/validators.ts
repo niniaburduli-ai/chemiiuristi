@@ -54,14 +54,6 @@ export const ALLOWED_UPLOAD_TYPES = [
 ] as const;
 export type AllowedUploadType = (typeof ALLOWED_UPLOAD_TYPES)[number];
 
-export const LegislationQuerySchema = z.object({
-  q: z.string().trim().min(1).max(200).optional(),
-  code: z.string().trim().min(1).max(80).optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-  skip: z.coerce.number().int().min(0).default(0),
-});
-export type LegislationQueryInput = z.infer<typeof LegislationQuerySchema>;
-
 export const UploadNoteSchema = z.object({
   note: z.string().trim().max(500).default(""),
 });
