@@ -26,9 +26,13 @@ export async function Header() {
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
   const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
 
+  const initials = user?.name
+    ? user.name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase()
+    : user?.email?.[0]?.toUpperCase() ?? "";
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-sm transition-shadow">
-      <div className="container mx-auto flex min-h-16 flex-wrap items-center justify-between gap-y-2 px-4 py-2">
+      <div className="container mx-auto flex min-h-16 flex-nowrap items-center justify-between gap-x-6 lg:gap-x-10 px-4 py-2">
         {/* Logo */}
         <Link href="/" className="flex flex-col leading-tight shrink-0 group">
           <span className="text-lg font-bold text-primary tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80">
@@ -40,7 +44,7 @@ export async function Header() {
         </Link>
 
         {/* Nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-5 text-sm shrink-0">
           {navItems.map((n) => (
             <Link
               key={n._id}
@@ -55,7 +59,7 @@ export async function Header() {
         </nav>
 
         {/* Auth */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <LanguageSwitcher current={locale} />
           <ThemeToggle />
           {user ? (
@@ -72,8 +76,8 @@ export async function Header() {
                 href="/dashboard"
                 className={buttonVariants({ variant: "ghost", size: "sm" }) + " btn-hover"}
               >
-                <User2 className="h-4 w-4 sm:mr-1.5" />
-                <span className="hidden sm:inline">{user.name ?? user.email}</span>
+                <User2 className="h-4 w-4 mr-1" />
+                {initials}
               </Link>
               <LogoutButton />
             </>
