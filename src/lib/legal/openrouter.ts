@@ -122,6 +122,9 @@ export const SYSTEM_PROMPT = [
   "   - გამოიყენე მხოლოდ პრაქტიკული, ცხოვრებისეული ახსნისთვის (პროცედურა, ვადები, რა ხდება პრაქტიკაში, სად მიმართო) — პასუხი ამით უფრო სასარგებლო და კონკრეტული გახადე.",
   `   - არასოდეს ამოიღო იქიდან მუხლის ნომერი, პროცენტი, თანხა ან ვადა და არ ჩაწერო ${CITATION_DELIM}-ის შემდეგ. სამართლებრივი საფუძველი მხოლოდ კანონის ტექსტიდანაა.`,
   "   - თუ პრაქტიკული კონტექსტი ეწინააღმდეგება მოწოდებულ კანონს — დაეყრდენი კანონს.",
+  "",
+  `11. ${STRICT_BREVITY_RULE}`,
+  "ეს წესი ეხება მხოლოდ ფორმას (შესავალს, თავაზიან კლიშეებს, გამეორებას, დასკვნით შეჯამებას) — არასოდეს ამართლებს რომელიმე მუხლის, პუნქტის, ქვეპუნქტის, გამონაკლისის ან საჭირო ქვეთემის გამოტოვებას. წესები 3 და 6ა–6გ (ყველა შესაბამისი დებულების სრული, ამომწურავი მოცვა) აქტუალობას არ კარგავს და აღემატება ამ წესს კონფლიქტის შემთხვევაში.",
 ].join("\n");
 
 /**
@@ -535,8 +538,13 @@ function retryHint(attempt: number, keywords?: string[]): string {
 export type WebAnswer = { prose: string; sources: WebSource[] };
 
 /** Max search attempts before giving up — matsne.gov.ge covers all of Georgian
- * law, so a single miss is treated as a bad query, not a real gap. */
-const WEB_ANSWER_MAX_ATTEMPTS = 4;
+ * law, so a single miss is treated as a bad query, not a real gap. Capped at
+ * 2 (was 4): retryHint's own escalation logic front-loads the highest-value
+ * rewording into attempt 1; attempts 3-4 were diminishing-returns tail spend
+ * on an already-rare fallback path (only reached when all 8 approved sources
+ * miss). Cutting this is a cost lever, not a recall lever — same two best
+ * search angles still run. */
+const WEB_ANSWER_MAX_ATTEMPTS = 2;
 
 async function runWebAnswerAttempt(
   question: string,
@@ -556,6 +564,11 @@ async function runWebAnswerAttempt(
       { role: "user", content: question + retryHint(attempt, keywords) },
     ],
   };
+  // Deliberately NOT setting search_context_size here (unlike
+  // searchWebContext's "low" tier): finding the right matsne.gov.ge article
+  // on this path is the actual answer, not secondary color, so it stays at
+  // the provider's default search depth — a cost/correctness tradeoff, not
+  // a free cut.
   if (!hasNativeWebAccess(model)) {
     const webPlugin: Record<string, unknown> = {
       id: "web",
