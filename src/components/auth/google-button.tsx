@@ -37,7 +37,9 @@ export function GoogleButton({
     if (requireConsent && !consented) return;
     const fd = new FormData();
     fd.set("callbackUrl", callbackUrl);
-    startTransition(() => { googleSignInAction(fd); });
+    startTransition(async () => {
+      await googleSignInAction(fd);
+    });
   };
 
   return (
