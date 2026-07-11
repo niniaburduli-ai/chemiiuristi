@@ -24,7 +24,8 @@ export async function getPublicStats(): Promise<PublicStats> {
       Upload.estimatedDocumentCount(),
     ])
     return { users, consultations, documents, reviews, uploads }
-  } catch {
+  } catch (err) {
+    console.error("getPublicStats failed:", err instanceof Error ? err.message : err)
     return { ...ZERO }
   }
 }
