@@ -320,6 +320,8 @@ const ka = {
     improveRecommendationsLabel: "განახლებული რეკომენდაციები",
     improveQuestionsTitle: "საჭიროა დაზუსტება",
     improveAnswerPlaceholder: "თქვენი პასუხი...",
+    improveFollowUpCommentLabel: "დამატებითი კომენტარი",
+    improveFollowUpCommentPlaceholder: "მიუთითეთ სხვა რამ, რაც გსურთ შესწორდეს (არასავალდებულო)",
     improveApplyAnswersCta: "პასუხების გაგზავნა",
   },
   servicesModal: {
@@ -677,6 +679,8 @@ const en: Dict = {
     improveRecommendationsLabel: "Updated recommendations",
     improveQuestionsTitle: "Needs your input",
     improveAnswerPlaceholder: "Your answer...",
+    improveFollowUpCommentLabel: "Additional comment",
+    improveFollowUpCommentPlaceholder: "Anything else you'd like fixed (optional)",
     improveApplyAnswersCta: "Submit answers",
   },
   servicesModal: {

@@ -68,6 +68,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
   const [revision, setRevision] = useState<RevisionResult | null>(null);
   const [instructionText, setInstructionText] = useState("");
   const [answersDraft, setAnswersDraft] = useState<Record<string, string>>({});
+  const [followUpComment, setFollowUpComment] = useState("");
   const [improveStatus, setImproveStatus] = useState<ImproveStatus>("idle");
   const [improveErrorKind, setImproveErrorKind] = useState<
     "unauthorized" | "quota" | "generic" | null
@@ -92,6 +93,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
     setRevision(null);
     setInstructionText("");
     setAnswersDraft({});
+    setFollowUpComment("");
     setImproveStatus("idle");
     setImproveErrorKind(null);
     if (fileRef.current) fileRef.current.value = "";
@@ -245,7 +247,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
   }
 
   function applyAnswers() {
-    improve("", answersDraft);
+    improve(followUpComment, answersDraft);
   }
 
   function copyRevisedText() {
@@ -579,11 +581,23 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
                           />
                         </div>
                       ))}
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold text-muted-foreground">
+                          {t.improveFollowUpCommentLabel}
+                        </p>
+                        <Textarea
+                          value={followUpComment}
+                          onChange={(e) => setFollowUpComment(e.target.value)}
+                          placeholder={t.improveFollowUpCommentPlaceholder}
+                          rows={2}
+                        />
+                      </div>
                       <Button
                         onClick={applyAnswers}
                         disabled={
                           improveStatus === "loading" ||
-                          revision.questions.every((q) => !answersDraft[q]?.trim())
+                          (revision.questions.every((q) => !answersDraft[q]?.trim()) &&
+                            !followUpComment.trim())
                         }
                         className="w-full"
                       >
