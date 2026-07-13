@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FileUp, Image as ImageIcon, Loader2, Plus, Sparkles, AlertCircle, X as XIcon, Wand2 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,21 @@ function extOf(name: string): string {
   return idx === -1 ? "" : name.slice(idx + 1).toLowerCase();
 }
 
+function WizardProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
+  return (
+    <div className="flex gap-1.5 mb-4">
+      {[1, 2, 3, 4].map((n) => (
+        <div
+          key={n}
+          className={`h-1.5 flex-1 rounded-full ${
+            n <= step ? "bg-gradient-to-r from-primary to-gold" : "bg-muted"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
   const t = getDict(locale).documentAnalysis;
   const [mode, setMode] = useState<Mode>("document");
@@ -66,6 +81,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
   >(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [revision, setRevision] = useState<RevisionResult | null>(null);
+  const [uiStep, setUiStep] = useState<2 | 3 | 4>(2);
   const [instructionText, setInstructionText] = useState("");
   const [answersDraft, setAnswersDraft] = useState<Record<string, string>>({});
   const [followUpComment, setFollowUpComment] = useState("");
@@ -91,6 +107,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
     setErrorKind(null);
     setResult(null);
     setRevision(null);
+    setUiStep(2);
     setInstructionText("");
     setAnswersDraft({});
     setFollowUpComment("");
@@ -200,6 +217,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
         return;
       }
       setResult(data as AnalysisResult);
+      setUiStep(2);
       setStatus("results");
     } catch {
       setErrorKind("generic");
@@ -264,6 +282,8 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
         <h3 className="text-lg font-bold text-foreground">{t.title}</h3>
         <p className="text-sm text-muted-foreground">{t.subtitle}</p>
       </div>
+
+      <WizardProgress step={status === "results" ? uiStep : 1} />
 
       {(status === "idle" || status === "ready") && (
           <div className="space-y-4">
