@@ -1,6 +1,9 @@
 import { PricingSection } from "@/components/site/PricingSection";
+import { CustomPlanBuilder } from "@/components/site/CustomPlanBuilder";
 import { PageHero } from "@/components/site/PageHero";
 import { getVisiblePlans } from "@/lib/plans-db";
+import { getCustomPlanRates } from "@/lib/custom-plan-rates";
+import { STEP_QUANTITIES } from "@/lib/custom-plan-rates-config";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import type { Metadata } from "next";
@@ -19,7 +22,7 @@ export const dynamic = "force-dynamic";
 export default async function PricingPage() {
   const locale = await getLocale();
   const d = getDict(locale);
-  const plans = await getVisiblePlans();
+  const [plans, customRates] = await Promise.all([getVisiblePlans(), getCustomPlanRates()]);
 
   return (
     <div className="animate-fade-up">
@@ -36,6 +39,27 @@ export default async function PricingPage() {
         }}
         heading=""
       />
+
+      <section className="container mx-auto px-4 pb-16 max-w-md">
+        <CustomPlanBuilder
+          rates={customRates}
+          steps={STEP_QUANTITIES}
+          services={[
+            { key: "consultations", label: d.pricing.customConsultations },
+            { key: "docTemplates", label: d.pricing.customTemplates },
+            { key: "docGeneration", label: d.pricing.customDocGeneration },
+            { key: "docReview", label: d.pricing.customDocAnalysis },
+          ]}
+          strings={{
+            heading: d.pricing.customTitle,
+            subtitle: d.pricing.customSubtitle,
+            buildAndPay: d.pricing.customBuildAndPay,
+            selectAtLeastOne: d.pricing.customSelectOne,
+            checkoutError: d.pricing.customCheckoutError,
+            networkError: d.pricing.customNetworkError,
+          }}
+        />
+      </section>
     </div>
   );
 }
