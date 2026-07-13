@@ -24,6 +24,25 @@ const UserSchema = new Schema(
     // for free accounts and for real Flitt subscriptions (those renew/expire
     // via subscriptionStatus + resetAt instead).
     planExpiresAt: { type: Date, default: null },
+    // Custom "build your own" one-time package — fully independent of the
+    // subscription above (plan/planExpiresAt/subscriptionStatus). A user can
+    // hold an active subscription AND an active custom package at the same
+    // time; buying a custom package never touches the fields above. See
+    // lib/plan-expiry.ts (applyCustomPlanExpiryIfDue) and lib/quota.ts.
+    customConsultationsRemaining: { type: Number, default: 0 },
+    customDocGenerationRemaining: { type: Number, default: 0 },
+    customDocReviewRemaining: { type: Number, default: 0 },
+    customDocTemplatesRemaining: { type: Number, default: 0 },
+    // Set on successful custom-package purchase; null/unset when no custom
+    // package is active. A repeat purchase while still active adds to the
+    // remaining quotas above and resets this to a fresh 30 days.
+    customPlanExpiresAt: { type: Date, default: null },
+    // Bookkeeping only for the custom order's own pending/callback state —
+    // kept separate from flittOrderId/flittPaymentId so a concurrent custom
+    // purchase can never corrupt an in-flight or active subscription's own
+    // callback state.
+    customFlittOrderId: { type: String, default: "" },
+    customFlittPaymentId: { type: String, default: "" },
     // Flitt Payments subscription state.
     flittOrderId: { type: String, index: true },
     flittPaymentId: { type: String },
