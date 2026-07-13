@@ -56,19 +56,43 @@ The 5 step quantities themselves (10/50/100/200/300) are a shared code constant,
 not stored per-service — only prices are admin-editable, the quantity ladder is
 fixed.
 
-### User plan fields (existing `User` model — no schema change needed)
+### User plan fields — custom plan is fully separate from the subscription
 
-Custom plan reuses the existing `plan`, `*Remaining`, `planExpiresAt`,
-`subscriptionStatus` fields exactly like a paid Flitt plan:
-- `plan = "custom"`
-- `consultationsRemaining` / `docGenerationRemaining` / `docReviewRemaining` /
-  `docTemplatesRemaining` = the purchased quantities (0 for excluded services)
-- `planExpiresAt = now + 30 days`
-- `subscriptionStatus = "active"`
+**Revised requirement:** the custom package must be purchasable *alongside* an
+active Standard/Premium subscription, with its own independent expiration, and
+must never cancel or overwrite the subscription. So it does **not** reuse
+`plan`/`planExpiresAt`/`subscriptionStatus`/`*Remaining` — those stay exactly
+as they are for whatever subscription (or free/none) the user already has. New
+fields on `User`, additive to the existing ones:
 
-Expiry reuses `applyPlanExpiryIfDue` unchanged — it already reverts any non-free
-user whose `planExpiresAt` has passed back to `free`, with no special-casing
-needed for `plan === "custom"`.
+```
+customConsultationsRemaining:  { type: Number, default: 0 }
+customDocGenerationRemaining:  { type: Number, default: 0 }
+customDocReviewRemaining:      { type: Number, default: 0 }
+customDocTemplatesRemaining:   { type: Number, default: 0 }
+customPlanExpiresAt:           { type: Date, default: null }
+```
+
+No `customPlan` boolean/status field needed — a user "has an active custom
+package" iff `customPlanExpiresAt` is set and in the future (checked the same
+lazy way as the main plan, see Expiry below).
+
+**Stacking on repeat purchase:** buying a second custom package while the
+first is still active **adds** the new quantities to whatever's left of the
+old ones (`$inc`, not `$set`) and resets `customPlanExpiresAt` to
+`now + 30 days` — one fresh 30-day window covering the combined balance,
+rather than tracking multiple expiring batches. Simpler to reason about and
+matches "buy more capacity" as the natural reason to stack.
+
+### Expiry
+
+New `applyCustomPlanExpiryIfDue(user)` in `lib/plan-expiry.ts`, parallel to
+(and independent of) the existing `applyPlanExpiryIfDue`: if
+`customPlanExpiresAt` is set and in the past, zero all four `custom*Remaining`
+fields and clear `customPlanExpiresAt`. Never touches `plan`,
+`planExpiresAt`, or `subscriptionStatus` — the two expiry timers are
+completely decoupled. Called wherever quota or dashboard data is read,
+alongside the existing call.
 
 ## Payment flow (one-time, not recurring)
 
@@ -83,22 +107,43 @@ needed for `plan === "custom"`.
 - New route `POST /api/checkout/custom`: validates each quantity is 0 or one of
   the 5 steps, requires at least one non-zero, computes the total **server-side**
   from `CustomPlanRates` (client-submitted price is never trusted), calls
-  `createOneTimeCheckout`, persists the pending order on the user record
-  (`flittOrderId`, `flittPaymentId`, `subscriptionStatus: "pending"`) exactly like
-  `/api/checkout` does today.
+  `createOneTimeCheckout`, persists the pending order on **new, separate**
+  fields — `customFlittOrderId`, `customFlittPaymentId` — never touching the
+  existing `flittOrderId`/`flittPaymentId`/`subscriptionStatus` fields a real
+  subscription may already be using. Keeping these separate is what prevents a
+  concurrent custom purchase from corrupting an in-flight or active
+  subscription's own pending/callback state.
 - `/api/flitt/callback` extended: branch on the `custom_` order-id prefix
   (`parseOrderId` gets a sibling `parseCustomOrderId`). On successful payment,
-  read quantities back from `merchant_data`, set the user fields listed above.
-  On failure/decline, leave the user on their current plan (same as today's
-  behavior for regular subscriptions).
+  read quantities back from `merchant_data`, `$inc` the four
+  `custom*Remaining` fields and `$set customPlanExpiresAt`. On failure/decline,
+  no user field changes at all (nothing was granted yet). Either way, the
+  user's `plan`/`planExpiresAt`/`subscriptionStatus`/regular `*Remaining` are
+  untouched by this branch.
 - No recurring billing, no Flitt subscription object created — this is a single
   charge.
 
-## Quota consumption
+## Quota consumption — two independent pools
 
-No changes. Chat/generate/review/templates routes already decrement
-`*Remaining` regardless of `plan` value — `"custom"` is just another string in
-that field.
+Chat/generate/review/templates routes currently do a single check-then-`$inc`
+against one `*Remaining` field per service. That becomes a shared helper,
+`consumeQuota(userId, service, amount, user)` in a new `lib/quota.ts`:
+
+1. Read `primary = user[<service>Remaining] ?? 0` and, only if
+   `customPlanExpiresAt` is in the future, `custom = user[custom<Service>Remaining] ?? 0` (otherwise `custom = 0`).
+2. If `primary + custom < amount` → insufficient, block the request (same 4xx
+   behavior as today).
+3. Otherwise decrement **primary first**, custom as overflow:
+   `fromPrimary = min(primary, amount)`, `fromCustom = amount - fromPrimary`.
+   Issue `$inc` on whichever field(s) are non-zero.
+
+Primary-first ordering matches the natural use case: a custom package is
+bought specifically to keep working *after* hitting the subscription's (or
+free tier's) limit, so it's spent last as overflow capacity, not drained
+first while subscription quota sits unused. `review`'s multi-page
+`creditsRequired` (currently a single `-creditsRequired` `$inc`) uses the same
+helper with `amount = creditsRequired`, so a review that's bigger than what's
+left of the primary pool can legitimately spill into the custom pool.
 
 ## UI — the builder card
 
@@ -119,6 +164,34 @@ static price/CTA with an interactive builder:
   explicitly a one-time, one-shot purchase per your requirement ("user must
   create this plan each time").
 
+Purchasing is available regardless of current subscription state — free,
+Standard, Premium, or already holding an active custom package all see the
+same builder card and can check out. This is a pure top-up; there's no
+interaction with `/api/checkout` (the subscription flow) at all.
+
+## Dashboard — two separate limit blocks
+
+`app/dashboard/page.tsx` currently renders one `LimitsDialog` built from the
+user's plan-derived limits (`consultLimit`/`genLimit`/`reviewLimit`/
+`templatesLimit` from `getPlanByKey`) and one `*Remaining` set. This becomes
+two clearly separated blocks, shown side by side (or stacked on mobile):
+
+1. **Subscription block** (unchanged data) — the existing plan name, status
+   badge, period-end date, and the 4 `LimitMetric`s built from
+   `planData`/`*Remaining` exactly as today. Hidden only if the user has never
+   had any plan info (never happens — `free` always renders).
+2. **Custom package block** (new) — only rendered when `customPlanExpiresAt`
+   is set and in the future (after `applyCustomPlanExpiryIfDue` runs). Shows
+   its own 4 `LimitMetric`s built from `custom*Remaining` (no "total" bundle
+   size to compare against since it's a la carte — display used, since last
+   purchase, isn't tracked separately from the subscription's usage counters,
+   so this block shows **remaining** quota per service, not a used/total bar)
+   and its own expiry date (`customPlanExpiresAt`), styled/labeled distinctly
+   ("Custom package" vs "Subscription") so the two never read as one merged
+   plan.
+
+Both blocks read from the same single `User.findById` — no extra query.
+
 ## Admin
 
 New section in the admin dashboard (next to `PlansPanel`), following the
@@ -131,5 +204,6 @@ itself is not admin-editable, only prices).
 - Multi-currency (stays GEL like the rest of the app).
 - Auto-renewal of the custom plan (explicitly one-time).
 - Editable quantity ladder (fixed at 10/50/100/200/300 in code).
-- Proration/refund flows if a user later upgrades away from an active custom
-  plan (same as existing behavior — not handled for Standard/Premium either).
+- Refunds (not handled for Standard/Premium either).
+- Tracking per-pool usage history separately (dashboard shows remaining
+  custom quota, not a used/total bar for it — see Dashboard section).
