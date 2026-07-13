@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { RiskFindingCard } from "@/components/site/risk-finding-card";
+import { TextDiff } from "@/components/site/text-diff";
+import { DocumentDownloadButton } from "@/components/site/document-download-button";
 import { getDict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
+import type { DiffSegment } from "@/lib/diff-text";
 
 const ACCEPT = ".pdf,.docx,.txt,.md";
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -38,6 +41,7 @@ type RevisionResult = {
   instruction: string;
   answers: Record<string, string>;
   createdAt: string;
+  diff: DiffSegment[];
 };
 
 type ImproveStatus = "idle" | "loading" | "error";
@@ -231,7 +235,7 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
         setImproveStatus("error");
         return;
       }
-      setRevision(data.revision as RevisionResult);
+      setRevision({ ...data.revision, diff: data.diff } as RevisionResult);
       setAnswersDraft({});
       setImproveStatus("idle");
     } catch {
@@ -505,13 +509,27 @@ export function DocumentAnalysisPanel({ locale }: { locale: Locale }) {
                       <p className="text-xs font-semibold text-muted-foreground">
                         {t.improveRevisedTitle}
                       </p>
-                      <Button variant="ghost" size="sm" onClick={copyRevisedText}>
-                        {t.improveCopyButton}
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="sm" onClick={copyRevisedText}>
+                          {t.improveCopyButton}
+                        </Button>
+                        <DocumentDownloadButton
+                          content={revision.text}
+                          filename={`${result.fileName || "document"}-corrected`}
+                        />
+                      </div>
                     </div>
-                    <pre className="whitespace-pre-wrap text-sm bg-muted/50 rounded-lg p-3 max-h-64 overflow-y-auto">
-                      {revision.text}
-                    </pre>
+                    <div className="flex items-center gap-3 mb-2 text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <span className="inline-block h-2.5 w-2.5 rounded-sm bg-green-500/40" />
+                        {t.improveDiffLegendAdded}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="inline-block h-2.5 w-2.5 rounded-sm bg-red-500/30" />
+                        {t.improveDiffLegendRemoved}
+                      </span>
+                    </div>
+                    <TextDiff segments={revision.diff} />
                   </div>
 
                   {revision.findings.length > 0 && (
