@@ -38,3 +38,33 @@ export async function applyPlanExpiryIfDue<T extends PlanCheckable>(
   await User.findByIdAndUpdate(user._id, { $set: fields });
   return { ...user, ...fields };
 }
+
+type CustomPlanCheckable = {
+  _id: unknown;
+  customPlanExpiresAt?: Date | null;
+};
+
+/**
+ * Lazily zero out an expired custom package's quota. Completely independent
+ * of applyPlanExpiryIfDue — a subscription's own plan/planExpiresAt is never
+ * touched here, matching the requirement that the custom package have its
+ * own separate expiration and never affect the subscription.
+ */
+export async function applyCustomPlanExpiryIfDue<T extends CustomPlanCheckable>(
+  user: T
+): Promise<T> {
+  const expiresAt = user.customPlanExpiresAt;
+  if (!expiresAt || new Date(expiresAt) > new Date()) {
+    return user;
+  }
+
+  const fields = {
+    customConsultationsRemaining: 0,
+    customDocGenerationRemaining: 0,
+    customDocReviewRemaining: 0,
+    customDocTemplatesRemaining: 0,
+    customPlanExpiresAt: null,
+  };
+  await User.findByIdAndUpdate(user._id, { $set: fields });
+  return { ...user, ...fields };
+}
