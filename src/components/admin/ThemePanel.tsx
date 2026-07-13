@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import {
   THEME_TOKENS,
+  TOKEN_GROUPS,
   FONT_CHOICES,
   DEFAULT_LIGHT,
   DEFAULT_DARK,
@@ -17,80 +18,159 @@ import {
   type ThemeConfigData,
 } from "@/lib/theme-tokens"
 
-function ColorGrid({
-  tokens,
+const TOKEN_LABEL: Record<string, string> = Object.fromEntries(THEME_TOKENS.map((t) => [t.key, t.label]))
+
+/** One color swatch + hex input, labeled with what it actually controls. */
+function ColorField({
+  tokenKey,
+  value,
   onChange,
 }: {
-  tokens: Record<string, string>
-  onChange: (key: string, val: string) => void
+  tokenKey: string
+  value: string
+  onChange: (val: string) => void
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {THEME_TOKENS.map((t) => (
-        <div key={t.key} className="flex items-center gap-3 rounded-md border px-3 py-2">
-          <input
-            type="color"
-            value={tokens[t.key] ?? "#000000"}
-            onChange={(e) => onChange(t.key, e.target.value)}
-            className="h-8 w-10 shrink-0 cursor-pointer rounded border bg-transparent p-0.5"
-            aria-label={t.label}
-          />
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium">{t.label}</div>
-            <Input
-              value={tokens[t.key] ?? ""}
-              onChange={(e) => onChange(t.key, e.target.value)}
-              className="mt-1 h-7 font-mono text-xs"
-            />
-          </div>
-        </div>
-      ))}
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        value={value || "#000000"}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 w-9 shrink-0 cursor-pointer rounded border bg-transparent p-0.5"
+        aria-label={TOKEN_LABEL[tokenKey] ?? tokenKey}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-xs text-muted-foreground">{TOKEN_LABEL[tokenKey] ?? tokenKey}</div>
+        <Input value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="h-7 font-mono text-xs" />
+      </div>
     </div>
   )
 }
 
-function Preview({ tokens, radius }: { tokens: Record<string, string>; radius: string }) {
-  return (
-    <div
-      className="rounded-lg border p-5"
-      style={{
-        background: tokens.background,
-        color: tokens.foreground,
-        borderColor: tokens.border,
-        // @ts-expect-error custom prop
-        "--r": radius,
-      }}
-    >
-      <p className="mb-3 text-sm font-semibold">წინასწარი ხედი</p>
-      <div className="flex flex-wrap items-center gap-3">
-        <span
+/** Live-rendered sample using the exact tokens the group controls, so it's obvious what changes. */
+function GroupPreview({
+  type,
+  keys,
+  tokens,
+  radius,
+  sampleLabel,
+}: {
+  type: (typeof TOKEN_GROUPS)[number]["previewType"]
+  keys: string[]
+  tokens: Record<string, string>
+  radius: string
+  sampleLabel?: string
+}) {
+  const r = { borderRadius: radius }
+
+  if (type === "bg-text")
+    return (
+      <div className="flex h-full min-h-20 flex-col justify-center gap-1 rounded-md border p-3" style={{ background: tokens[keys[0]], ...r }}>
+        <p className="text-sm font-medium" style={{ color: tokens[keys[1]] }}>ასეთი ტექსტი ჩანს გვერდზე</p>
+        <p className="text-xs" style={{ color: tokens[keys[1]], opacity: 0.7 }}>მაგალითი აბზაცი</p>
+      </div>
+    )
+
+  if (type === "button")
+    return (
+      <div className="flex h-full min-h-20 items-center justify-center rounded-md border p-3">
+        <button
+          type="button"
           className="px-4 py-2 text-sm font-medium"
-          style={{ background: tokens.primary, color: tokens["primary-foreground"], borderRadius: radius }}
+          style={{ background: tokens[keys[0]], color: tokens[keys[1]], ...r }}
         >
-          მთავარი ღილაკი
-        </span>
+          {sampleLabel}
+        </button>
+      </div>
+    )
+
+  if (type === "badge")
+    return (
+      <div className="flex h-full min-h-20 items-center justify-center rounded-md border p-3">
         <span
-          className="px-4 py-2 text-sm font-medium"
-          style={{ background: tokens.secondary, color: tokens["secondary-foreground"], borderRadius: radius }}
-        >
-          მეორადი
-        </span>
-        <span
-          className="px-4 py-2 text-sm font-medium"
+          className="px-3 py-1 text-xs font-semibold"
           style={{ background: tokens.accent, color: tokens["accent-foreground"], borderRadius: radius }}
         >
-          აქცენტი
-        </span>
-        <span
-          className="px-4 py-2 text-sm font-medium"
-          style={{ background: tokens.destructive, color: "#fff", borderRadius: radius }}
-        >
-          საფრთხე
+          {sampleLabel}
         </span>
       </div>
-      <p className="mt-3 text-sm" style={{ color: tokens["muted-foreground"] }}>
-        მქრქალი ტექსტის ნიმუში მკითხველისთვის.
-      </p>
+    )
+
+  if (type === "muted")
+    return (
+      <div className="flex h-full min-h-20 flex-col justify-center gap-1 rounded-md border p-3" style={{ background: tokens[keys[0]], ...r }}>
+        <p className="text-sm" style={{ color: tokens[keys[1]] }}>დამატებითი, ნაკლებად მნიშვნელოვანი ტექსტი ასე გამოიყურება</p>
+      </div>
+    )
+
+  if (type === "card")
+    return (
+      <div className="flex h-full min-h-20 items-center rounded-md border p-3">
+        <div className="w-full rounded-md border p-3" style={{ background: tokens[keys[0]], color: tokens[keys[1]], borderColor: tokens.border, ...r }}>
+          <p className="text-sm font-semibold">ბარათის სათაური</p>
+          <p className="text-xs opacity-70">ბარათის ტექსტის მაგალითი</p>
+        </div>
+      </div>
+    )
+
+  if (type === "border")
+    return (
+      <div className="flex h-full min-h-20 flex-col items-center justify-center gap-2 rounded-md border p-3">
+        <div
+          className="w-full rounded-md px-3 py-2 text-xs text-muted-foreground"
+          style={{ border: `1px solid ${tokens.input}`, borderRadius: radius }}
+        >
+          ინფუთის ველის მაგალითი
+        </div>
+        <div
+          className="w-full rounded-md px-3 py-2 text-xs text-muted-foreground"
+          style={{ border: `1px solid ${tokens.border}`, boxShadow: `0 0 0 3px ${tokens.ring}55`, borderRadius: radius }}
+        >
+          ფოკუსის რგოლის მაგალითი
+        </div>
+      </div>
+    )
+
+  return (
+    <div className="flex h-full min-h-20 items-center justify-center rounded-md border p-3">
+      <button
+        type="button"
+        className="px-4 py-2 text-sm font-medium text-white"
+        style={{ background: tokens.destructive, ...r }}
+      >
+        {sampleLabel}
+      </button>
+    </div>
+  )
+}
+
+function ColorGroups({
+  tokens,
+  radius,
+  onChange,
+}: {
+  tokens: Record<string, string>
+  radius: string
+  onChange: (key: string, val: string) => void
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {TOKEN_GROUPS.map((g) => (
+        <div key={g.title} className="rounded-lg border p-4">
+          <div className="mb-3">
+            <div className="text-sm font-semibold">{g.title}</div>
+            <div className="text-xs text-muted-foreground">{g.description}</div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              {g.keys.map((k) => (
+                <ColorField key={k} tokenKey={k} value={tokens[k]} onChange={(v) => onChange(k, v)} />
+              ))}
+            </div>
+            <GroupPreview type={g.previewType} keys={g.keys} tokens={tokens} radius={radius} sampleLabel={g.sampleLabel} />
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -145,9 +225,14 @@ export function ThemePanel() {
   const radiusNum = parseFloat(cfg.radius) || 0.625
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">თემა და ტიპოგრაფია</h2>
+        <div>
+          <h2 className="text-lg font-semibold">თემა და ტიპოგრაფია</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            თითოეულ ველთან ჩანს, ზუსტად სად გამოჩნდება ის ფერი საიტზე — ცვლილება მაშინვე აისახება მაგალითში.
+          </p>
+        </div>
         <Button
           variant="ghost"
           size="sm"
@@ -202,16 +287,14 @@ export function ThemePanel() {
       {/* Colors */}
       <Tabs defaultValue="light">
         <TabsList>
-          <TabsTrigger value="light">ღია (Light)</TabsTrigger>
-          <TabsTrigger value="dark">მუქი (Dark)</TabsTrigger>
+          <TabsTrigger value="light">ღია რეჟიმი</TabsTrigger>
+          <TabsTrigger value="dark">მუქი რეჟიმი</TabsTrigger>
         </TabsList>
-        <TabsContent value="light" className="mt-4 space-y-4">
-          <ColorGrid tokens={cfg.light} onChange={(k, v) => setToken("light", k, v)} />
-          <Preview tokens={cfg.light} radius={cfg.radius} />
+        <TabsContent value="light" className="mt-4">
+          <ColorGroups tokens={cfg.light} radius={cfg.radius} onChange={(k, v) => setToken("light", k, v)} />
         </TabsContent>
-        <TabsContent value="dark" className="mt-4 space-y-4">
-          <ColorGrid tokens={cfg.dark} onChange={(k, v) => setToken("dark", k, v)} />
-          <Preview tokens={cfg.dark} radius={cfg.radius} />
+        <TabsContent value="dark" className="mt-4">
+          <ColorGroups tokens={cfg.dark} radius={cfg.radius} onChange={(k, v) => setToken("dark", k, v)} />
         </TabsContent>
       </Tabs>
 

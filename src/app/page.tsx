@@ -160,7 +160,7 @@ export default async function Home() {
 
           <div className="relative container mx-auto px-4">
             <div className="flex flex-col justify-center min-h-[420px] lg:min-h-[500px] py-10 lg:py-14 max-w-[640px] gap-4">
-              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full backdrop-blur-sm w-fit animate-fade-up">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-gold/30 px-4 py-2 rounded-full backdrop-blur-sm w-fit animate-fade-up">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
@@ -194,7 +194,6 @@ export default async function Home() {
           cardsHeading={cardsHeading}
           d={d}
           flags={flags}
-          locale={locale}
         />
       )}
 
@@ -237,7 +236,7 @@ export default async function Home() {
                       return (
                         <AnimateIn key={f._id} delay={idx * 60}>
                           <div className="flex gap-4 group">
-                            <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center transition-all group-hover:bg-primary group-hover:ring-primary">
+                            <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center transition-colors group-hover:bg-primary">
                               <FIcon className="h-5 w-5 text-primary transition-colors group-hover:text-primary-foreground" />
                             </div>
                             <div>

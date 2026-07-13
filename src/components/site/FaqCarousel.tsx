@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, ChevronDown, ArrowLeft, List } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, ArrowLeft } from "lucide-react"
 
 type FaqItem = { _id: string; question: string; answer: string }
 
@@ -85,12 +85,10 @@ export function FaqCarousel({
       <div className="flex justify-center mb-4">
         {viewAllHref ? (
           <Link href={viewAllHref} className={VIEW_ALL_CLASS}>
-            <List className="h-4 w-4" />
             {labels.viewAll}
           </Link>
         ) : (
           <button type="button" onClick={() => setViewAll(true)} className={VIEW_ALL_CLASS}>
-            <List className="h-4 w-4" />
             {labels.viewAll}
           </button>
         )}

@@ -1,10 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { Consultation } from "@/lib/models/consultation";
-import { buttonVariants } from "@/components/ui/button";
+import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { ConsultationsGrid, type ConsultationItem } from "./consultations-grid";
 
 export const dynamic = "force-dynamic";
@@ -38,15 +36,11 @@ export default async function ConsultationsPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl">
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">კონსულტაციების ისტორია</h1>
-          <p className="text-sm text-muted-foreground">{items.length} კონსულტაცია</p>
-        </div>
-      </div>
+      <SubPageHeader
+        backHref="/dashboard"
+        title="კონსულტაციების ისტორია"
+        subtitle={`${items.length} კონსულტაცია`}
+      />
 
       <ConsultationsGrid items={items} />
     </div>

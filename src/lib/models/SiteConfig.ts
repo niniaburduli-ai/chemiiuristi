@@ -9,6 +9,7 @@ const SiteConfigSchema = new Schema(
     favicon: { type: String, default: "" },
     contactEmail: { type: String, default: "" },
     contactPhone: { type: String, default: "" },
+    contactPhoneVisible: { type: Boolean, default: false },
     contactAddress: { type: String, default: "" },
     socialLinks: {
       facebook: { type: String, default: "" },
@@ -23,7 +24,7 @@ const SiteConfigSchema = new Schema(
 
 export type SiteConfigDoc = {
   logoUrl: string; logoPubId: string; siteName: string; tagline: string
-  favicon: string; contactEmail: string; contactPhone: string; contactAddress: string
+  favicon: string; contactEmail: string; contactPhone: string; contactPhoneVisible: boolean; contactAddress: string
   socialLinks: { facebook?: string; twitter?: string; linkedin?: string; youtube?: string }
   locale: string
   _id: unknown; createdAt: Date; updatedAt: Date

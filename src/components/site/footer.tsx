@@ -90,8 +90,9 @@ export async function Footer() {
   const copyright = footer.copyright?.trim() || DEFAULT_COPYRIGHT;
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
   const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
-  const contactEmail = config.contactEmail?.trim() || "info@chemiuristi.ge";
-  const contactPhone = config.contactPhone?.trim() || "+995 32 12 123 456";
+  const contactEmail = config.contactEmail?.trim() || "chemiiuristi@gmail.com";
+  const contactPhone = config.contactPhone?.trim() || "";
+  const showPhone = Boolean(config.contactPhoneVisible && contactPhone);
   const contactAddress = config.contactAddress?.trim() || d.footer.address;
 
   return (
@@ -150,6 +151,12 @@ export async function Footer() {
         <div className="flex flex-col w-max">
           <p className="font-semibold text-slate-200 mb-2">{d.footer.contact}</p>
           <ul className="flex flex-col gap-1.5">
+            <li className="flex items-center gap-2 text-slate-400">
+              <Globe className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+              <a href="https://chemiiuristi.com" className="hover:text-white transition-colors footer-link">
+                chemiiuristi.com
+              </a>
+            </li>
             {contactEmail && (
               <li className="flex items-center gap-2 text-slate-400">
                 <Mail className="h-3.5 w-3.5 shrink-0 text-slate-500" />
@@ -158,13 +165,7 @@ export async function Footer() {
                 </a>
               </li>
             )}
-            <li className="flex items-center gap-2 text-slate-400">
-              <Globe className="h-3.5 w-3.5 shrink-0 text-slate-500" />
-              <a href="https://chemiuristi.ge" className="hover:text-white transition-colors footer-link">
-                chemiuristi.ge
-              </a>
-            </li>
-            {contactPhone && (
+            {showPhone && (
               <li className="flex items-center gap-2 text-slate-400">
                 <Phone className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                 <a href={`tel:${contactPhone.replace(/\s/g, "")}`} className="hover:text-white transition-colors footer-link">

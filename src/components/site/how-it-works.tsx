@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, FolderSearch, LayoutTemplate, FileText } from "lucide-react";
+import { MessageCircle, FolderSearch, LayoutTemplate, FileText, Check } from "lucide-react";
 import { AnimateIn } from "@/components/site/AnimateIn";
 import type { FeatureFlagsData } from "@/lib/features";
 
@@ -75,8 +75,8 @@ export function HowItWorks({
           <div className="flex flex-col gap-4 mb-6">
             {active.steps.map((step, idx) => (
               <div key={idx} className="flex gap-3 items-start">
-                <div className="shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-primary to-gold text-primary-foreground text-xs font-bold flex items-center justify-center">
-                  {idx + 1}
+                <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center transition-colors hover:bg-primary hover:text-primary-foreground">
+                  <Check className="h-3.5 w-3.5" strokeWidth={3} />
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed pt-0.5">{step}</p>
               </div>

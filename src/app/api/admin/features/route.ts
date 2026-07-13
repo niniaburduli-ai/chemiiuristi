@@ -7,7 +7,7 @@ import { getFeatureFlags, FEATURE_DEFS } from "@/lib/features"
 
 export const runtime = "nodejs"
 
-const KEYS = FEATURE_DEFS.map((f) => f.key)
+const KEYS = [...FEATURE_DEFS.map((f) => f.key), "testModeBanner"] as const
 
 export async function GET() {
   const session = await getAdminSession()

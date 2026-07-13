@@ -9,6 +9,7 @@ export interface SiteConfigData {
   favicon: string
   contactEmail: string
   contactPhone: string
+  contactPhoneVisible: boolean
   contactAddress: string
   socialLinks: { facebook?: string; twitter?: string; linkedin?: string; youtube?: string }
 }

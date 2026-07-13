@@ -2,7 +2,10 @@
 
 export type FeatureKey = "chat" | "generate" | "review" | "templates" | "legislation" | "blog"
 
-export type FeatureFlagsData = Record<FeatureKey, boolean>
+/** Flags without a nav/page (e.g. site-wide banners) — not part of FEATURE_DEFS. */
+export type SiteFlagKey = "testModeBanner"
+
+export type FeatureFlagsData = Record<FeatureKey, boolean> & Record<SiteFlagKey, boolean>
 
 export const DEFAULT_FLAGS: FeatureFlagsData = {
   chat: true,
@@ -11,6 +14,7 @@ export const DEFAULT_FLAGS: FeatureFlagsData = {
   templates: true,
   legislation: true,
   blog: true,
+  testModeBanner: true,
 }
 
 /** Feature metadata for the admin panel + route/nav mapping. */

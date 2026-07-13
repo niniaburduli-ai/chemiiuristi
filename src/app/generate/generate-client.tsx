@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { FileText, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { FileText, Loader2, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,19 +93,12 @@ export function GenerateClient({ initialType }: { initialType?: string } = {}) {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FileText className="h-5 w-5" /> დოკუმენტის მომზადება
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            AI ადგენს საჩივარს ან მოთხოვნას შენი კონკრეტული სიტუაციის მიხედვით
-          </p>
-        </div>
-      </div>
+      <SubPageHeader
+        backHref="/dashboard"
+        icon={<FileText className="h-5 w-5" />}
+        title="დოკუმენტის მომზადება"
+        subtitle="AI ადგენს საჩივარს ან მოთხოვნას შენი კონკრეტული სიტუაციის მიხედვით"
+      />
 
       <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 mb-6 text-sm text-amber-700 dark:text-amber-400">
         <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />

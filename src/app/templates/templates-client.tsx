@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { FileText, ArrowLeft, Loader2 } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { FileText, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,7 @@ const QUOTA_STRINGS = {
   close: "დახურვა",
 };
 
-const TEMPLATE_DOC_TYPES = [
+export const TEMPLATE_DOC_TYPES = [
   { value: "rental-agreement", label: "ქირავნობის ხელშეკრულება" },
   { value: "employment-contract", label: "შრომის ხელშეკრულება" },
   { value: "power-of-attorney", label: "მინდობილობა" },
@@ -80,19 +80,12 @@ export function TemplatesClient({ initialType }: { initialType?: string } = {}) 
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FileText className="h-5 w-5" /> მზა შაბლონები
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            შეავსე ველები — დოკუმენტი მზადდება მყისიერად, AI-ს გარეშე
-          </p>
-        </div>
-      </div>
+      <SubPageHeader
+        backHref="/dashboard"
+        icon={<FileText className="h-5 w-5" />}
+        title="მზა შაბლონები"
+        subtitle="შეავსე ველები — დოკუმენტი მზადდება მყისიერად, AI-ს გარეშე"
+      />
 
       <div className="grid gap-6 lg:grid-cols-[380px_1fr] items-start">
         <Card className="lg:sticky lg:top-4">

@@ -50,78 +50,81 @@
 }
 
 :root {
-  /* Trust & Authority palette — primary matches hero (slate-900), gold accent */
-  --gold: oklch(0.83 0.19 87);
-  --background: oklch(0.984 0.003 247.858);
-  --foreground: oklch(0.148 0.026 265);
-  --card: oklch(0.936 0.068 252);
-  --color-card: oklch(0.936 0.068 252);
-  --card-foreground: oklch(0.148 0.026 265);
-  --popover: oklch(0.936 0.068 252);
-  --color-popover: oklch(0.936 0.068 252);
-  --popover-foreground: oklch(0.148 0.026 265);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.966 0.022 216);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.922 0.078 252);
-  --color-muted: oklch(0.922 0.078 252);
-  --muted-foreground: oklch(0.513 0.030 256);
-  --accent: oklch(0.921 0.036 216);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.845 0.014 252);
-  --input: oklch(0.845 0.014 252);
-  --ring: oklch(0.208 0.042 265.755);
-  --chart-1: oklch(0.208 0.042 265.755);
-  --chart-2: oklch(0.513 0.030 256);
-  --chart-3: oklch(0.695 0.100 214);
-  --chart-4: oklch(0.845 0.014 252);
-  --chart-5: oklch(0.148 0.026 265);
+  /* Trust & Authority palette — ink navy primary, antique-brass gold accent.
+     Kept in exact sync with lib/theme-tokens.ts DEFAULT_LIGHT/DEFAULT_DARK —
+     that file's hex values override these at runtime via the CMS theme
+     injector in layout.tsx, so a mismatch here silently reappears on every page. */
+  --gold: #E6A817;
+  --background: #FAF8F3;
+  --foreground: #10182B;
+  --card: #FFF7E6;
+  --color-card: #FFF7E6;
+  --card-foreground: #10182B;
+  --popover: #FFF7E6;
+  --color-popover: #FFF7E6;
+  --popover-foreground: #10182B;
+  --primary: #0B1220;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3E6C4;
+  --secondary-foreground: #0B1220;
+  --muted: #F3E6C4;
+  --color-muted: #F3E6C4;
+  --muted-foreground: #5E6674;
+  --accent: #F2D89A;
+  --accent-foreground: #0B1220;
+  --destructive: #B3261E;
+  --border: #E8D9AE;
+  --input: #E8D9AE;
+  --ring: #0B1220;
+  --chart-1: #0B1220;
+  --chart-2: #5E6674;
+  --chart-3: #E6A817;
+  --chart-4: #9CA6B4;
+  --chart-5: #10182B;
   --radius: 0.625rem;
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.148 0.026 265);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.921 0.036 216);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.845 0.014 252);
-  --sidebar-ring: oklch(0.208 0.042 265.755);
+  --sidebar: #F5F1E6;
+  --sidebar-foreground: #10182B;
+  --sidebar-primary: #0B1220;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F2D89A;
+  --sidebar-accent-foreground: #0B1220;
+  --sidebar-border: #E8D9AE;
+  --sidebar-ring: #0B1220;
 }
 
 .dark {
-  --gold: oklch(0.87 0.19 87);
-  --background: oklch(0.148 0.026 265);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.217 0.024 252);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.217 0.024 252);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.217 0.024 252);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.217 0.024 252);
-  --muted-foreground: oklch(0.669 0.021 252);
-  --accent: oklch(0.217 0.024 252);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.331 0.024 252);
-  --input: oklch(0.331 0.024 252);
-  --ring: oklch(0.208 0.042 265.755);
-  --chart-1: oklch(0.208 0.042 265.755);
-  --chart-2: oklch(0.669 0.021 252);
-  --chart-3: oklch(0.484 0.090 214);
-  --chart-4: oklch(0.331 0.024 252);
-  --chart-5: oklch(0.984 0.003 247.858);
-  --sidebar: oklch(0.217 0.024 252);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.217 0.024 252);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(0.331 0.024 252);
-  --sidebar-ring: oklch(0.208 0.042 265.755);
+  --gold: #F5C24D;
+  --background: #0B1220;
+  --foreground: #F3EFE4;
+  --card: #142132;
+  --card-foreground: #F3EFE4;
+  --popover: #142132;
+  --popover-foreground: #F3EFE4;
+  --primary: #24344A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #16202F;
+  --secondary-foreground: #F3EFE4;
+  --muted: #16202F;
+  --muted-foreground: #93A0B3;
+  --accent: #1B2636;
+  --accent-foreground: #F3EFE4;
+  --destructive: #E5484D;
+  --border: #22314A;
+  --input: #22314A;
+  --ring: #F5C24D;
+  --chart-1: #24344A;
+  --chart-2: #93A0B3;
+  --chart-3: #F5C24D;
+  --chart-4: #3A4A63;
+  --chart-5: #F3EFE4;
+  --sidebar: #142132;
+  --sidebar-foreground: #F3EFE4;
+  --sidebar-primary: #24344A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1B2636;
+  --sidebar-accent-foreground: #F3EFE4;
+  --sidebar-border: #22314A;
+  --sidebar-ring: #D4AF63;
 }
 
 @layer base {
@@ -196,8 +199,8 @@
 }
 .card-hover:hover {
   transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 8px 32px oklch(0.208 0.042 265.755 / 0.12);
-  border-color: oklch(0.208 0.042 265.755 / 0.35);
+  box-shadow: 0 8px 32px rgba(11, 18, 32, 0.12);
+  border-color: rgba(11, 18, 32, 0.35);
 }
 
 /* ── Button hover micro-interaction ─────────────────────────────────────── */
@@ -206,7 +209,7 @@
 }
 .btn-hover:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 16px oklch(0.208 0.042 265.755 / 0.22);
+  box-shadow: 0 4px 16px rgba(11, 18, 32, 0.22);
 }
 
 /* ── Footer link underline slide-in ─────────────────────────────────────── */
@@ -238,7 +241,7 @@
   left: 0;
   width: 0;
   height: 1.5px;
-  background: oklch(0.208 0.042 265.755);
+  background: var(--primary);
   transition: width 200ms ease-out;
 }
 .header-link:hover::after {
@@ -287,7 +290,7 @@
   pointer-events: auto;
 }
 .faq-card-active:hover {
-  box-shadow: 0 12px 40px oklch(0.208 0.042 265.755 / 0.15);
+  box-shadow: 0 12px 40px rgba(11, 18, 32, 0.15);
 }
 .faq-card-dim {
   opacity: 0 !important;

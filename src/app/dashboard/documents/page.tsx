@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Clock, AlertTriangle } from "lucide-react";
+import { Clock, AlertTriangle } from "lucide-react";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { GeneratedDocument } from "@/lib/models/generated-document";
@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DOC_TYPES } from "@/lib/validators";
 import { DocumentDownloadButton } from "@/components/site/document-download-button";
+import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { estimatePageCount } from "@/lib/page-count";
 
 export const dynamic = "force-dynamic";
@@ -31,15 +32,11 @@ export default async function DocumentsPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "icon" })}>
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">გენერირებული დოკუმენტები</h1>
-          <p className="text-sm text-muted-foreground">{docs.length} დოკუმენტი</p>
-        </div>
-      </div>
+      <SubPageHeader
+        backHref="/dashboard"
+        title="გენერირებული დოკუმენტები"
+        subtitle={`${docs.length} დოკუმენტი`}
+      />
 
       <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 mb-6 text-sm text-amber-700 dark:text-amber-400">
         <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />

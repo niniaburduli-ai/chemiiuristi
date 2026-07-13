@@ -12,6 +12,7 @@ const FeatureFlagsSchema = new Schema(
     templates: { type: Boolean, default: true },
     legislation: { type: Boolean, default: true },
     blog: { type: Boolean, default: true },
+    testModeBanner: { type: Boolean, default: true },
   },
   { timestamps: true, minimize: false }
 )
@@ -24,6 +25,7 @@ export type FeatureFlagsDoc = {
   templates: boolean
   legislation: boolean
   blog: boolean
+  testModeBanner: boolean
   createdAt: Date
   updatedAt: Date
 }

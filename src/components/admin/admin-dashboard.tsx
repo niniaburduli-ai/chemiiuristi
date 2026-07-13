@@ -167,7 +167,7 @@ export function AdminDashboard({
     return (
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center gap-2.5 border-b px-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-gold/40">
             <Scale className="h-4 w-4" />
           </div>
           <div className="leading-tight">

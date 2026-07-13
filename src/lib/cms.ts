@@ -23,7 +23,7 @@ function localeMatch(locale: Locale) {
 
 const DEFAULT_SITE_CONFIG: SiteConfigData = {
   logoUrl: "", logoPubId: "", siteName: "ჩემი იურისტი", tagline: "",
-  favicon: "", contactEmail: "", contactPhone: "", contactAddress: "", socialLinks: {},
+  favicon: "", contactEmail: "", contactPhone: "", contactPhoneVisible: false, contactAddress: "", socialLinks: {},
 }
 
 const DEFAULT_NAV: NavMenuData = {
@@ -44,7 +44,7 @@ const DEFAULT_FOOTER: FooterData = {
 
 const DEFAULT_SITE_CONFIG_EN: SiteConfigData = {
   logoUrl: "", logoPubId: "", siteName: "My Lawyer", tagline: "Law in plain language",
-  favicon: "", contactEmail: "", contactPhone: "", contactAddress: "", socialLinks: {},
+  favicon: "", contactEmail: "", contactPhone: "", contactPhoneVisible: false, contactAddress: "", socialLinks: {},
 }
 
 const DEFAULT_NAV_EN: NavMenuData = {
@@ -103,7 +103,8 @@ export async function getSiteConfig(locale: Locale = "ka"): Promise<SiteConfigDa
     return toPlain({
       logoUrl: doc.logoUrl, logoPubId: doc.logoPubId, siteName: doc.siteName,
       tagline: doc.tagline, favicon: doc.favicon, contactEmail: doc.contactEmail,
-      contactPhone: doc.contactPhone, contactAddress: doc.contactAddress,
+      contactPhone: doc.contactPhone, contactPhoneVisible: doc.contactPhoneVisible ?? false,
+      contactAddress: doc.contactAddress,
       socialLinks: doc.socialLinks ?? {},
     })
   } catch { return fallback }

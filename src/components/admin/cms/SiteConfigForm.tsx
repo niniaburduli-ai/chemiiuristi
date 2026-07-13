@@ -10,7 +10,7 @@ import type { Locale } from "@/lib/i18n/config"
 
 const EMPTY: SiteConfigData = {
   logoUrl: "", logoPubId: "", siteName: "", tagline: "", favicon: "",
-  contactEmail: "", contactPhone: "", contactAddress: "",
+  contactEmail: "", contactPhone: "", contactPhoneVisible: false, contactAddress: "",
   socialLinks: { facebook: "", twitter: "", linkedin: "", youtube: "" },
 }
 
@@ -51,6 +51,16 @@ export function SiteConfigForm({ locale = "ka" }: { locale?: Locale }) {
           <div key={k} className={k === "contactAddress" ? "sm:col-span-2" : ""}>
             <Label>{k}</Label>
             <Input value={(data[k] as string) ?? ""} onChange={(e) => set(k, e.target.value as SiteConfigData[typeof k])} />
+            {k === "contactPhone" && (
+              <label className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={data.contactPhoneVisible}
+                  onChange={(e) => set("contactPhoneVisible", e.target.checked)}
+                />
+                საიტზე ტელეფონის ჩვენება
+              </label>
+            )}
           </div>
         ))}
       </div>

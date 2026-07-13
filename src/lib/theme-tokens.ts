@@ -7,22 +7,89 @@ export type FontChoice = "sans" | "serif" | "system"
 
 /** Editable design tokens, in form order. Keys map to CSS vars consumed by Tailwind. */
 export const THEME_TOKENS: { key: string; label: string }[] = [
-  { key: "background", label: "ფონი (Background)" },
-  { key: "foreground", label: "ტექსტი (Foreground)" },
-  { key: "primary", label: "მთავარი (Primary)" },
-  { key: "primary-foreground", label: "მთავარის ტექსტი" },
-  { key: "secondary", label: "მეორადი (Secondary)" },
-  { key: "secondary-foreground", label: "მეორადის ტექსტი" },
-  { key: "accent", label: "აქცენტი (Accent)" },
-  { key: "accent-foreground", label: "აქცენტის ტექსტი" },
-  { key: "muted", label: "მქრქალი (Muted)" },
-  { key: "muted-foreground", label: "მქრქალი ტექსტი" },
-  { key: "card", label: "ბარათი (Card)" },
+  { key: "background", label: "გვერდის ფონი" },
+  { key: "foreground", label: "ჩვეულებრივი ტექსტი" },
+  { key: "primary", label: "მთავარი ღილაკის ფონი" },
+  { key: "primary-foreground", label: "მთავარი ღილაკის ტექსტი" },
+  { key: "secondary", label: "მეორადი ღილაკის ფონი" },
+  { key: "secondary-foreground", label: "მეორადი ღილაკის ტექსტი" },
+  { key: "accent", label: "მონიშვნის/ბეჯის ფონი" },
+  { key: "accent-foreground", label: "მონიშვნის/ბეჯის ტექსტი" },
+  { key: "muted", label: "მქრქალი ფონი" },
+  { key: "muted-foreground", label: "მქრქალი (დამატებითი) ტექსტი" },
+  { key: "card", label: "ბარათის ფონი" },
   { key: "card-foreground", label: "ბარათის ტექსტი" },
-  { key: "border", label: "ჩარჩო (Border)" },
-  { key: "input", label: "ინფუთი (Input)" },
-  { key: "ring", label: "ფოკუსი (Ring)" },
-  { key: "destructive", label: "საფრთხე (Destructive)" },
+  { key: "border", label: "ხაზის/ჩარჩოს ფერი" },
+  { key: "input", label: "ინფუთის ველის ჩარჩო" },
+  { key: "ring", label: "ფოკუსის რგოლი" },
+  { key: "destructive", label: "საფრთხის/წაშლის ფერი" },
+]
+
+/**
+ * Groups THEME_TOKENS by where they actually show up on the site, each with a
+ * live-rendered sample so the admin can see the effect of a color without
+ * guessing what "accent" or "ring" means. previewType picks which sample
+ * renderer ThemePanel uses.
+ */
+export const TOKEN_GROUPS: {
+  title: string
+  description: string
+  keys: string[]
+  previewType: "bg-text" | "button" | "badge" | "muted" | "card" | "border" | "destructive"
+  sampleLabel?: string
+}[] = [
+  {
+    title: "ფონი და ტექსტი",
+    description: "მთელი გვერდის ფონი და ჩვეულებრივი ტექსტის ფერი.",
+    keys: ["background", "foreground"],
+    previewType: "bg-text",
+  },
+  {
+    title: "მთავარი ღილაკი",
+    description: "ყველაზე მნიშვნელოვანი ღილაკები, მაგ. \"შესვლა\", \"გაგზავნა\".",
+    keys: ["primary", "primary-foreground"],
+    previewType: "button",
+    sampleLabel: "მთავარი ღილაკი",
+  },
+  {
+    title: "მეორადი ღილაკი",
+    description: "ნაკლებად მნიშვნელოვანი ღილაკები და ფონები.",
+    keys: ["secondary", "secondary-foreground"],
+    previewType: "button",
+    sampleLabel: "მეორადი ღილაკი",
+  },
+  {
+    title: "მონიშვნა და ბეჯები",
+    description: "გამოკვეთილი ელემენტები, ბეჯები, ტეგები.",
+    keys: ["accent", "accent-foreground"],
+    previewType: "badge",
+    sampleLabel: "ბეჯის მაგალითი",
+  },
+  {
+    title: "მქრქალი ტექსტი",
+    description: "ნაკლებად მნიშვნელოვანი, დამატებითი ტექსტი და ფონები (მაგ. აღწერები).",
+    keys: ["muted", "muted-foreground"],
+    previewType: "muted",
+  },
+  {
+    title: "ბარათი",
+    description: "ბარათების ფონი და ტექსტი — მაგ. სერვისის ბარათები მთავარ გვერდზე.",
+    keys: ["card", "card-foreground"],
+    previewType: "card",
+  },
+  {
+    title: "ჩარჩოები და ველები",
+    description: "ხაზები, ინფუთის ველის ჩარჩო და კლავიატურით ფოკუსის რგოლი.",
+    keys: ["border", "input", "ring"],
+    previewType: "border",
+  },
+  {
+    title: "საფრთხის ფერი",
+    description: "შეცდომები და წაშლის ღილაკები.",
+    keys: ["destructive"],
+    previewType: "destructive",
+    sampleLabel: "წაშლა",
+  },
 ]
 
 export const FONT_CHOICES: { value: FontChoice; label: string }[] = [
@@ -32,25 +99,25 @@ export const FONT_CHOICES: { value: FontChoice; label: string }[] = [
 ]
 
 export const DEFAULT_LIGHT: Record<string, string> = {
-  background: "#CFFAFE", foreground: "#0F172A",
-  primary: "#1E3A8A", "primary-foreground": "#FFFFFF",
-  secondary: "#ECFEFF", "secondary-foreground": "#1E3A8A",
-  accent: "#A5F3FC", "accent-foreground": "#1E3A8A",
-  muted: "#CFFAFE", "muted-foreground": "#64748B",
-  card: "#ECFEFF", "card-foreground": "#0F172A",
-  border: "#CBD5E1", input: "#CBD5E1", ring: "#1E3A8A",
-  destructive: "#DC2626",
+  background: "#FAF8F3", foreground: "#10182B",
+  primary: "#0B1220", "primary-foreground": "#FFFFFF",
+  secondary: "#F3E6C4", "secondary-foreground": "#0B1220",
+  accent: "#F2D89A", "accent-foreground": "#0B1220",
+  muted: "#F3E6C4", "muted-foreground": "#5E6674",
+  card: "#FFF7E6", "card-foreground": "#10182B",
+  border: "#E8D9AE", input: "#E8D9AE", ring: "#0B1220",
+  destructive: "#B3261E",
 }
 
 export const DEFAULT_DARK: Record<string, string> = {
-  background: "#0F172A", foreground: "#F8FAFC",
-  primary: "#60A5FA", "primary-foreground": "#0F172A",
-  secondary: "#1E293B", "secondary-foreground": "#F8FAFC",
-  accent: "#1E293B", "accent-foreground": "#93C5FD",
-  muted: "#1E293B", "muted-foreground": "#94A3B8",
-  card: "#1E293B", "card-foreground": "#F8FAFC",
-  border: "#334155", input: "#334155", ring: "#60A5FA",
-  destructive: "#EF4444",
+  background: "#0B1220", foreground: "#F3EFE4",
+  primary: "#24344A", "primary-foreground": "#FFFFFF",
+  secondary: "#16202F", "secondary-foreground": "#F3EFE4",
+  accent: "#1B2636", "accent-foreground": "#F3EFE4",
+  muted: "#16202F", "muted-foreground": "#93A0B3",
+  card: "#142132", "card-foreground": "#F3EFE4",
+  border: "#22314A", input: "#22314A", ring: "#F5C24D",
+  destructive: "#E5484D",
 }
 
 export type ThemeConfigData = {
