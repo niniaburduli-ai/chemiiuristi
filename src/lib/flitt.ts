@@ -83,6 +83,18 @@ export function parseOrderId(orderId: string): { plan: PlanKey | null; userId: s
   return m ? { plan: m[1], userId: m[2] } : { plan: null, userId: null };
 }
 
+/** order_id for a one-time custom-package purchase (no plan key — quantities travel in merchant_data). */
+export function buildCustomOrderId(userId: string): string {
+  return `custom_${userId}_${Date.now()}`;
+}
+export function isCustomOrderId(orderId: string): boolean {
+  return orderId.startsWith("custom_");
+}
+export function parseCustomOrderId(orderId: string): { userId: string | null } {
+  const m = /^custom_([0-9a-fA-F]+)_\d+$/.exec(orderId || "");
+  return { userId: m ? m[1] : null };
+}
+
 export type CheckoutResult = { checkoutUrl: string; orderId: string; paymentId?: string };
 
 /**
@@ -133,6 +145,56 @@ export async function createSubscriptionCheckout(
   return { checkoutUrl: inner.checkout_url, orderId, paymentId: inner.payment_id };
 }
 
+export type OneTimeCheckoutItem = {
+  orderId: string;
+  description: string;
+  amountMinor: number;
+  merchantData: Record<string, unknown>;
+};
+
+/**
+ * Create a one-time (non-recurring) Flitt checkout — no `subscription`/
+ * `recurring_data`, unlike createSubscriptionCheckout. Used for the custom
+ * "build your own" package, which is explicitly a single charge with no
+ * auto-renewal.
+ */
+export async function createOneTimeCheckout(
+  item: OneTimeCheckoutItem,
+  user: { id: string; email: string; name?: string | null }
+): Promise<CheckoutResult> {
+  const order = {
+    order_id: item.orderId,
+    order_desc: item.description,
+    merchant_id: merchantId(),
+    currency: "GEL",
+    amount: item.amountMinor,
+    server_callback_url: `${appUrl()}/api/flitt/callback`,
+    response_url: `${appUrl()}/billing?status=success`,
+    merchant_data: JSON.stringify(item.merchantData),
+    sender_email: user.email,
+    lang: "ka",
+  };
+
+  const data = Buffer.from(JSON.stringify({ order }), "utf8").toString("base64");
+  const body = { request: { version: "2.0", data, signature: signV2(data, paymentKey()) } };
+
+  const res = await fetch(CHECKOUT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  const respData = json?.response?.data;
+  if (!respData) {
+    const msg = json?.response?.error_message || "Unknown Flitt error";
+    throw new Error(`Flitt checkout failed: ${msg}`);
+  }
+  const decoded = JSON.parse(Buffer.from(respData, "base64").toString("utf8"));
+  const inner = decoded?.order ?? decoded?.response ?? decoded;
+  if (!inner?.checkout_url) throw new Error("Flitt response missing checkout_url");
+  return { checkoutUrl: inner.checkout_url, orderId: item.orderId, paymentId: inner.payment_id };
+}
+
 export type CallbackData = {
   order_id?: string;
   payment_id?: string | number;
@@ -173,7 +235,7 @@ export function verifyCallback(raw: unknown): CallbackData | null {
   return body as CallbackData;
 }
 
-const PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
+export const PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Fields set when a subscription becomes active — reset quota for the period. */
 export function planActivationFields(plan: PlanKey, limits: PlanLimits) {
