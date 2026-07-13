@@ -6,7 +6,7 @@ const PaymentSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     orderId: { type: String, required: true, index: true },
     paymentId: { type: String, index: true }, // Flitt payment_id (unique per charge)
-    plan: { type: String, enum: ["standard", "premium"], required: true },
+    plan: { type: String, enum: ["standard", "premium", "custom"], required: true },
     amount: { type: Number, required: true }, // minor units (1900 = 19.00 GEL)
     currency: { type: String, default: "GEL" },
     status: { type: String, default: "approved" }, // approved | declined | reversed | sandbox_test
