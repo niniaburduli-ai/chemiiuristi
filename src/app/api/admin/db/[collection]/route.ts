@@ -18,10 +18,14 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ collection:
   const limit = Math.min(100, Math.max(1, Number(sp.get("limit")) || 25))
   const skip = Math.max(0, Number(sp.get("skip")) || 0)
 
+  // Correspondence rows an admin archived (soft-deleted) stay in the DB for
+  // audit purposes but drop out of the default list view.
+  const filter = collection === "email-log" ? { archivedAt: null } : {}
+
   await dbConnect()
   const [docs, total] = await Promise.all([
-    col.model.find().sort({ _id: -1 }).skip(skip).limit(limit).lean(),
-    col.model.estimatedDocumentCount(),
+    col.model.find(filter).sort({ _id: -1 }).skip(skip).limit(limit).lean(),
+    Object.keys(filter).length ? col.model.countDocuments(filter) : col.model.estimatedDocumentCount(),
   ])
 
   const rows = (docs as Record<string, unknown>[]).map((d) => stripHidden(d, col.hidden))

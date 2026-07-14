@@ -4,6 +4,7 @@ import { isValidObjectId } from "mongoose"
 import { getAdminSession } from "@/lib/admin"
 import { dbConnect } from "@/lib/db"
 import { getCollection, sanitizeWrite, stripHidden } from "@/lib/admin-collections"
+import { isPermanentEmailType } from "@/lib/models/EmailLog"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -13,7 +14,7 @@ type Ctx = { params: Promise<{ collection: string; id: string }> }
 async function resolve(ctx: Ctx) {
   const { collection, id } = await ctx.params
   const col = getCollection(collection)
-  return { col, id }
+  return { col, id, collection }
 }
 
 export async function GET(_req: NextRequest, ctx: Ctx) {
@@ -62,11 +63,24 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
   const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  const { col, id } = await resolve(ctx)
+  const { col, id, collection } = await resolve(ctx)
   if (!col) return NextResponse.json({ error: "Unknown collection" }, { status: 404 })
   if (!isValidObjectId(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 })
 
   await dbConnect()
+
+  // Permanent audit types (feedback, balance-deduction) are archived instead
+  // of hard-deleted so the record survives for audit purposes.
+  if (collection === "email-log") {
+    const existing = await col.model.findById(id).lean<{ type?: string } | null>()
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (isPermanentEmailType(String(existing.type))) {
+      await col.model.findByIdAndUpdate(id, { $set: { archivedAt: new Date() } })
+      revalidatePath("/", "layout")
+      return NextResponse.json({ ok: true, archived: true })
+    }
+  }
+
   const doc = await col.model.findByIdAndDelete(id).lean()
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
   revalidatePath("/", "layout")

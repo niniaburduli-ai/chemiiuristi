@@ -1,5 +1,7 @@
 import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
+import { dbConnect } from "@/lib/db";
+import { EmailLog, computeExpireAt, type EmailType } from "@/lib/models/EmailLog";
 
 /**
  * Gmail SMTP transport, created once and reused across hot reloads (same
@@ -31,6 +33,29 @@ function getTransport(): Transporter {
 
 export function fromAddress(): string {
   return process.env.SMTP_FROM || process.env.SMTP_USER || "";
+}
+
+/** Records a sent (or failed) email so admins can review/purge correspondence later. */
+async function logEmail(
+  type: EmailType,
+  to: string,
+  subject: string,
+  status: "sent" | "failed",
+  error?: unknown
+): Promise<void> {
+  try {
+    await dbConnect();
+    await EmailLog.create({
+      to,
+      subject,
+      type,
+      status,
+      error: error instanceof Error ? error.message : error ? String(error) : undefined,
+      expireAt: computeExpireAt(type),
+    });
+  } catch {
+    // Logging is best-effort — never let it mask the original send result.
+  }
 }
 
 /** Bilingual (Georgian-first) password-reset email with the magic link. */
@@ -82,7 +107,13 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
     </table>
   </div>`;
 
-  await transport.sendMail({ from: fromAddress(), to, subject, text, html });
+  try {
+    await transport.sendMail({ from: fromAddress(), to, subject, text, html });
+  } catch (err) {
+    await logEmail("password-reset", to, subject, "failed", err);
+    throw err;
+  }
+  await logEmail("password-reset", to, subject, "sent");
 }
 
 /** Notifies the configured contact address when a visitor submits site feedback. */
@@ -120,5 +151,11 @@ export async function sendFeedbackEmail(
     </table>
   </div>`;
 
-  await transport.sendMail({ from: fromAddress(), to, subject, text, html });
+  try {
+    await transport.sendMail({ from: fromAddress(), to, subject, text, html });
+  } catch (err) {
+    await logEmail("feedback", to, subject, "failed", err);
+    throw err;
+  }
+  await logEmail("feedback", to, subject, "sent");
 }

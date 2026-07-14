@@ -18,6 +18,7 @@ import { BlogPost } from "@/lib/models/BlogPost"
 import { BlogCategory } from "@/lib/models/BlogCategory"
 import { ThemeConfig } from "@/lib/models/ThemeConfig"
 import { FeatureFlags } from "@/lib/models/FeatureFlags"
+import { EmailLog } from "@/lib/models/EmailLog"
 
 export type AdminCollection = {
   slug: string
@@ -52,6 +53,7 @@ export const ADMIN_COLLECTIONS: AdminCollection[] = [
   { slug: "blog-categories", label: "Blog Categories", model: BlogCategory as unknown as Model<unknown>, hidden: [] },
   { slug: "theme-config", label: "Theme Config", model: ThemeConfig as unknown as Model<unknown>, hidden: [] },
   { slug: "feature-flags", label: "Feature Flags", model: FeatureFlags as unknown as Model<unknown>, hidden: [] },
+  { slug: "email-log", label: "Correspondence", model: EmailLog as unknown as Model<unknown>, hidden: [] },
 ]
 
 export function getCollection(slug: string): AdminCollection | null {
