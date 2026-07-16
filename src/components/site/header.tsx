@@ -32,7 +32,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-sm transition-shadow">
-      <div className="container mx-auto flex min-h-16 flex-nowrap items-center justify-between gap-x-6 lg:gap-x-10 px-4 py-2">
+      <div className="container mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-2 lg:gap-x-10 px-4 py-2">
         {/* Logo */}
         <Link href="/" className="flex flex-col leading-tight shrink-0 group">
           <span className="text-lg font-bold text-primary tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80">
@@ -59,7 +59,7 @@ export async function Header() {
         </nav>
 
         {/* Auth */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-auto">
           <LanguageSwitcher current={locale} />
           <ThemeToggle />
           {user ? (
