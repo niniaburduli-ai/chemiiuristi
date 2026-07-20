@@ -68,7 +68,7 @@ export function FeedbackWidget({ locale }: { locale: Locale }) {
       </button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-background">
           <DialogHeader>
             <DialogTitle>{d.modalTitle}</DialogTitle>
             <DialogDescription>{d.modalDescription}</DialogDescription>
