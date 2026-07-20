@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -31,7 +31,7 @@ import { TEMPLATE_DOC_TYPES } from "@/app/templates/templates-client";
 import { getDict } from "@/lib/i18n/dictionaries";
 import { renderMarkdownBold } from "@/lib/markdown-bold";
 import { groupItemsByArticle } from "@/lib/legal/citations";
-import { pick, pickArr } from "@/lib/i18n/loc";
+import { ChatStreamReader, type ChatStreamEvent } from "@/lib/streaming/chat-protocol";
 import type { Locale } from "@/lib/i18n/config";
 import type { FeatureFlagsData } from "@/lib/features";
 import type { PlanData } from "@/lib/plans-db";
@@ -70,6 +70,31 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
     { id: "greeting", role: "assistant", content: d.chat.howCanIHelp },
   ]);
   const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/consultations");
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = data.items as { id: string; question: string; answer: string }[];
+        if (items.length === 0) return;
+        const history: Message[] = [...items].reverse().flatMap((item) => [
+          { id: `${item.id}-q`, role: "user", content: item.question },
+          { id: `${item.id}-a`, role: "assistant", content: item.answer },
+        ]);
+        setMessages(history);
+      } catch {
+        // keep the greeting-only state on failure
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -103,30 +128,39 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
         return;
       }
 
-      let legalBasis: LegalBasisGroup[] = [];
-      const raw = res.headers.get("X-Legal-Basis");
-      if (raw) {
-        try {
-          legalBasis = JSON.parse(decodeURIComponent(raw));
-        } catch {
-          legalBasis = [];
-        }
-      }
-
       if (!res.body) {
-        patch((msg) => ({ ...msg, content: d.chat.errorNoBody, legalBasis }));
+        patch((msg) => ({ ...msg, content: d.chat.errorNoBody }));
         return;
       }
 
+      // Legal-basis citations arrive as a trailing in-band JSON payload, not
+      // a response header — see ChatStreamReader for the full wire protocol
+      // (also used by the main /chat page's client).
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      const streamReader = new ChatStreamReader();
       let acc = "";
+      let legalBasis: LegalBasisGroup[] = [];
+
+      const applyEvents = (events: ChatStreamEvent[]) => {
+        for (const ev of events) {
+          if (ev.type === "prose") acc += ev.text;
+          else if (ev.type === "reset") acc = "";
+          else if (ev.type === "meta" && ev.data && typeof ev.data === "object") {
+            const data = ev.data as { legalBasis?: LegalBasisGroup[] };
+            legalBasis = data.legalBasis ?? [];
+          }
+        }
+      };
+
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        acc += decoder.decode(value, { stream: true });
+        applyEvents(streamReader.push(decoder.decode(value, { stream: true })));
         patch((msg) => ({ ...msg, content: acc }));
       }
+      applyEvents(streamReader.finish());
+
       const isNotFound = acc.trim() === NOT_FOUND_MSG;
       patch((msg) => ({
         ...msg,
@@ -148,14 +182,14 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-primary">{sm.aiTab}</h3>
+            <h3 className="text-lg font-bold text-gold">{sm.aiTab}</h3>
             <p className="text-xs text-muted-foreground">{sm.aiSubtitle}</p>
           </div>
         </div>
         <PreviousCorrespondenceButton locale={locale} />
       </header>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4">
         {messages.map((m) => (
           <div
             key={m.id}
@@ -205,7 +239,7 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
                           href={g.url}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className="flex items-start gap-1.5 text-xs text-primary hover:underline"
+                          className="flex items-start gap-1.5 text-xs text-gold hover:underline"
                         >
                           <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                           <span>{d.chat.source}</span>
@@ -259,7 +293,7 @@ function TemplatesPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesModal"
     <div className="flex flex-col h-full">
       <header className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
         <div>
-          <h3 className="text-lg font-bold text-primary">{sm.customDocsTab}</h3>
+          <h3 className="text-lg font-bold text-gold">{sm.customDocsTab}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">{sm.customDocsHint}</p>
         </div>
         <div className="relative">
@@ -284,14 +318,14 @@ function TemplatesPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesModal"
                 href={`/generate?type=${t.value}`}
                 className="p-3 border border-border rounded-xl hover:shadow-md transition-shadow group bg-card"
               >
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-gold mb-2">
                   <Icon className="h-4 w-4" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                <h4 className="text-sm font-bold text-foreground group-hover:text-gold transition-colors">
                   {t.label}
                 </h4>
                 {meta && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{meta.description}</p>}
-                <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
+                <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-gold">
                   {sm.generateCta}
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -316,7 +350,7 @@ function TemplatesLinkPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesMo
   return (
     <div className="flex flex-col h-full">
       <header className="p-4 border-b border-border shrink-0">
-        <h3 className="text-lg font-bold text-primary">{sm.templatesTab}</h3>
+        <h3 className="text-lg font-bold text-gold">{sm.templatesTab}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">{sm.templatesHint}</p>
       </header>
 
@@ -331,14 +365,14 @@ function TemplatesLinkPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesMo
                 href={`/templates?type=${t.value}`}
                 className="p-3 border border-border rounded-xl hover:shadow-md transition-shadow group bg-card"
               >
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-gold mb-2">
                   <Icon className="h-4 w-4" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                <h4 className="text-sm font-bold text-foreground group-hover:text-gold transition-colors">
                   {t.label}
                 </h4>
                 {meta && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{meta.description}</p>}
-                <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
+                <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-gold">
                   {sm.generateCta}
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -356,17 +390,11 @@ function TemplatesLinkPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesMo
 
 function UpgradeCard({ plan, locale, d }: { plan: PlanData | null; locale: Locale; d: ReturnType<typeof getDict> }) {
   if (!plan) return null;
-  const name = pick(plan.name, plan.nameEn, locale);
-  const base = pickArr(plan.features, plan.featuresEn, locale);
-  const gen = plan.includeDocGeneration ? pickArr(plan.featuresDocGeneration, plan.featuresDocGenerationEn, locale) : [];
-  const rev = plan.includeDocReview ? pickArr(plan.featuresDocReview, plan.featuresDocReviewEn, locale) : [];
-  const body = [...base, ...gen, ...rev].slice(0, 3).join(", ");
-  const title = locale === "en" ? `Upgrade to ${name}` : `განაახლე ${name}-ზე`;
+  const title = locale === "en" ? "Upgrade plan" : "განაახლე პაკეტი";
 
   return (
     <div className="p-3 bg-card border border-border rounded-lg">
-      <p className="text-sm font-bold text-primary mb-1">{title}</p>
-      <p className="text-xs text-muted-foreground mb-3">{body}</p>
+      <p className="text-sm font-bold text-gold mb-3">{title}</p>
       <Link href="/pricing" className="block">
         <Button size="sm" className="w-full">
           {d.profile.upgradeCta}
@@ -444,7 +472,7 @@ export function ServicesPageClient({
             </aside>
 
             {/* Canvas */}
-            <section className="flex-1 min-w-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <section className="flex-1 min-w-0 h-[75vh] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <div className={activeTab === "ai" ? "contents" : "hidden"}>
                 {flags.chat && <AiConsultPanel locale={locale} />}
               </div>
