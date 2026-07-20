@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
-type Coll = { slug: string; label: string; count: number }
+type Coll = { slug: string; label: string; labelKa: string; count: number }
 type Doc = Record<string, unknown>
 
 const LIMIT = 25
@@ -122,7 +122,7 @@ export function DatabasePanel() {
           >
             {colls.map((c) => (
               <option key={c.slug} value={c.slug}>
-                {c.label} ({c.count})
+                {c.labelKa} / {c.label} ({c.count})
               </option>
             ))}
           </select>

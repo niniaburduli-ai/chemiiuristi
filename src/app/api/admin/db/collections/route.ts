@@ -15,6 +15,7 @@ export async function GET() {
     ADMIN_COLLECTIONS.map(async (c) => ({
       slug: c.slug,
       label: c.label,
+      labelKa: c.labelKa,
       // Matches the list route's default filter so the sidebar count doesn't
       // include correspondence rows an admin already archived.
       count:

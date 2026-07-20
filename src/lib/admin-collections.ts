@@ -19,10 +19,13 @@ import { BlogCategory } from "@/lib/models/BlogCategory"
 import { ThemeConfig } from "@/lib/models/ThemeConfig"
 import { FeatureFlags } from "@/lib/models/FeatureFlags"
 import { EmailLog } from "@/lib/models/EmailLog"
+import { Feedback } from "@/lib/models/Feedback"
 
 export type AdminCollection = {
   slug: string
   label: string
+  /** Georgian label shown alongside the English one in the admin picker. */
+  labelKa: string
   model: Model<unknown>
   /** Fields never returned to the client nor writable from the editor. */
   hidden: string[]
@@ -34,26 +37,27 @@ export type AdminCollection = {
  * rejected on write.
  */
 export const ADMIN_COLLECTIONS: AdminCollection[] = [
-  { slug: "users", label: "Users", model: User as unknown as Model<unknown>, hidden: ["passwordHash"] },
-  { slug: "plans", label: "Plans", model: Plan as unknown as Model<unknown>, hidden: [] },
-  { slug: "consultations", label: "Consultations", model: Consultation as unknown as Model<unknown>, hidden: [] },
-  { slug: "generated-documents", label: "Generated Documents", model: GeneratedDocument as unknown as Model<unknown>, hidden: [] },
-  { slug: "document-reviews", label: "Document Reviews", model: DocumentReview as unknown as Model<unknown>, hidden: [] },
-  { slug: "uploads", label: "Uploads", model: Upload as unknown as Model<unknown>, hidden: [] },
-  { slug: "payments", label: "Payments", model: Payment as unknown as Model<unknown>, hidden: [] },
-  { slug: "subscriptions", label: "Subscriptions", model: Subscription as unknown as Model<unknown>, hidden: [] },
-  { slug: "site-config", label: "Site Config", model: SiteConfig as unknown as Model<unknown>, hidden: [] },
-  { slug: "nav-menus", label: "Nav Menus", model: NavMenu as unknown as Model<unknown>, hidden: [] },
-  { slug: "home-pages", label: "Home Pages", model: HomePage as unknown as Model<unknown>, hidden: [] },
-  { slug: "about-pages", label: "About Pages", model: AboutPage as unknown as Model<unknown>, hidden: [] },
-  { slug: "faqs", label: "FAQ", model: FAQ as unknown as Model<unknown>, hidden: [] },
-  { slug: "footers", label: "Footers", model: FooterContent as unknown as Model<unknown>, hidden: [] },
-  { slug: "legal-notices", label: "Legal Notices", model: LegalNotice as unknown as Model<unknown>, hidden: [] },
-  { slug: "blog-posts", label: "Blog Posts", model: BlogPost as unknown as Model<unknown>, hidden: [] },
-  { slug: "blog-categories", label: "Blog Categories", model: BlogCategory as unknown as Model<unknown>, hidden: [] },
-  { slug: "theme-config", label: "Theme Config", model: ThemeConfig as unknown as Model<unknown>, hidden: [] },
-  { slug: "feature-flags", label: "Feature Flags", model: FeatureFlags as unknown as Model<unknown>, hidden: [] },
-  { slug: "email-log", label: "Correspondence", model: EmailLog as unknown as Model<unknown>, hidden: [] },
+  { slug: "users", label: "Users", labelKa: "მომხმარებლები", model: User as unknown as Model<unknown>, hidden: ["passwordHash"] },
+  { slug: "plans", label: "Plans", labelKa: "გეგმები", model: Plan as unknown as Model<unknown>, hidden: [] },
+  { slug: "consultations", label: "Consultations", labelKa: "კონსულტაციები", model: Consultation as unknown as Model<unknown>, hidden: [] },
+  { slug: "generated-documents", label: "Generated Documents", labelKa: "დაგენერირებული დოკუმენტები", model: GeneratedDocument as unknown as Model<unknown>, hidden: [] },
+  { slug: "document-reviews", label: "Document Reviews", labelKa: "დოკუმენტების მიმოხილვები", model: DocumentReview as unknown as Model<unknown>, hidden: [] },
+  { slug: "uploads", label: "Uploads", labelKa: "ატვირთვები", model: Upload as unknown as Model<unknown>, hidden: [] },
+  { slug: "payments", label: "Payments", labelKa: "გადახდები", model: Payment as unknown as Model<unknown>, hidden: [] },
+  { slug: "subscriptions", label: "Subscriptions", labelKa: "გამოწერები", model: Subscription as unknown as Model<unknown>, hidden: [] },
+  { slug: "site-config", label: "Site Config", labelKa: "საიტის კონფიგურაცია", model: SiteConfig as unknown as Model<unknown>, hidden: [] },
+  { slug: "nav-menus", label: "Nav Menus", labelKa: "ნავიგაციის მენიუები", model: NavMenu as unknown as Model<unknown>, hidden: [] },
+  { slug: "home-pages", label: "Home Pages", labelKa: "მთავარი გვერდები", model: HomePage as unknown as Model<unknown>, hidden: [] },
+  { slug: "about-pages", label: "About Pages", labelKa: "გვერდი ჩვენ შესახებ", model: AboutPage as unknown as Model<unknown>, hidden: [] },
+  { slug: "faqs", label: "FAQ", labelKa: "ხშირად დასმული კითხვები", model: FAQ as unknown as Model<unknown>, hidden: [] },
+  { slug: "footers", label: "Footers", labelKa: "ქვედა კოლონტიტულები", model: FooterContent as unknown as Model<unknown>, hidden: [] },
+  { slug: "legal-notices", label: "Legal Notices", labelKa: "სამართლებრივი შეტყობინებები", model: LegalNotice as unknown as Model<unknown>, hidden: [] },
+  { slug: "blog-posts", label: "Blog Posts", labelKa: "ბლოგის სტატიები", model: BlogPost as unknown as Model<unknown>, hidden: [] },
+  { slug: "blog-categories", label: "Blog Categories", labelKa: "ბლოგის კატეგორიები", model: BlogCategory as unknown as Model<unknown>, hidden: [] },
+  { slug: "theme-config", label: "Theme Config", labelKa: "თემის კონფიგურაცია", model: ThemeConfig as unknown as Model<unknown>, hidden: [] },
+  { slug: "feature-flags", label: "Feature Flags", labelKa: "ფუნქციების ალმები", model: FeatureFlags as unknown as Model<unknown>, hidden: [] },
+  { slug: "email-log", label: "Correspondence", labelKa: "მიმოწერა", model: EmailLog as unknown as Model<unknown>, hidden: [] },
+  { slug: "feedback", label: "Feedback", labelKa: "მომხმარებლის გამოხმაურება", model: Feedback as unknown as Model<unknown>, hidden: [] },
 ]
 
 export function getCollection(slug: string): AdminCollection | null {
