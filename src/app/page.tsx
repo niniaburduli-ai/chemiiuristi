@@ -169,14 +169,14 @@ export default async function Home() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
                 </span>
                 <BadgeCheck className="h-4 w-4 text-gold" />
-                <span className="text-xs font-semibold text-gold uppercase tracking-wider">
+                <span className="text-xs font-semibold text-white uppercase tracking-wider">
                   {d.home.heroBadge}
                 </span>
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-tight animate-fade-up delay-150">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gold leading-[1.05] tracking-tight animate-fade-up delay-150">
                 {heroTitle}
               </h1>
-              <p className="text-lg md:text-xl font-semibold text-gold leading-snug animate-fade-up delay-300 max-w-lg [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
+              <p className="text-lg md:text-xl font-semibold text-white leading-snug animate-fade-up delay-300 max-w-lg [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
                 {heroSubtitle}
               </p>
               <Link
@@ -240,7 +240,7 @@ export default async function Home() {
                         <AnimateIn key={f._id} delay={idx * 60}>
                           <div className="flex gap-4 group">
                             <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center transition-colors group-hover:bg-primary">
-                              <FIcon className="h-5 w-5 text-primary transition-colors group-hover:text-primary-foreground" />
+                              <FIcon className="h-5 w-5 text-gold transition-colors group-hover:text-primary-foreground" />
                             </div>
                             <div>
                               <p className="font-bold text-foreground mb-1">{featureTitle}</p>
@@ -276,7 +276,7 @@ export default async function Home() {
                         <AnimateIn key={s._id} delay={idx * 100} className="h-full">
                           <div className="relative h-full overflow-hidden bg-card border border-border rounded-2xl p-4 pt-5 flex flex-col items-center justify-center text-center space-y-1 card-hover">
                             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-gold" />
-                            <p className="text-2xl font-bold text-primary leading-none tabular-nums">{display}</p>
+                            <p className="text-2xl font-bold text-gold leading-none tabular-nums">{display}</p>
                             <p className="text-xs text-muted-foreground leading-snug">{statLabel}</p>
                           </div>
                         </AnimateIn>
@@ -289,12 +289,12 @@ export default async function Home() {
                           <Star className="h-4 w-4 mx-auto text-gold fill-gold" />
                           <div className="flex items-center justify-center gap-3">
                             <div>
-                              <p className="text-2xl font-bold text-primary leading-none tabular-nums">{feedbackCard.percentage}</p>
+                              <p className="text-2xl font-bold text-gold leading-none tabular-nums">{feedbackCard.percentage}</p>
                               <p className="text-xs text-muted-foreground leading-snug mt-1">{feedbackCard.percentageLabel}</p>
                             </div>
                             <div className="w-px h-8 bg-border shrink-0" />
                             <div>
-                              <p className="text-2xl font-bold text-primary leading-none tabular-nums">{feedbackCard.rating}</p>
+                              <p className="text-2xl font-bold text-gold leading-none tabular-nums">{feedbackCard.rating}</p>
                               <p className="text-xs text-muted-foreground leading-snug mt-1">{feedbackCard.ratingLabel}</p>
                             </div>
                           </div>

@@ -147,7 +147,7 @@ export function ConsultationsGrid({ items }: { items: ConsultationItem[] }) {
                           href={g.url}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className="flex items-start gap-1.5 text-xs text-primary hover:underline"
+                          className="flex items-start gap-1.5 text-xs text-gold hover:underline"
                         >
                           <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                           <span>წყარო</span>

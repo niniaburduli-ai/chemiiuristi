@@ -171,7 +171,7 @@ export function PlansPanel() {
                 <td>
                   <div className="flex items-center gap-2 font-medium">
                     {p.name}
-                    {p.highlighted && <Star className="h-3.5 w-3.5 fill-primary text-primary" />}
+                    {p.highlighted && <Star className="h-3.5 w-3.5 fill-gold text-gold" />}
                   </div>
                   <div className="text-xs text-muted-foreground">{p.description}</div>
                 </td>

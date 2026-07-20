@@ -67,7 +67,7 @@ export function HowItWorks({
         <AnimateIn key={active.key} className="bg-card border border-border rounded-2xl p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center">
-              <Icon className="h-5 w-5 text-primary" />
+              <Icon className="h-5 w-5 text-gold" />
             </div>
             <h3 className="text-lg font-bold text-foreground">{active.title}</h3>
           </div>
@@ -75,7 +75,7 @@ export function HowItWorks({
           <div className="flex flex-col gap-4 mb-6">
             {active.steps.map((step, idx) => (
               <div key={idx} className="flex gap-3 items-start">
-                <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center transition-colors hover:bg-primary hover:text-primary-foreground">
+                <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-gold flex items-center justify-center transition-colors hover:bg-primary hover:text-primary-foreground">
                   <Check className="h-3.5 w-3.5" strokeWidth={3} />
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed pt-0.5">{step}</p>

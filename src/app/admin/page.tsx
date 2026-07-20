@@ -6,6 +6,7 @@ import { Upload } from "@/lib/models/upload";
 import { Consultation } from "@/lib/models/consultation";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { DocumentReview } from "@/lib/models/document-review";
+import { Feedback } from "@/lib/models/Feedback";
 import {
   AdminDashboard,
   type UploadRow,
@@ -13,6 +14,7 @@ import {
   type ConsultationRow,
   type GeneratedDocRow,
   type ReviewRow,
+  type FeedbackRow,
 } from "@/components/admin/admin-dashboard";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +25,7 @@ export default async function AdminPage() {
 
   await dbConnect();
 
-  const [uploads, users, consultations, generatedDocs, reviews] = await Promise.all([
+  const [uploads, users, consultations, generatedDocs, reviews, feedback] = await Promise.all([
     Upload.find()
       .sort({ createdAt: -1 })
       .limit(500)
@@ -45,6 +47,7 @@ export default async function AdminPage() {
       .limit(500)
       .populate({ path: "userId", model: User, select: "name email" })
       .lean(),
+    Feedback.find().sort({ createdAt: -1 }).limit(500).lean(),
   ]);
 
   const uploadRows: UploadRow[] = uploads.map((u) => {
@@ -121,6 +124,13 @@ export default async function AdminPage() {
     };
   });
 
+  const feedbackRows: FeedbackRow[] = feedback.map((f) => ({
+    id: String((f as { _id: unknown })._id),
+    rating: f.rating ?? null,
+    message: f.message ?? "",
+    createdAt: (f as { createdAt?: Date }).createdAt?.toISOString() ?? null,
+  }));
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <AdminDashboard
@@ -129,6 +139,7 @@ export default async function AdminPage() {
         initialConsultations={consultationRows}
         initialGeneratedDocs={generatedDocRows}
         initialReviews={reviewRows}
+        initialFeedback={feedbackRows}
         currentUserId={session.user.id}
       />
     </div>

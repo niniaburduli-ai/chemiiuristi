@@ -41,7 +41,7 @@ export default async function RegisterPage({ searchParams }: Props) {
           <RegisterForm locale={locale} callbackUrl={callbackUrl} />
           <p className="mt-6 text-sm text-center text-muted-foreground">
             {d.auth.haveAccount}{" "}
-            <Link href="/login" className="text-primary font-medium hover:underline">{d.auth.signInCta}</Link>
+            <Link href="/login" className="text-gold font-medium hover:underline">{d.auth.signInCta}</Link>
           </p>
         </CardContent>
       </Card>

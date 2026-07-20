@@ -70,7 +70,7 @@ export function RiskFindingCard({
       )}
       {finding.recommendation && (
         <p className="text-sm mt-2 flex items-start gap-1.5">
-          <span className="font-semibold text-primary shrink-0">→</span>
+          <span className="font-semibold text-gold shrink-0">→</span>
           <span>{finding.recommendation}</span>
         </p>
       )}

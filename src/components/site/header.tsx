@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { buttonVariants } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { GuestAuthButtons } from "@/components/site/guest-auth-buttons";
+import { MobileNavSheet } from "@/components/site/mobile-nav-sheet";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { getNavMenu, getSiteConfig } from "@/lib/cms";
@@ -25,6 +26,14 @@ export async function Header() {
 
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
   const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
+  const contactEmail = config.contactEmail?.trim() || "contact.chemiiuristi@gmail.com";
+  const contactAddress = config.contactAddress?.trim() || d.footer.address;
+
+  const legalItems = [
+    { href: "/privacy", label: d.footer.legal.privacy },
+    { href: "/terms", label: d.footer.legal.terms },
+    { href: "/disclaimer", label: d.footer.legal.disclaimer },
+  ];
 
   const initials = user?.name
     ? user.name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase()
@@ -32,19 +41,32 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-sm transition-shadow">
-      <div className="container mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-6 gap-y-2 lg:gap-x-10 px-4 py-2">
-        {/* Logo */}
-        <Link href="/" className="flex flex-col leading-tight shrink-0 group">
-          <span className="text-lg font-bold text-primary tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80">
-            {siteName}
-          </span>
-          <span className="text-xs text-muted-foreground font-normal">
-            {tagline}
-          </span>
-        </Link>
+      <div className="container mx-auto flex min-h-16 flex-wrap md:flex-nowrap items-center justify-between gap-x-6 gap-y-2 lg:gap-x-10 px-4 py-2">
+        {/* Menu trigger (mobile) + Logo — stay together on the first line */}
+        <div className="flex items-center gap-2 shrink-0 order-1">
+          <MobileNavSheet
+            siteName={siteName}
+            menuLabel={d.header.menu}
+            navItems={navItems}
+            legalItems={legalItems}
+            navigationLabel={d.footer.navigation}
+            usefulInfoLabel={d.footer.usefulInfo}
+            contactLabel={d.footer.contact}
+            contactEmail={contactEmail}
+            contactAddress={contactAddress}
+          />
+          <Link href="/" className="flex flex-col leading-tight shrink-0 group">
+            <span className="text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80">
+              {siteName}
+            </span>
+            <span className="text-xs text-foreground font-normal">
+              {tagline}
+            </span>
+          </Link>
+        </div>
 
         {/* Nav */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-5 text-sm shrink-0">
+        <nav className="hidden lg:flex items-center gap-4 lg:gap-5 text-sm shrink-0 order-2">
           {navItems.map((n) => (
             <Link
               key={n._id}
@@ -58,8 +80,8 @@ export async function Header() {
           ))}
         </nav>
 
-        {/* Auth */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-auto">
+        {/* Auth — wraps onto its own line on mobile, inline on desktop */}
+        <div className="flex items-center justify-between md:justify-end gap-1.5 sm:gap-2.5 shrink-0 order-3 w-full md:w-auto md:ml-auto">
           <LanguageSwitcher current={locale} />
           <ThemeToggle />
           {user ? (

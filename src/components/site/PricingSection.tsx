@@ -148,7 +148,7 @@ export function PricingSection({
                 </div>
               )}
 
-              <p className="font-bold text-base mb-4 text-primary">{p.name}</p>
+              <p className="font-bold text-base mb-4 text-gold">{p.name}</p>
 
               <div className="mb-6">
                 {p.originalPrice && (
@@ -171,7 +171,7 @@ export function PricingSection({
               <ul className="space-y-3 text-sm flex-1 mb-8">
                 {p.items.map((item, ii) => (
                   <li key={ii} className="flex gap-2.5 items-start">
-                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-gold" />
                     <span className="text-foreground/80 leading-snug">{item}</span>
                   </li>
                 ))}
@@ -185,7 +185,7 @@ export function PricingSection({
                     "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover",
                     p.highlighted
                       ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "border border-border text-primary hover:bg-primary/5",
+                      : "border border-border text-gold hover:bg-gold/5",
                   ].join(" ")}
                 />
               ) : (
@@ -195,7 +195,7 @@ export function PricingSection({
                     "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors btn-hover",
                     p.highlighted
                       ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "border border-border text-primary hover:bg-primary/5",
+                      : "border border-border text-gold hover:bg-gold/5",
                   ].join(" ")}
                 >
                   {p.ctaText}

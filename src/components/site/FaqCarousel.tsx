@@ -63,7 +63,7 @@ export function FaqCarousel({
         <button
           type="button"
           onClick={() => setViewAll(false)}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all mb-6"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-gold hover:gap-3 transition-all mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
           {labels.back}

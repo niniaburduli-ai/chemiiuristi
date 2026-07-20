@@ -60,7 +60,7 @@ export default async function AboutPage() {
                 <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-8 flex flex-col sm:flex-row gap-8 card-hover group">
                   <div className="shrink-0">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                      <Icon className="h-8 w-8 text-primary" />
+                      <Icon className="h-8 w-8 text-gold" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -79,7 +79,7 @@ export default async function AboutPage() {
               <div className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-8 card-hover group">
                 <div className="flex items-center gap-5 mb-8">
                   <div className="shrink-0 w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <Users className="h-8 w-8 text-primary" />
+                    <Users className="h-8 w-8 text-gold" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold leading-snug text-foreground">{d.teamTitle}</h2>
                 </div>
@@ -97,7 +97,7 @@ export default async function AboutPage() {
                           />
                         ) : (
                           <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-2xl font-bold text-primary">
+                            <span className="text-2xl font-bold text-gold">
                               {member.name[0] ?? '?'}
                             </span>
                           </div>

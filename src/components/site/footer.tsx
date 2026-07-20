@@ -103,8 +103,8 @@ export async function Footer() {
         {/* Col 1 — brand */}
         <div className="flex flex-col gap-2 w-max max-w-xs">
           <div>
-            <p className="font-bold text-lg leading-tight text-white">{siteName}</p>
-            <p className="text-slate-400 text-xs mt-0.5">{tagline}</p>
+            <p className="font-bold text-lg leading-tight text-gold">{siteName}</p>
+            <p className="text-white text-xs mt-0.5">{tagline}</p>
           </div>
           <p className="text-slate-400 text-xs leading-relaxed">
             {d.footer.brandBlurb}
@@ -185,7 +185,7 @@ export async function Footer() {
         {/* Col 5 — payment methods */}
         <div className="flex flex-col w-max">
           <p className="font-semibold text-slate-200 mb-2">{d.footer.paymentMethods}</p>
-          <div className="flex flex-col items-start gap-1.5">
+          <div className="flex flex-row flex-wrap items-center gap-1.5 md:flex-col md:items-start">
             <VisaIcon />
             <MastercardIcon />
             <ApplePayIcon />

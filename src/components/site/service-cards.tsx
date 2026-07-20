@@ -47,7 +47,7 @@ export function ServiceCards({
             const content = (
               <>
                 <div className="shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center transition-all group-hover:ring-primary/30 group-hover:scale-105">
-                  <Icon className="h-5 w-5 text-primary" />
+                  <Icon className="h-5 w-5 text-gold" />
                 </div>
                 <div>
                   <p className="font-bold text-foreground mb-0.5">{item.label}</p>

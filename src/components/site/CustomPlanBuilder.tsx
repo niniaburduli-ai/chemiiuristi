@@ -123,7 +123,7 @@ export function CustomPlanBuilder({
 
   return (
     <div className="relative rounded-2xl border border-border bg-card flex flex-col p-7 card-hover h-full">
-      <p className="font-bold text-base mb-1 text-primary">{strings.heading}</p>
+      <p className="font-bold text-base mb-1 text-gold">{strings.heading}</p>
       <p className="text-sm text-muted-foreground mb-6">{strings.subtitle}</p>
 
       <div className="space-y-5 flex-1">
@@ -138,7 +138,7 @@ export function CustomPlanBuilder({
                 onClick={() => setEnabled((p) => ({ ...p, [s.key]: !p[s.key] }))}
                 className={[
                   "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-                  enabled[s.key] ? "bg-primary" : "bg-gray-300 dark:bg-gray-700",
+                  enabled[s.key] ? "bg-gold" : "bg-gray-300 dark:bg-gray-700",
                 ].join(" ")}
               >
                 <span
@@ -210,7 +210,7 @@ export function CustomPlanBuilder({
           type="button"
           onClick={buildAndPay}
           disabled={total === null || loading}
-          className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-primary hover:bg-primary/5"
+          className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mx-auto" />

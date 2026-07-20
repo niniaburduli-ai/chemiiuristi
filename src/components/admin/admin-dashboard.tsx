@@ -21,6 +21,7 @@ import {
   ToggleRight,
   Menu,
   Scale,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -105,6 +106,13 @@ export type ReviewRow = {
   owner: { name: string | null; email: string | null } | null;
 };
 
+export type FeedbackRow = {
+  id: string;
+  rating: number | null;
+  message: string;
+  createdAt: string | null;
+};
+
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
@@ -117,7 +125,7 @@ function formatDate(iso: string | null): string {
 }
 
 type AdminSection =
-  | "overview" | "users" | "consultations" | "documents" | "reviews"
+  | "overview" | "users" | "consultations" | "documents" | "reviews" | "feedback"
   | "files" | "cms" | "theme" | "plans" | "custom-plan-rates" | "features" | "database";
 
 export function AdminDashboard({
@@ -126,6 +134,7 @@ export function AdminDashboard({
   initialConsultations,
   initialGeneratedDocs,
   initialReviews,
+  initialFeedback,
   currentUserId,
 }: {
   initialUploads: UploadRow[];
@@ -133,6 +142,7 @@ export function AdminDashboard({
   initialConsultations: ConsultationRow[];
   initialGeneratedDocs: GeneratedDocRow[];
   initialReviews: ReviewRow[];
+  initialFeedback: FeedbackRow[];
   currentUserId: string;
 }) {
   const [section, setSection] = useState<AdminSection>("overview");
@@ -147,6 +157,7 @@ export function AdminDashboard({
         { id: "consultations", label: "კონსულტაციები", icon: MessagesSquare, count: initialConsultations.length },
         { id: "documents", label: "დოკუმენტები", icon: FileText, count: initialGeneratedDocs.length },
         { id: "reviews", label: "მიმოხილვები", icon: FileSearch, count: initialReviews.length },
+        { id: "feedback", label: "შეფასებები", icon: Star, count: initialFeedback.length },
         { id: "files", label: "ფაილები", icon: ImageIcon, count: initialUploads.length },
       ],
     },
@@ -229,6 +240,7 @@ export function AdminDashboard({
     case "consultations": content = <ConsultationsTable initial={initialConsultations} />; break;
     case "documents": content = <GeneratedDocsTable initial={initialGeneratedDocs} />; break;
     case "reviews": content = <ReviewsTable initial={initialReviews} />; break;
+    case "feedback": content = <FeedbackTable initial={initialFeedback} />; break;
     case "files": content = <UploadsTable initial={initialUploads} />; break;
     case "cms": content = <CMSPanel />; break;
     case "theme": content = <ThemePanel />; break;
@@ -627,6 +639,71 @@ function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
                 <tr key={`${r.id}-exp`} className="border-b bg-muted/20">
                   <td colSpan={6} className="px-4 py-3">
                     <p className="text-sm leading-relaxed">{r.summary}</p>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* -------------------------------- Feedback -------------------------------- */
+
+function StarRating({ rating }: { rating: number | null }) {
+  if (rating === null) return <span className="text-muted-foreground">—</span>;
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star
+          key={n}
+          className={cn(
+            "h-3.5 w-3.5",
+            n <= rating ? "fill-gold text-gold" : "fill-none text-muted-foreground/30"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  return (
+    <div className="rounded-lg border overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="border-b bg-muted/40 text-muted-foreground">
+          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+            <th>შეფასება</th>
+            <th>შეტყობინება</th>
+            <th>თარიღი</th>
+            <th className="text-right">ქმედება</th>
+          </tr>
+        </thead>
+        <tbody>
+          {initial.length === 0 && (
+            <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
+          )}
+          {initial.map((f) => (
+            <React.Fragment key={f.id}>
+              <tr className="border-b [&>td]:px-4 [&>td]:py-3">
+                <td><StarRating rating={f.rating} /></td>
+                <td className="max-w-[320px] truncate text-muted-foreground">{f.message || "—"}</td>
+                <td className="text-muted-foreground">{formatDate(f.createdAt)}</td>
+                <td className="text-right">
+                  {f.message && (
+                    <Button variant="ghost" size="sm" onClick={() => setExpanded(expanded === f.id ? null : f.id)}>
+                      {expanded === f.id ? "დახურვა" : "ნახვა"}
+                    </Button>
+                  )}
+                </td>
+              </tr>
+              {expanded === f.id && (
+                <tr key={`${f.id}-exp`} className="border-b bg-muted/20">
+                  <td colSpan={4} className="px-4 py-3">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{f.message}</p>
                   </td>
                 </tr>
               )}

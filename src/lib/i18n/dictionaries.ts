@@ -11,6 +11,7 @@ const ka = {
     admin: "ადმინი",
     account: "ანგარიში",
     logout: "გასვლა",
+    menu: "მენიუ",
   },
   footer: {
     navigation: "ნავიგაცია",
@@ -118,7 +119,7 @@ const ka = {
   },
   home: {
     comingSoon: "მალე",
-    heroBadge: "ინოვაციური სამართალი",
+    heroBadge: "AI იურისტი 24/7",
     learnMore: "გაიგეთ მეტი",
     perMonth: "/ თვეში",
     heroTitle: "ჩემი იურისტი",
@@ -394,6 +395,7 @@ const en: Dict = {
     admin: "Admin",
     account: "Account",
     logout: "Sign out",
+    menu: "Menu",
   },
   footer: {
     navigation: "Navigation",
@@ -501,7 +503,7 @@ const en: Dict = {
   },
   home: {
     comingSoon: "Coming soon",
-    heroBadge: "Innovative Law",
+    heroBadge: "AI Lawyer 24/7",
     learnMore: "Learn more",
     perMonth: "/ month",
     heroTitle: "My Lawyer",

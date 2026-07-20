@@ -24,7 +24,7 @@ export function ForgotPasswordForm({ locale }: { locale: Locale }) {
     return (
       <div className="space-y-4 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <CheckCircle2 className="h-6 w-6 text-primary" />
+          <CheckCircle2 className="h-6 w-6 text-gold" />
         </div>
         <div className="space-y-1.5">
           <p className="font-medium">{d.auth.forgotSentTitle}</p>
@@ -65,7 +65,7 @@ export function ForgotPasswordForm({ locale }: { locale: Locale }) {
         {pending ? d.auth.forgotSending : d.auth.forgotSubmit}
       </Button>
       <p className="text-sm text-center text-muted-foreground">
-        <Link href="/login" className="text-primary font-medium hover:underline">
+        <Link href="/login" className="text-gold font-medium hover:underline">
           {d.auth.backToLogin}
         </Link>
       </p>

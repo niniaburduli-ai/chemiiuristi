@@ -133,10 +133,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
   html {
     @apply font-sans;
     scrollbar-width: none;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
   html::-webkit-scrollbar {
     display: none;

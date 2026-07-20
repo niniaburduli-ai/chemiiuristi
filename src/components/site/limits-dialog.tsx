@@ -47,7 +47,7 @@ export function LimitsDialog({
         className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-6 card-hover h-full flex flex-col gap-3 text-left w-full"
       >
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <BarChart3 className="h-5 w-5 text-primary" />
+          <BarChart3 className="h-5 w-5 text-gold" />
         </div>
         <div>
           <p className="text-lg font-bold text-foreground">{triggerLabel}</p>
@@ -69,7 +69,7 @@ export function LimitsDialog({
                     {m.icon}
                     {m.label}
                   </div>
-                  <span className="text-xl font-bold tabular-nums text-primary">{m.used}</span>
+                  <span className="text-xl font-bold tabular-nums text-gold">{m.used}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1.5">
                   {m.isUnlimited

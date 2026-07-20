@@ -26,7 +26,7 @@ export function UpgradeRequiredDialog({
       <DialogContent>
         <DialogHeader>
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-1">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="h-5 w-5 text-gold" />
           </div>
           <DialogTitle>{strings.title}</DialogTitle>
           <DialogDescription>{strings.body}</DialogDescription>

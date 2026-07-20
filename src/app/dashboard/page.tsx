@@ -83,10 +83,10 @@ export default async function DashboardPage() {
   const customMetrics = hasCustomPlan
     ? (
         [
-          { key: "consultations", label: dp.questionsAsked, icon: <MessagesSquare className="h-4 w-4 text-primary" />, remaining: user.customConsultationsRemaining ?? 0 },
-          { key: "generate", label: dp.documentsGenerated, icon: <FileText className="h-4 w-4 text-primary" />, remaining: user.customDocGenerationRemaining ?? 0 },
-          { key: "review", label: dp.documentsAnalyzed, icon: <FileSearch className="h-4 w-4 text-primary" />, remaining: user.customDocReviewRemaining ?? 0 },
-          { key: "templates", label: dp.templatesFilled, icon: <FileText className="h-4 w-4 text-primary" />, remaining: user.customDocTemplatesRemaining ?? 0 },
+          { key: "consultations", label: dp.questionsAsked, icon: <MessagesSquare className="h-4 w-4 text-gold" />, remaining: user.customConsultationsRemaining ?? 0 },
+          { key: "generate", label: dp.documentsGenerated, icon: <FileText className="h-4 w-4 text-gold" />, remaining: user.customDocGenerationRemaining ?? 0 },
+          { key: "review", label: dp.documentsAnalyzed, icon: <FileSearch className="h-4 w-4 text-gold" />, remaining: user.customDocReviewRemaining ?? 0 },
+          { key: "templates", label: dp.templatesFilled, icon: <FileText className="h-4 w-4 text-gold" />, remaining: user.customDocTemplatesRemaining ?? 0 },
         ] as { key: string; label: string; icon: React.ReactNode; remaining: number }[]
       ).filter((m) => m.remaining > 0)
     : [];
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
     {
       key: "consultations",
       label: dp.questionsAsked,
-      icon: <MessagesSquare className="h-4 w-4 text-primary" />,
+      icon: <MessagesSquare className="h-4 w-4 text-gold" />,
       used: consultationsCount,
       remaining: consultRemaining,
       total: consultLimit,
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
           {
             key: "generate",
             label: dp.documentsGenerated,
-            icon: <FileText className="h-4 w-4 text-primary" />,
+            icon: <FileText className="h-4 w-4 text-gold" />,
             used: documentsCount,
             remaining: docGenRemaining,
             total: genLimit,
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
           {
             key: "review",
             label: dp.documentsAnalyzed,
-            icon: <FileSearch className="h-4 w-4 text-primary" />,
+            icon: <FileSearch className="h-4 w-4 text-gold" />,
             used: reviewsCount,
             remaining: docReviewRemaining,
             total: reviewLimit,
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
           {
             key: "templates",
             label: dp.templatesFilled,
-            icon: <FileText className="h-4 w-4 text-primary" />,
+            icon: <FileText className="h-4 w-4 text-gold" />,
             used: templatesCount,
             remaining: docTemplatesRemaining,
             total: templatesLimit,
@@ -227,7 +227,7 @@ export default async function DashboardPage() {
               className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-6 card-hover h-full flex flex-col gap-3"
             >
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <LayoutGrid className="h-5 w-5 text-primary" />
+                <LayoutGrid className="h-5 w-5 text-gold" />
               </div>
               <div>
                 <p className="text-lg font-bold text-foreground">{d.footer.nav.services}</p>
@@ -296,7 +296,7 @@ export default async function DashboardPage() {
                 {consultations.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
                     {dp.noConsultations}{" "}
-                    <Link href="/chat" className="underline text-primary">
+                    <Link href="/chat" className="underline text-gold">
                       {dp.startChat}
                     </Link>
                   </p>
@@ -340,7 +340,7 @@ export default async function DashboardPage() {
                   {documents.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
                       {dp.noDocs}{" "}
-                      <Link href="/generate" className="underline text-primary">
+                      <Link href="/generate" className="underline text-gold">
                         {dp.createDoc}
                       </Link>
                     </p>
@@ -392,7 +392,7 @@ export default async function DashboardPage() {
                       <ReviewModalTriggerLink
                         label={dp.uploadDoc}
                         locale={locale}
-                        className="underline text-primary"
+                        className="underline text-gold"
                       />
                     </p>
                   ) : (

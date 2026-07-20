@@ -42,7 +42,7 @@ export function LoginForm({ locale }: { locale: Locale }) {
           <Label htmlFor="password">{d.auth.password}</Label>
           <Link
             href="/forgot-password"
-            className="text-xs text-primary font-medium hover:underline"
+            className="text-xs text-gold font-medium hover:underline"
           >
             {d.auth.forgotLink}
           </Link>

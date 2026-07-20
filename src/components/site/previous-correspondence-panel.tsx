@@ -92,7 +92,7 @@ export function PreviousCorrespondenceButton({ locale }: { locale: Locale }) {
                       onClick={() => setExpandedId(isOpen ? null : item.id)}
                       className="w-full text-left p-3 flex items-start gap-2 hover:bg-muted/50 transition-colors"
                     >
-                      <MessageSquare className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                      <MessageSquare className="h-4 w-4 shrink-0 mt-0.5 text-gold" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium leading-snug line-clamp-2">
                           {item.question}

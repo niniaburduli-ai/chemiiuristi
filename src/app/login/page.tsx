@@ -46,7 +46,7 @@ export default async function LoginPage({ searchParams }: Props) {
           </Suspense>
           <p className="mt-6 text-sm text-center text-muted-foreground">
             {d.auth.noAccount}{" "}
-            <Link href={registerHref} className="text-primary font-medium hover:underline">{d.auth.signUpCta}</Link>
+            <Link href={registerHref} className="text-gold font-medium hover:underline">{d.auth.signUpCta}</Link>
           </p>
         </CardContent>
       </Card>

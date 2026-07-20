@@ -129,7 +129,6 @@ export function DocumentAnalysisPanel({
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialReviewId]);
 
   function clearImages() {
@@ -360,7 +359,7 @@ export function DocumentAnalysisPanel({
                   onClick={() => fileRef.current?.click()}
                   className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition-colors p-4 flex flex-col items-center gap-1.5 text-center"
                 >
-                  <FileUp className="h-5 w-5 text-primary" />
+                  <FileUp className="h-5 w-5 text-gold" />
                   <p className="text-sm font-medium text-foreground">
                     {file ? file.name : t.dropzoneHint}
                   </p>
@@ -406,7 +405,7 @@ export function DocumentAnalysisPanel({
                       <button
                         type="button"
                         onClick={() => imagesRef.current?.click()}
-                        className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/60 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                        className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/60 flex items-center justify-center text-muted-foreground hover:text-gold transition-colors"
                         aria-label={t.addMoreLabel}
                       >
                         <Plus className="h-5 w-5" />
@@ -419,7 +418,7 @@ export function DocumentAnalysisPanel({
                     onClick={() => imagesRef.current?.click()}
                     className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition-colors p-4 flex flex-col items-center gap-1.5 text-center"
                   >
-                    <ImageIcon className="h-5 w-5 text-primary" />
+                    <ImageIcon className="h-5 w-5 text-gold" />
                     <p className="text-sm font-medium text-foreground">{t.dropzoneHintPhotos}</p>
                     <span className="text-xs text-muted-foreground">{t.chooseFile}</span>
                   </button>
@@ -447,7 +446,7 @@ export function DocumentAnalysisPanel({
 
         {status === "analyzing" && (
           <div className="py-10 flex flex-col items-center gap-3 text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-8 w-8 animate-spin text-gold" />
             <p className="text-sm text-muted-foreground">{t.analyzing}</p>
           </div>
         )}

@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
 import { DocumentReview } from "@/lib/models/document-review";
-import { applyPlanExpiryIfDue } from "@/lib/plan-expiry";
+import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { callOpenRouterChat } from "@/lib/ai-call";
 import { DocumentImproveSchema } from "@/lib/validators";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
@@ -12,7 +12,9 @@ import {
   IMPROVEMENT_SYSTEM_PROMPT,
   buildImprovementUserMessage,
   parseImprovementResponse,
+  reviewCreditCost,
 } from "@/lib/legal/document-analysis";
+import { splitQuota, applyQuotaSplit, totalRemaining } from "@/lib/quota";
 import { computeWordDiff } from "@/lib/diff-text";
 
 export const runtime = "nodejs";
@@ -45,13 +47,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
   user = await applyPlanExpiryIfDue(user);
+  user = await applyCustomPlanExpiryIfDue(user);
   const isAdmin = user.role === "admin";
-  if (!isAdmin && (user.docReviewRemaining ?? 0) <= 0) {
-    return NextResponse.json(
-      { error: "Document review quota exceeded. Please upgrade your plan." },
-      { status: 403 }
-    );
-  }
 
   const review = await DocumentReview.findById(reviewId);
   if (!review) {
@@ -59,6 +56,20 @@ export async function POST(req: Request) {
   }
   if (String(review.userId) !== session.user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Same size-based pricing as the initial review (reviewCreditCost) — an
+  // improve call re-sends the full document and asks for a full rewrite, so
+  // it costs the same as reviewing that document again, not a flat 1 credit.
+  const creditsRequired = reviewCreditCost(review.pages);
+  const quotaSplit = isAdmin ? null : splitQuota(user, "docReview", creditsRequired);
+  if (!isAdmin && !quotaSplit) {
+    return NextResponse.json(
+      {
+        error: `This document (${review.pages} pages) requires ${creditsRequired} review credits; you have ${totalRemaining(user, "docReview")} remaining.`,
+      },
+      { status: 403 }
+    );
   }
 
   const revisions = (review.revisions ?? []) as Array<{
@@ -132,8 +143,8 @@ export async function POST(req: Request) {
   review.revisions.push(revision);
   await review.save();
 
-  if (!isAdmin) {
-    await User.findByIdAndUpdate(session.user.id, { $inc: { docReviewRemaining: -1 } });
+  if (!isAdmin && quotaSplit) {
+    await applyQuotaSplit(session.user.id, "docReview", quotaSplit);
   }
 
   return NextResponse.json({ id: String(review._id), revision, diff }, { status: 201 });

@@ -77,7 +77,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
                 <div className="flex items-center gap-1">
                   <Link
                     href={`/services?tab=docs&reviewId=${review.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline px-2 py-1.5"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-gold hover:underline px-2 py-1.5"
                   >
                     <Play className="h-3 w-3" /> განაგრძეთ
                   </Link>

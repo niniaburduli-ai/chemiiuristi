@@ -24,7 +24,7 @@ export function ResetPasswordForm({ locale, token }: { locale: Locale; token: st
     return (
       <div className="space-y-4 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <CheckCircle2 className="h-6 w-6 text-primary" />
+          <CheckCircle2 className="h-6 w-6 text-gold" />
         </div>
         <div className="space-y-1.5">
           <p className="font-medium">{d.auth.resetDoneTitle}</p>
@@ -74,7 +74,7 @@ export function ResetPasswordForm({ locale, token }: { locale: Locale; token: st
           <p className="text-sm text-destructive">{state.error}</p>
           <Link
             href="/forgot-password"
-            className="text-sm text-primary font-medium hover:underline"
+            className="text-sm text-gold font-medium hover:underline"
           >
             {d.auth.requestNewLink}
           </Link>
