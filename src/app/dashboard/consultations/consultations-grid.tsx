@@ -2,21 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Clock, MessageSquare } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { ArrowLeft, BookOpen, Clock, MessagesSquare } from "lucide-react";
 import { groupItemsByArticle, type LegalBasisItem } from "@/lib/legal/citations";
 import { renderMarkdownBold } from "@/lib/markdown-bold";
 import { formatDate } from "@/lib/utils";
+import type { Dict } from "@/lib/i18n/dictionaries";
 
 export type RawSource = {
   title?: string;
@@ -73,94 +63,95 @@ function groupSources(sources: RawSource[]): SourceGroup[] {
   }));
 }
 
-
-export function ConsultationsGrid({ items }: { items: ConsultationItem[] }) {
+export function ConsultationsGrid({ items, d }: { items: ConsultationItem[]; d: Dict }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const active = items.find((it) => it.id === openId) ?? null;
-
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-muted-foreground mb-4">ჯერ კონსულტაცია არ გაქვს.</p>
-          <Link href="/chat" className={buttonVariants()}>
-            დაიწყე კონსულტაცია
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
+  const dp = d.profile;
 
   return (
-    <>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setOpenId(item.id)}
-            className="text-left border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-5 card-hover h-full flex flex-col gap-3"
-          >
-            <p className="text-sm font-semibold leading-snug line-clamp-2">{item.question}</p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-auto">
-              <Clock className="h-3 w-3" /> {formatDate(item.createdAt)}
-            </p>
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-col h-full">
+      <header className="p-5 border-b border-border shrink-0">
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+          <MessagesSquare className="h-5 w-5 text-gold" />
+          {dp.aiConsultations}
+        </h3>
+      </header>
 
-      <Dialog open={active !== null} onOpenChange={(next) => !next && setOpenId(null)}>
-        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto bg-background">
-          {active && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-start gap-2">
-                  <MessageSquare className="h-4 w-4 shrink-0 mt-0.5" />
-                  <span>{active.question}</span>
-                </DialogTitle>
-              </DialogHeader>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Clock className="h-3 w-3" /> {formatDate(active.createdAt)}
-              </p>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                {renderMarkdownBold(active.answer)}
-              </p>
-              {active.sources.length > 0 && (
-                <div className="mt-1 space-y-3 border-t pt-3">
-                  <p className="text-xs font-semibold text-muted-foreground">
-                    იურიდიული საფუძველი:
-                  </p>
-                  {groupSources(active.sources).map((g, i) => (
-                    <div key={`${g.url ?? ""}|${i}`} className="space-y-1">
-                      <p className="text-xs font-medium">{g.lawName}:</p>
-                      <ul className="ml-1 space-y-0.5">
-                        {g.articleGroups.map(({ article, points }) => (
-                          <li key={article} className="text-xs text-muted-foreground">
-                            {article}
-                            {points.length > 1 && <>, პუნქტები: {points.join("; ")}</>}
-                            {points.length === 1 && <>, პუნქტი: {points[0]}</>}
-                          </li>
-                        ))}
-                      </ul>
-                      {g.url && (
-                        <a
-                          href={g.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="flex items-start gap-1.5 text-xs text-gold hover:underline"
-                        >
-                          <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                          <span>წყარო</span>
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
+      <div className="flex-1 overflow-y-auto">
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12 px-5">
+            {dp.noConsultations}{" "}
+            <Link href="/chat" className="underline text-gold">
+              {dp.startChat}
+            </Link>
+          </p>
+        ) : active ? (
+          <div className="p-5">
+            <button
+              type="button"
+              onClick={() => setOpenId(null)}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 text-gold" /> {d.faq.back}
+            </button>
+            <p className="text-sm font-semibold leading-snug">{active.question}</p>
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 mb-4">
+              <Clock className="h-3 w-3 text-gold" /> {formatDate(active.createdAt)}
+            </p>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+              {renderMarkdownBold(active.answer)}
+            </p>
+            {active.sources.length > 0 && (
+              <div className="mt-4 space-y-3 border-t border-border pt-3">
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {d.chat.legalBasis}
+                </p>
+                {groupSources(active.sources).map((g, i) => (
+                  <div key={`${g.url ?? ""}|${i}`} className="space-y-1">
+                    <p className="text-xs font-medium">{g.lawName}:</p>
+                    <ul className="ml-1 space-y-0.5">
+                      {g.articleGroups.map(({ article, points }) => (
+                        <li key={article} className="text-xs text-muted-foreground">
+                          {article}
+                          {points.length > 1 && <>, {d.chat.articlePoints} {points.join("; ")}</>}
+                          {points.length === 1 && <>, {d.chat.articlePoint} {points[0]}</>}
+                        </li>
+                      ))}
+                    </ul>
+                    {g.url && (
+                      <a
+                        href={g.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="flex items-start gap-1.5 text-xs text-gold hover:underline"
+                      >
+                        <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gold" />
+                        <span>{d.chat.source}</span>
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {items.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setOpenId(item.id)}
+                className="w-full text-left px-5 py-3 hover:bg-muted transition-colors flex items-center justify-between gap-4"
+              >
+                <p className="text-sm font-medium truncate flex-1">{item.question}</p>
+                <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+                  <Clock className="h-3 w-3 text-gold" /> {formatDate(item.createdAt)}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   MessagesSquare,
@@ -6,9 +5,8 @@ import {
   FileSearch,
   CreditCard,
   Clock,
-  ArrowRight,
-  LayoutGrid,
 } from "lucide-react";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
@@ -17,25 +15,27 @@ import { Consultation } from "@/lib/models/consultation";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { DocumentReview } from "@/lib/models/document-review";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getPlanByKey } from "@/lib/plans-db";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
-import { AnimateIn } from "@/components/site/AnimateIn";
-import { LimitsDialog, type LimitMetric } from "@/components/site/limits-dialog";
-import { ReviewModalTriggerLink } from "@/components/site/review-modal-trigger-link";
-import { DOC_TYPES } from "@/lib/validators";
+import { computeWordDiff } from "@/lib/diff-text";
+import type { RiskFinding } from "@/lib/legal/document-analysis";
+import { DashboardClient } from "./dashboard-client";
+import type { ConsultationItem, RawSource } from "./consultations/consultations-grid";
+import type { GeneratedDocItem } from "./documents/documents-list";
+import type { ReviewItem } from "./reviews/reviews-grid";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
-  const [session, locale] = await Promise.all([auth(), getLocale()]);
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const [session, locale, { tab }] = await Promise.all([auth(), getLocale(), searchParams]);
   if (!session?.user?.id) redirect("/login?callbackUrl=/dashboard");
 
   const d = getDict(locale);
@@ -48,9 +48,9 @@ export default async function DashboardPage() {
       User.findById(session.user.id).select("-passwordHash").lean(),
       Subscription.findOne({ userId: session.user.id }).lean(),
       getFeatureFlags(),
-      Consultation.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
-      GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
-      DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(5).lean(),
+      Consultation.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
+      GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
+      DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
       Consultation.countDocuments({ userId: session.user.id }),
       GeneratedDocument.countDocuments({ userId: session.user.id, source: { $ne: "template" } }),
       DocumentReview.countDocuments({ userId: session.user.id }),
@@ -116,7 +116,7 @@ export default async function DashboardPage() {
     .slice(0, 2)
     .toUpperCase();
 
-  const limitMetrics: LimitMetric[] = [
+  const limitMetrics = [
     {
       key: "consultations",
       label: dp.questionsAsked,
@@ -167,6 +167,75 @@ export default async function DashboardPage() {
       : []),
   ];
 
+  const consultationItems: ConsultationItem[] = consultations.map((c) => {
+    const item = c as unknown as {
+      _id: unknown;
+      question: string;
+      answer: string;
+      createdAt?: Date;
+      sources?: RawSource[];
+    };
+    return {
+      id: String(item._id),
+      question: item.question,
+      answer: item.answer,
+      createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
+      sources: item.sources ?? [],
+    };
+  });
+
+  const documentItems: GeneratedDocItem[] = documents.map((doc) => {
+    const item = doc as unknown as { _id: unknown; title: string; type: string; content: string; createdAt?: Date };
+    return {
+      id: String(item._id),
+      title: item.title,
+      type: item.type,
+      content: item.content,
+      createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
+    };
+  });
+
+  const reviewItems: ReviewItem[] = reviews.map((review) => {
+    const r = review as unknown as {
+      _id: unknown;
+      fileName?: string;
+      createdAt?: Date;
+      summary: string;
+      findings: unknown[];
+      recommendations: unknown[];
+      sourceText?: string;
+      revisions?: Array<{
+        text: string;
+        summary: string;
+        findings: unknown[];
+        recommendations: unknown[];
+        instruction: string;
+        createdAt?: Date;
+      }>;
+    };
+    const revisions = r.revisions ?? [];
+    return {
+      id: String(r._id),
+      fileName: r.fileName ?? "document",
+      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
+      summary: r.summary,
+      findings: r.findings ?? [],
+      recommendations: r.recommendations ?? [],
+      revisions: revisions.map((rev, i) => {
+        const baseText = i === 0 ? r.sourceText ?? "" : revisions[i - 1].text;
+        return {
+          text: rev.text,
+          summary: rev.summary,
+          findings: rev.findings as unknown as RiskFinding[],
+          recommendations: rev.recommendations as string[],
+          instruction: rev.instruction,
+          createdAt: rev.createdAt ? new Date(rev.createdAt).toISOString() : null,
+          diff: computeWordDiff(baseText, rev.text),
+        };
+      }),
+    };
+  });
+
   return (
     <div>
       {/* ── Header ─────────────────────────────────────── */}
@@ -194,7 +263,7 @@ export default async function DashboardPage() {
                 )}
                 {periodEnd && (
                   <span className="text-xs text-white/60 flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
+                    <Clock className="h-3 w-3 text-gold" />
                     {periodEnd}
                     {dp.untilSuffix}
                   </span>
@@ -202,223 +271,30 @@ export default async function DashboardPage() {
               </div>
             </div>
             <Link href="/billing" className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}>
-              <CreditCard className="mr-2 h-4 w-4" />
+              <CreditCard className="mr-2 h-4 w-4 text-gold" />
               {dp.subscription}
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-16 max-w-5xl">
-        {/* ── Limits / Services ──────────────────────────── */}
-        <AnimateIn delay={0}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <LimitsDialog
-              metrics={limitMetrics}
-              triggerLabel={dp.limits}
-              triggerSubtitle={dp.limitsSubtitle}
-              title={dp.limits}
-              subtitle={dp.limitsDialogSubtitle}
-              remainingLabel={dp.remainingOf}
-              unlimitedLabel={dp.unlimited}
-            />
-            <Link
-              href="/services"
-              className="border-t-[3px] border-t-primary bg-card border border-border rounded-2xl p-6 card-hover h-full flex flex-col gap-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <LayoutGrid className="h-5 w-5 text-gold" />
-              </div>
-              <div>
-                <p className="text-lg font-bold text-foreground">{d.footer.nav.services}</p>
-                <p className="text-sm text-muted-foreground mt-1">{dp.servicesSubtitle}</p>
-              </div>
-            </Link>
-          </div>
-          {plan === "free" && (
-            <Card className="mb-8 border-primary/30 bg-primary/5 card-hover">
-              <CardContent className="py-4 flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <p className="font-semibold text-sm">{dp.upgradeTitle}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{dp.upgradeBody}</p>
-                </div>
-                <Link href="/pricing" className={buttonVariants({ size: "sm" })}>
-                  {dp.upgradeCta}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-          )}
-          {hasCustomPlan && (
-            <Card className="mb-8 border-t-[3px] border-t-gold card-hover">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
-                  <p className="font-semibold text-sm">{dp.customPackageTitle}</p>
-                  <span className="text-xs text-muted-foreground">
-                    {dp.customPackageExpiresPrefix} {customExpiresLabel}
-                  </span>
-                </div>
-                {customMetrics.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {customMetrics.map((m) => (
-                      <div key={m.key} className="flex items-center gap-2 text-sm">
-                        {m.icon}
-                        <div>
-                          <div className="font-semibold tabular-nums">{m.remaining}</div>
-                          <div className="text-xs text-muted-foreground">{m.label}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">{dp.customPackageDepleted}</p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </AnimateIn>
-
-        {/* ── Consultation history preview ───────────────── */}
-        <AnimateIn delay={160}>
-          <section className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold flex items-center gap-2 text-sm">
-                <MessagesSquare className="h-4 w-4" />
-                {dp.aiConsultations}
-              </h2>
-              <Link href="/dashboard/consultations" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                {dp.viewAll}
-                <ArrowRight className="ml-1 h-3 w-3" />
-              </Link>
-            </div>
-            <Card className="card-hover border-t-[3px] border-t-primary">
-              <CardContent className="py-0">
-                {consultations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {dp.noConsultations}{" "}
-                    <Link href="/chat" className="underline text-gold">
-                      {dp.startChat}
-                    </Link>
-                  </p>
-                ) : (
-                  <div className="divide-y">
-                    {consultations.map((c) => {
-                      const id = String((c as { _id: unknown })._id);
-                      const created = (c as { createdAt?: Date }).createdAt;
-                      return (
-                        <div key={id} className="py-3 flex items-start justify-between gap-4">
-                          <p className="text-sm truncate flex-1 font-medium">{c.question}</p>
-                          <span className="text-xs text-muted-foreground shrink-0">
-                            {created ? new Date(created).toLocaleDateString(dateLocale) : ""}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </section>
-        </AnimateIn>
-
-        {/* ── Generated documents preview ────────────────── */}
-        {showGenerate && (
-          <AnimateIn delay={240}>
-            <section className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold flex items-center gap-2 text-sm">
-                  <FileText className="h-4 w-4" />
-                  {dp.generatedDocs}
-                </h2>
-                <Link href="/dashboard/documents" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                  {dp.viewAll}
-                  <ArrowRight className="ml-1 h-3 w-3" />
-                </Link>
-              </div>
-              <Card className="card-hover border-t-[3px] border-t-primary">
-                <CardContent className="py-0">
-                  {documents.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {dp.noDocs}{" "}
-                      <Link href="/generate" className="underline text-gold">
-                        {dp.createDoc}
-                      </Link>
-                    </p>
-                  ) : (
-                    <div className="divide-y">
-                      {documents.map((doc) => {
-                        const id = String((doc as { _id: unknown })._id);
-                        const created = (doc as { createdAt?: Date }).createdAt;
-                        const typeName = DOC_TYPES[doc.type as keyof typeof DOC_TYPES] ?? doc.type;
-                        return (
-                          <div key={id} className="py-3 flex items-center justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{doc.title}</p>
-                              <p className="text-xs text-muted-foreground">{typeName}</p>
-                            </div>
-                            <span className="text-xs text-muted-foreground shrink-0">
-                              {created ? new Date(created).toLocaleDateString(dateLocale) : ""}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </section>
-          </AnimateIn>
-        )}
-
-        {/* ── Document review history preview ────────────── */}
-        {showReview && (
-          <AnimateIn delay={320}>
-            <section className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold flex items-center gap-2 text-sm">
-                  <FileSearch className="h-4 w-4" />
-                  {dp.analysisResults}
-                </h2>
-                <Link href="/dashboard/reviews" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                  {dp.viewAll}
-                  <ArrowRight className="ml-1 h-3 w-3" />
-                </Link>
-              </div>
-              <Card className="card-hover border-t-[3px] border-t-primary">
-                <CardContent className="py-0">
-                  {reviews.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {dp.noReviews}{" "}
-                      <ReviewModalTriggerLink
-                        label={dp.uploadDoc}
-                        locale={locale}
-                        className="underline text-gold"
-                      />
-                    </p>
-                  ) : (
-                    <div className="divide-y">
-                      {reviews.map((r) => {
-                        const id = String((r as { _id: unknown })._id);
-                        const created = (r as { createdAt?: Date }).createdAt;
-                        return (
-                          <div key={id} className="py-3">
-                            <div className="flex items-center justify-between gap-4 mb-1">
-                              <p className="text-sm font-medium truncate flex-1">{r.fileName ?? "document"}</p>
-                              <span className="text-xs text-muted-foreground shrink-0">
-                                {created ? new Date(created).toLocaleDateString(dateLocale) : ""}
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{r.summary}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </section>
-          </AnimateIn>
-        )}
+      <div className="container mx-auto px-4 py-10">
+        <DashboardClient
+          d={d}
+          initialTab={tab}
+          limitMetrics={limitMetrics}
+          planLabel={PLAN_LABELS[plan] ?? plan}
+          planExpiresLabel={periodEnd}
+          hasCustomPlan={hasCustomPlan}
+          customExpiresLabel={customExpiresLabel}
+          customMetrics={customMetrics}
+          isFreePlan={plan === "free"}
+          consultations={consultationItems}
+          documents={documentItems}
+          reviews={reviewItems}
+          showGenerate={showGenerate}
+          showReview={showReview}
+        />
       </div>
     </div>
   );

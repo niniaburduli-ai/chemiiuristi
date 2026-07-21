@@ -64,12 +64,12 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <FileSearch className="h-4 w-4 shrink-0" />
+                    <FileSearch className="h-4 w-4 shrink-0 text-gold" />
                     {review.fileName ?? "document"}
                   </CardTitle>
                   {review.createdAt && (
                     <CardDescription className="mt-1 flex items-center gap-1 text-xs">
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-3 w-3 text-gold" />
                       {formatDate(review.createdAt)}
                     </CardDescription>
                   )}
@@ -79,7 +79,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
                     href={`/services?tab=docs&reviewId=${review.id}`}
                     className="inline-flex items-center gap-1 text-xs font-medium text-gold hover:underline px-2 py-1.5"
                   >
-                    <Play className="h-3 w-3" /> განაგრძეთ
+                    <Play className="h-3 w-3 text-gold" /> განაგრძეთ
                   </Link>
                   {review.revisions.length > 0 && (
                     <Button
@@ -87,7 +87,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
                       size="sm"
                       onClick={() => setExpandedId(isOpen ? null : review.id)}
                     >
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-4 w-4 text-gold transition-transform ${isOpen ? "rotate-180" : ""}`} />
                     </Button>
                   )}
                 </div>
@@ -102,7 +102,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
               {findings.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" /> ნაპოვნი რისკები
+                    <AlertCircle className="h-3 w-3 text-gold" /> ნაპოვნი რისკები
                   </p>
                   <div className="space-y-2">
                     {findings.map((f, i) =>
@@ -122,7 +122,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
               {recommendations.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                    <CheckCircle2 className="h-3 w-3" /> რეკომენდაციები
+                    <CheckCircle2 className="h-3 w-3 text-gold" /> რეკომენდაციები
                   </p>
                   <RecommendationList recommendations={recommendations} />
                 </div>
@@ -131,7 +131,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
               {isOpen && review.revisions.length > 0 && (
                 <div className="space-y-4 border-t pt-4">
                   <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-                    <Wand2 className="h-3 w-3" /> შესწორების ისტორია
+                    <Wand2 className="h-3 w-3 text-gold" /> შესწორების ისტორია
                   </p>
                   {review.revisions.map((rev, i) => (
                     <div key={i} className="space-y-3 rounded-lg border border-border p-3">
@@ -144,7 +144,7 @@ export function ReviewsGrid({ items }: { items: ReviewItem[] }) {
                         </p>
                         {rev.createdAt && (
                           <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                            <Clock className="h-3 w-3" /> {formatDate(rev.createdAt)}
+                            <Clock className="h-3 w-3 text-gold" /> {formatDate(rev.createdAt)}
                           </p>
                         )}
                       </div>
