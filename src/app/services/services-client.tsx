@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { DocumentAnalysisPanel } from "@/components/site/document-analysis-modal";
 import { PreviousCorrespondenceButton } from "@/components/site/previous-correspondence-panel";
 import { PageHero } from "@/components/site/PageHero";
@@ -189,7 +190,8 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
         <PreviousCorrespondenceButton locale={locale} />
       </header>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4">
+      <ScrollArea viewportRef={scrollRef} className="flex-1 min-h-0">
+      <div className="p-5 space-y-4">
         {messages.map((m) => (
           <div
             key={m.id}
@@ -253,6 +255,7 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
           </div>
         ))}
       </div>
+      </ScrollArea>
 
       <footer className="p-4 border-t border-border shrink-0">
         <div className="relative">
@@ -489,7 +492,7 @@ export function ServicesPageClient({
             </aside>
 
             {/* Canvas */}
-            <section className="flex-1 min-w-0 h-[85vh] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <section className="flex-1 min-w-0 h-[65vh] md:h-[85vh] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <div className={activeTab === "ai" ? "contents" : "hidden"}>
                 {flags.chat && <AiConsultPanel locale={locale} />}
               </div>
