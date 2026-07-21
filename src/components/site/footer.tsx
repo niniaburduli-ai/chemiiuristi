@@ -104,9 +104,9 @@ export async function Footer() {
         <div className="flex flex-col gap-2 w-max max-w-xs">
           <div>
             <p className="font-bold text-lg leading-tight text-gold">{siteName}</p>
-            <p className="text-white text-xs mt-0.5">{tagline}</p>
+            <p className="text-white text-sm mt-0.5">{tagline}</p>
           </div>
-          <p className="text-slate-400 text-xs leading-relaxed">
+          <p className="text-slate-400 text-sm leading-relaxed">
             {d.footer.brandBlurb}
           </p>
         </div>
@@ -152,14 +152,14 @@ export async function Footer() {
           <p className="font-semibold text-slate-200 mb-2">{d.footer.contact}</p>
           <ul className="flex flex-col gap-1.5">
             <li className="flex items-center gap-2 text-slate-400">
-              <Globe className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+              <Globe className="h-3.5 w-3.5 shrink-0 text-gold" />
               <a href="https://chemiiuristi.com" className="hover:text-white transition-colors footer-link">
                 chemiiuristi.com
               </a>
             </li>
             {contactEmail && (
               <li className="flex items-center gap-2 text-slate-400">
-                <Mail className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                <Mail className="h-3.5 w-3.5 shrink-0 text-gold" />
                 <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors truncate footer-link">
                   {contactEmail}
                 </a>
@@ -167,7 +167,7 @@ export async function Footer() {
             )}
             {showPhone && (
               <li className="flex items-center gap-2 text-slate-400">
-                <Phone className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                <Phone className="h-3.5 w-3.5 shrink-0 text-gold" />
                 <a href={`tel:${contactPhone.replace(/\s/g, "")}`} className="hover:text-white transition-colors footer-link">
                   {contactPhone}
                 </a>
@@ -175,7 +175,7 @@ export async function Footer() {
             )}
             {contactAddress && (
               <li className="flex items-center gap-2 text-slate-400">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-gold" />
                 <span>{contactAddress}</span>
               </li>
             )}
@@ -197,7 +197,7 @@ export async function Footer() {
       {/* Warning banner — disclaimer from CMS */}
       <div className="py-2.5 px-4 border-t border-slate-700/60">
         <p className="flex items-start justify-center gap-2 text-xs text-slate-400 text-center leading-snug max-w-3xl mx-auto">
-          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-slate-500 mt-px" />
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-gold mt-px" />
           <span>{disclaimer}</span>
         </p>
       </div>

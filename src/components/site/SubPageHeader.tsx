@@ -18,7 +18,7 @@ export function SubPageHeader({
     <div className="mb-8">
       <div className="flex items-center gap-3">
         <Link href={backHref} className={buttonVariants({ variant: "ghost", size: "icon" })}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 text-gold" />
         </Link>
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">

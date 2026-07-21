@@ -75,7 +75,7 @@ export function ImageUpload({ value, pubId, onUpload, onDelete, label = "Image" 
         onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
       />
       <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => ref.current?.click()}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4 text-gold" />}
         {value ? "Replace" : "Upload"}
       </Button>
     </div>

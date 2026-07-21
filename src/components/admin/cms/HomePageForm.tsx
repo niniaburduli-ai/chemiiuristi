@@ -79,13 +79,13 @@ function Reorder({
         type="button" onClick={onUp} disabled={isFirst}
         className="rounded p-0.5 text-muted-foreground hover:text-foreground disabled:opacity-20"
       >
-        <ChevronUp className="h-3.5 w-3.5" />
+        <ChevronUp className="h-3.5 w-3.5 text-gold" />
       </button>
       <button
         type="button" onClick={onDown} disabled={isLast}
         className="rounded p-0.5 text-muted-foreground hover:text-foreground disabled:opacity-20"
       >
-        <ChevronDown className="h-3.5 w-3.5" />
+        <ChevronDown className="h-3.5 w-3.5 text-gold" />
       </button>
     </div>
   )
@@ -428,7 +428,7 @@ export function HomePageForm() {
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium">სერვისის ბარათები</h4>
             <Button type="button" size="sm" variant="outline" onClick={addCard}>
-              <Plus className="mr-1 h-3 w-3" /> Add
+              <Plus className="mr-1 h-3 w-3 text-gold" /> Add
             </Button>
           </div>
 
@@ -564,7 +564,7 @@ export function HomePageForm() {
             </div>
           ))}
           <Button type="button" size="sm" variant="outline" onClick={addStat}>
-            <Plus className="mr-1 h-3 w-3" /> Add Stat
+            <Plus className="mr-1 h-3 w-3 text-gold" /> Add Stat
           </Button>
         </div>
       </section>
@@ -622,7 +622,7 @@ export function HomePageForm() {
             </div>
           ))}
           <Button type="button" size="sm" variant="outline" onClick={addFeature}>
-            <Plus className="mr-1 h-3 w-3" /> Add Feature
+            <Plus className="mr-1 h-3 w-3 text-gold" /> Add Feature
           </Button>
         </div>
       </section>
@@ -675,7 +675,7 @@ export function HomePageForm() {
                   </div>
                 ))}
                 <Button type="button" size="sm" variant="ghost" onClick={() => addHowItWorksStep(i)}>
-                  <Plus className="mr-1 h-3 w-3" /> Add step
+                  <Plus className="mr-1 h-3 w-3 text-gold" /> Add step
                 </Button>
               </div>
               <BiInput
@@ -781,13 +781,13 @@ export function HomePageForm() {
                   </div>
                 ))}
                 <Button type="button" size="sm" variant="ghost" onClick={() => addPlanItem(pi)}>
-                  <Plus className="mr-1 h-3 w-3" /> Add bullet
+                  <Plus className="mr-1 h-3 w-3 text-gold" /> Add bullet
                 </Button>
               </div>
             </div>
           ))}
           <Button type="button" size="sm" variant="outline" onClick={addPlan}>
-            <Plus className="mr-1 h-3 w-3" /> Add Plan
+            <Plus className="mr-1 h-3 w-3 text-gold" /> Add Plan
           </Button>
         </div>
       </section>
@@ -835,7 +835,7 @@ export function HomePageForm() {
       {/* Save */}
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}
           Draft
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>

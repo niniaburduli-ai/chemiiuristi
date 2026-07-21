@@ -108,7 +108,7 @@ export default async function BillingPage() {
           </div>
           {isPaid && (
             <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="h-4 w-4 text-gold" />
               {d.billing.nextPayment} {fmtDate(user.resetAt)}
             </div>
           )}
@@ -128,7 +128,7 @@ export default async function BillingPage() {
         <CardContent>
           {payments.length === 0 ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-              <Receipt className="h-4 w-4" />
+              <Receipt className="h-4 w-4 text-gold" />
               {d.billing.noPayments}
             </div>
           ) : (

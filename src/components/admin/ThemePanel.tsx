@@ -238,7 +238,7 @@ export function ThemePanel() {
           size="sm"
           onClick={() => setCfg({ ...DEFAULT_THEME, light: { ...DEFAULT_LIGHT }, dark: { ...DEFAULT_DARK } })}
         >
-          <RotateCcw className="mr-2 h-4 w-4" /> ნაგულისხმევზე დაბრუნება
+          <RotateCcw className="mr-2 h-4 w-4 text-gold" /> ნაგულისხმევზე დაბრუნება
         </Button>
       </div>
 

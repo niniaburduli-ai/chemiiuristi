@@ -99,7 +99,7 @@ export function LegalNoticesForm() {
 
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}Draft
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}Draft
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>გამოქვეყნება</Button>
         <Button onClick={() => save("hidden")} disabled={saving} variant="ghost">დამალვა</Button>

@@ -289,6 +289,9 @@ const ka = {
     customPackageTitle: "ინდივიდუალური პაკეტი",
     customPackageExpiresPrefix: "მოქმედებს",
     customPackageDepleted: "ამ პაკეტის ყველა სერვისი უკვე გამოყენებულია.",
+    sidebarHeading: "ჩემი კაბინეტი",
+    sidebarSubtitle: "პაკეტი და ისტორია",
+    planExpiresPrefix: "მოქმედებს",
   },
   documentAnalysis: {
     title: "დოკუმენტის ანალიზი",
@@ -366,7 +369,7 @@ const ka = {
     cabinetLimitsItem: "ლიმიტების შემოწმება",
     cabinetPlanItem: "პაკეტის განახლება",
     cabinetHistoryItem: "ისტორიის ნახვა",
-    cabinetCta: "შესვლა კაბინეტში",
+    cabinetCta: "კაბინეტში შესვლა",
   },
   feedback: {
     tabLabel: "გამოხმაურება",
@@ -678,6 +681,9 @@ const en: Dict = {
     customPackageTitle: "Custom package",
     customPackageExpiresPrefix: "Valid until",
     customPackageDepleted: "All services in this package have been used.",
+    sidebarHeading: "My Cabinet",
+    sidebarSubtitle: "Plan & history",
+    planExpiresPrefix: "Valid until",
   },
   documentAnalysis: {
     title: "Document Analysis",

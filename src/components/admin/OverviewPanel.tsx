@@ -77,7 +77,7 @@ function StatCard({
     <Card>
       <CardContent className="flex items-center gap-4 py-5">
         <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-gold">
-          <Icon className="h-5 w-5" />
+          <Icon className="h-5 w-5 text-gold" />
         </div>
         <div>
           <div className="text-2xl font-bold leading-none">{value}</div>

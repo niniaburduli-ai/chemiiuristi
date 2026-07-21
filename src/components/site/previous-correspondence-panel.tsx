@@ -60,7 +60,7 @@ export function PreviousCorrespondenceButton({ locale }: { locale: Locale }) {
   return (
     <>
       <Button variant="outline" size="sm" onClick={() => handleOpenChange(true)}>
-        <History className="h-4 w-4 mr-1.5" />
+        <History className="h-4 w-4 mr-1.5 text-gold" />
         {t.viewCorrespondence}
       </Button>
 
@@ -98,7 +98,7 @@ export function PreviousCorrespondenceButton({ locale }: { locale: Locale }) {
                           {item.question}
                         </p>
                         <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                          <Clock className="h-3 w-3" /> {formatDate(item.createdAt)}
+                          <Clock className="h-3 w-3 text-gold" /> {formatDate(item.createdAt)}
                         </p>
                       </div>
                     </button>

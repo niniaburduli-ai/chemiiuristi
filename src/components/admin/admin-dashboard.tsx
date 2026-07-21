@@ -214,7 +214,7 @@ export function AdminDashboard({
                             : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                         )}
                       >
-                        <Icon className="h-4 w-4 shrink-0" />
+                        <Icon className="h-4 w-4 shrink-0 text-gold" />
                         <span className="flex-1 text-left">{item.label}</span>
                         {typeof item.count === "number" && (
                           <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
@@ -264,7 +264,7 @@ export function AdminDashboard({
             <SheetTrigger
               render={<Button variant="outline" size="icon" className="md:hidden" aria-label="მენიუ" />}
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-4 w-4 text-gold" />
             </SheetTrigger>
             <SheetContent side="left" className="!w-64 gap-0 bg-sidebar p-0 text-sidebar-foreground">
               <SheetTitle className="sr-only">ნავიგაცია</SheetTitle>
@@ -345,7 +345,7 @@ function UsersTable({
               <td>
                 <div className="flex justify-end gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setEditing(u)} aria-label="რედაქტირება">
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4 text-gold" />
                   </Button>
                   <Button size="icon" variant="ghost" disabled={busyId === u.id || u.id === currentUserId} onClick={() => handleDelete(u)} aria-label="წაშლა">
                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -760,7 +760,7 @@ function UploadsTable({ initial }: { initial: UploadRow[] }) {
                     {f.resourceType === "image" && f.format !== "pdf" ? (
                       <Image src={f.url} alt={f.originalName ?? "file"} width={40} height={40} className="h-full w-full object-cover" unoptimized />
                     ) : (
-                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                      <ImageIcon className="h-4 w-4 text-gold" />
                     )}
                   </div>
                   <span className="max-w-[180px] truncate">{f.originalName ?? f.publicId}</span>
@@ -778,10 +778,10 @@ function UploadsTable({ initial }: { initial: UploadRow[] }) {
               <td>
                 <div className="flex justify-end gap-1">
                   <a href={f.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent" aria-label="გახსნა">
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-4 w-4 text-gold" />
                   </a>
                   <Button size="icon" variant="ghost" onClick={() => setEditing(f)} aria-label="შენიშვნა">
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4 text-gold" />
                   </Button>
                   <Button size="icon" variant="ghost" disabled={busyId === f.id} onClick={() => handleDelete(f)} aria-label="წაშლა">
                     <Trash2 className="h-4 w-4 text-destructive" />

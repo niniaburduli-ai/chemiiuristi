@@ -57,7 +57,7 @@ export function InstallPrompt() {
   return (
     <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-lg sm:left-auto sm:right-4 sm:mx-0">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-gold">
-        <Download className="size-5" />
+        <Download className="size-5 text-gold" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-foreground">
@@ -78,7 +78,7 @@ export function InstallPrompt() {
         aria-label="დახურვა"
         className="shrink-0 text-muted-foreground hover:text-foreground"
       >
-        <X className="size-4" />
+        <X className="size-4 text-gold" />
       </button>
     </div>
   )

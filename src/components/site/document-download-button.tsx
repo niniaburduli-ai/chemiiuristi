@@ -22,16 +22,16 @@ export function DocumentDownloadButton({
       <DropdownMenuTrigger
         render={
           <Button variant="outline" size="sm" className="shrink-0">
-            <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
+            <Download className="h-4 w-4 mr-1 text-gold" /> ჩამოტვირთვა
           </Button>
         }
       />
       <DropdownMenuContent>
         <DropdownMenuItem onClick={() => exportAsDocx(content, filename)}>
-          <FileText className="h-4 w-4 mr-2" /> Word (.docx)
+          <FileText className="h-4 w-4 mr-2 text-gold" /> Word (.docx)
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => exportAsPdf(content, filename)}>
-          <File className="h-4 w-4 mr-2" /> PDF (.pdf)
+          <File className="h-4 w-4 mr-2 text-gold" /> PDF (.pdf)
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

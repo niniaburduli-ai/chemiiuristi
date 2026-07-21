@@ -114,7 +114,7 @@ export function DatabasePanel() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Database className="h-5 w-5 text-muted-foreground" />
+          <Database className="h-5 w-5 text-gold" />
           <select
             value={active}
             onChange={(e) => loadRows(e.target.value, 0)}
@@ -167,7 +167,7 @@ export function DatabasePanel() {
                     <td>
                       <div className="flex justify-end gap-1">
                         <Button size="icon" variant="ghost" onClick={() => setEditing({ doc: d, isNew: false })} aria-label="რედაქტირება">
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-4 w-4 text-gold" />
                         </Button>
                         <Button size="icon" variant="ghost" disabled={busyId === id} onClick={() => remove(d)} aria-label="წაშლა">
                           <Trash2 className="h-4 w-4 text-destructive" />
@@ -189,10 +189,10 @@ export function DatabasePanel() {
           </span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={skip === 0 || loading} onClick={() => loadRows(active, Math.max(0, skip - LIMIT))}>
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 text-gold" />
             </Button>
             <Button variant="outline" size="sm" disabled={skip + LIMIT >= total || loading} onClick={() => loadRows(active, skip + LIMIT)}>
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 text-gold" />
             </Button>
           </div>
         </div>

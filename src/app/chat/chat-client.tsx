@@ -185,7 +185,7 @@ export function ChatClient({ locale }: { locale: Locale }) {
             <div className="shrink-0 mt-1">
               {m.role === "user" ? (
                 <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                  <User className="h-4 w-4" />
+                  <User className="h-4 w-4 text-gold" />
                 </div>
               ) : (
                 <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
@@ -229,7 +229,7 @@ export function ChatClient({ locale }: { locale: Locale }) {
                             rel="noreferrer noopener"
                             className="flex items-start gap-1.5 text-xs text-gold hover:underline"
                           >
-                            <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                            <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gold" />
                             <span>{d.chat.source}</span>
                           </a>
                         </div>

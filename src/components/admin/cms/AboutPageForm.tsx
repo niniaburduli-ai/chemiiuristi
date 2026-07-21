@@ -86,7 +86,7 @@ export function AboutPageForm() {
           <h3 className="font-medium">გუნდი</h3>
           <Button type="button" size="sm" variant="outline" onClick={() =>
             setData((p) => ({ ...p, team: [...p.team, { _id: randomId(), name: "", role: "", imageUrl: "", imagePubId: "", order: p.team.length }] }))
-          }><Plus className="mr-1 h-3 w-3" /> Add</Button>
+          }><Plus className="mr-1 h-3 w-3 text-gold" /> Add</Button>
         </div>
         {data.team.map((m, i) => (
           <div key={m._id} className="flex gap-3 rounded border p-3">
@@ -105,7 +105,7 @@ export function AboutPageForm() {
 
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}Draft
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}Draft
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>გამოქვეყნება</Button>
         {msg && <span className="text-sm text-green-600">{msg}</span>}

@@ -65,7 +65,7 @@ export function FaqCarousel({
           onClick={() => setViewAll(false)}
           className="inline-flex items-center gap-2 text-sm font-semibold text-gold hover:gap-3 transition-all mb-6"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 text-gold" />
           {labels.back}
         </button>
         <div className="space-y-4">
@@ -141,7 +141,7 @@ export function FaqCarousel({
                   </p>
                   {isActive && (
                     <ChevronDown
-                      className={`h-4 w-4 text-muted-foreground mx-auto transition-transform duration-300 ${
+                      className={`h-4 w-4 text-gold mx-auto transition-transform duration-300 ${
                         isExpanded ? "rotate-180" : ""
                       }`}
                     />
@@ -160,7 +160,7 @@ export function FaqCarousel({
               aria-label="Previous"
               className="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-40 bg-card w-11 h-11 rounded-full shadow-lg border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all btn-hover"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 text-gold" />
             </button>
             <button
               type="button"
@@ -168,7 +168,7 @@ export function FaqCarousel({
               aria-label="Next"
               className="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-40 bg-card w-11 h-11 rounded-full shadow-lg border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all btn-hover"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 text-gold" />
             </button>
           </>
         )}

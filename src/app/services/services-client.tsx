@@ -19,6 +19,7 @@ import {
   UserMinus,
   LayoutTemplate,
   BookOpen,
+  Rocket,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -203,7 +204,7 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
                 m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
               }`}
             >
-              {m.role === "user" ? <User className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+              {m.role === "user" ? <User className="h-4 w-4" /> : <Sparkles className="h-4 w-4 text-gold" />}
             </div>
             <div
               className={`p-4 rounded-2xl text-sm whitespace-pre-wrap ${
@@ -244,7 +245,7 @@ function AiConsultPanel({ locale }: { locale: Locale }) {
                           rel="noreferrer noopener"
                           className="flex items-start gap-1.5 text-xs text-gold hover:underline"
                         >
-                          <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                          <BookOpen className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gold" />
                           <span>{d.chat.source}</span>
                         </a>
                       </div>
@@ -301,7 +302,7 @@ function TemplatesPanel({ sm }: { sm: ReturnType<typeof getDict>["servicesModal"
           <p className="text-xs text-muted-foreground mt-0.5">{sm.customDocsHint}</p>
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gold" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -397,10 +398,13 @@ function UpgradeCard({ plan, locale, d }: { plan: PlanData | null; locale: Local
   const title = locale === "en" ? "Upgrade plan" : "განაახლე პაკეტი";
 
   return (
-    <div className="p-3 bg-card border border-border rounded-lg">
-      <p className="text-sm font-bold text-gold mb-3">{title}</p>
+    <div>
+      <p className="flex items-center gap-2 text-lg font-bold text-foreground mb-3">
+        <Rocket className="h-4 w-4 shrink-0 text-gold" />
+        {title}
+      </p>
       <Link href="/pricing" className="block">
-        <Button size="sm" className="w-full">
+        <Button className="w-full h-10 rounded-full">
           {d.profile.upgradeCta}
         </Button>
       </Link>
@@ -447,8 +451,8 @@ export function ServicesPageClient({
         ) : (
           <div className="flex flex-col md:flex-row gap-6">
             {/* Sidebar */}
-            <aside className="w-full md:w-72 shrink-0">
-              <div className="bg-card border border-border rounded-2xl p-4 space-y-2 md:sticky md:top-24">
+            <aside className="w-full md:w-72 shrink-0 space-y-4 md:sticky md:top-24">
+              <div className="bg-card border border-border rounded-2xl p-4 space-y-2">
                 <div className="px-2 pb-2">
                   <h2 className="text-lg font-bold text-foreground">{sm.sidebarHeading}</h2>
                   <p className="text-xs text-muted-foreground">{sm.sidebarSubtitle}</p>
@@ -458,34 +462,34 @@ export function ServicesPageClient({
                     key={t.key}
                     type="button"
                     onClick={() => setActiveTab(t.key)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+                    className={`w-full flex items-center gap-3 h-10 px-4 rounded-full transition-colors text-sm font-medium ${
                       activeTab === t.key
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-white"
                         : "text-muted-foreground hover:bg-muted"
                     }`}
                   >
-                    <t.icon className="h-4 w-4 shrink-0" />
+                    <t.icon className="h-4 w-4 shrink-0 text-gold" />
                     {t.label}
                   </button>
                 ))}
-
-                <div className="pt-4 mt-4 border-t border-border space-y-3">
-                  <UpgradeCard plan={upgradePlan} locale={locale} d={d} />
-                </div>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-4 mt-4">
+              <div className="bg-card border border-border rounded-2xl p-4">
+                <UpgradeCard plan={upgradePlan} locale={locale} d={d} />
+              </div>
+
+              <div className="bg-card border border-border rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="h-5 w-5 text-gold" />
-                  <h3 className="font-bold text-foreground">{sm.cabinetTitle}</h3>
+                  <h3 className="text-lg font-bold text-foreground">{sm.cabinetTitle}</h3>
                 </div>
-                <ul className="text-xs text-muted-foreground space-y-1 mb-3 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1 mb-3 list-disc list-inside">
                   <li>{sm.cabinetLimitsItem}</li>
                   <li>{sm.cabinetPlanItem}</li>
                   <li>{sm.cabinetHistoryItem}</li>
                 </ul>
                 <Link href="/dashboard" className="block">
-                  <Button size="sm" variant="outline" className="w-full">
+                  <Button className="w-full h-10 rounded-full">
                     {sm.cabinetCta}
                   </Button>
                 </Link>

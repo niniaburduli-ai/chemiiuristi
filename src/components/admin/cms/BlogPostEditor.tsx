@@ -57,7 +57,7 @@ export function BlogPostEditor({ post, categories, onSave, onCancel }: Props) {
   return (
     <div className="space-y-5 max-w-2xl">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={onCancel}><ArrowLeft className="mr-1 h-4 w-4" /> უკან</Button>
+        <Button variant="ghost" size="sm" onClick={onCancel}><ArrowLeft className="mr-1 h-4 w-4 text-gold" /> უკან</Button>
         <h2 className="text-lg font-semibold">{post ? "პოსტის რედაქტირება" : "ახალი პოსტი"}</h2>
       </div>
 
@@ -103,7 +103,7 @@ export function BlogPostEditor({ post, categories, onSave, onCancel }: Props) {
 
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}Draft
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}Draft
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>გამოქვეყნება</Button>
         <Button onClick={() => save("hidden")} disabled={saving} variant="ghost">დამალვა</Button>

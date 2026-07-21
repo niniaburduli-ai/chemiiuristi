@@ -17,8 +17,8 @@ export function ThemeToggle() {
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {/* CSS-driven icon swap — no mount state, so no hydration mismatch. */}
-      <Sun className="hidden h-4 w-4 dark:block" />
-      <Moon className="block h-4 w-4 dark:hidden" />
+      <Sun className="hidden h-4 w-4 text-gold dark:block" />
+      <Moon className="block h-4 w-4 text-gold dark:hidden" />
     </Button>
   )
 }

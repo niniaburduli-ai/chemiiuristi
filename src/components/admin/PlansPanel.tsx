@@ -214,7 +214,7 @@ export function PlansPanel() {
                 <td>
                   <div className="flex justify-end gap-1">
                     <Button size="icon" variant="ghost" onClick={() => setEditing({ ...p })} aria-label="რედაქტირება">
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-4 w-4 text-gold" />
                     </Button>
                     <Button
                       size="icon"

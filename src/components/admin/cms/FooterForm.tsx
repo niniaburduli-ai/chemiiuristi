@@ -77,7 +77,7 @@ export function FooterForm({ locale = "ka" }: { locale?: Locale }) {
         <div className="flex items-center justify-between">
           <h3 className="font-medium">სვეტები</h3>
           <Button type="button" size="sm" variant="outline" onClick={() => setData((p) => ({ ...p, columns: [...p.columns, newCol(p.columns.length)] }))}>
-            <Plus className="mr-1 h-3 w-3" /> სვეტის დამატება
+            <Plus className="mr-1 h-3 w-3 text-gold" /> სვეტის დამატება
           </Button>
         </div>
         {data.columns.map((col, ci) => (
@@ -102,7 +102,7 @@ export function FooterForm({ locale = "ka" }: { locale?: Locale }) {
                 </div>
               ))}
               <Button type="button" variant="outline" size="sm" onClick={() => addLink(ci)}>
-                <Plus className="mr-1 h-3 w-3" /> ლინკი
+                <Plus className="mr-1 h-3 w-3 text-gold" /> ლინკი
               </Button>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function FooterForm({ locale = "ka" }: { locale?: Locale }) {
 
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}Draft
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}Draft
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>გამოქვეყნება</Button>
         {msg && <span className="text-sm text-green-600">{msg}</span>}

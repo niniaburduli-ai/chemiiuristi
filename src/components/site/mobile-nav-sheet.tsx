@@ -52,7 +52,7 @@ export function MobileNavSheet({
       <SheetTrigger
         render={<Button variant="ghost" size="icon-lg" className="text-foreground" aria-label={menuLabel} />}
       >
-        <Menu className="h-7 w-7" strokeWidth={2.5} />
+        <Menu className="h-7 w-7 text-gold" strokeWidth={2.5} />
       </SheetTrigger>
       <SheetContent side="left" className="bg-background">
         <SheetHeader>
@@ -100,18 +100,18 @@ export function MobileNavSheet({
                 href="https://chemiiuristi.com"
                 className="flex items-center gap-2 hover:text-foreground transition-colors"
               >
-                <Globe className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <Globe className="h-3.5 w-3.5 shrink-0 text-gold" />
                 chemiiuristi.com
               </a>
               <a
                 href={`mailto:${contactEmail}`}
                 className="flex items-center gap-2 hover:text-foreground transition-colors"
               >
-                <Mail className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <Mail className="h-3.5 w-3.5 shrink-0 text-gold" />
                 {contactEmail}
               </a>
               <div className="flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-gold" />
                 {contactAddress}
               </div>
             </div>

@@ -143,7 +143,7 @@ export function GenerateClient({ initialType }: { initialType?: string } = {}) {
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <SubPageHeader
         backHref="/dashboard"
-        icon={<FileText className="h-5 w-5" />}
+        icon={<FileText className="h-5 w-5 text-gold" />}
         title="დოკუმენტის მომზადება"
         subtitle="AI ადგენს საჩივარს ან მოთხოვნას შენი კონკრეტული სიტუაციის მიხედვით"
       />

@@ -52,7 +52,7 @@ export function FAQForm() {
                 <span className={cn("rounded-full px-2 py-0.5 text-xs", item.status === "published" ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground")}>
                   {item.status}
                 </span>
-                {open === item._id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {open === item._id ? <ChevronUp className="h-4 w-4 text-gold" /> : <ChevronDown className="h-4 w-4 text-gold" />}
               </div>
             </button>
             {open === item._id && (
@@ -92,7 +92,7 @@ export function FAQForm() {
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => setItems((p) => [...p, newItem(p.length)])}>
-        <Plus className="mr-2 h-4 w-4" /> კითხვის დამატება
+        <Plus className="mr-2 h-4 w-4 text-gold" /> კითხვის დამატება
       </Button>
       <div className="flex items-center gap-3">
         <Button onClick={save} disabled={saving}>

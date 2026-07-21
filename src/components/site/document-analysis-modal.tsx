@@ -408,7 +408,7 @@ export function DocumentAnalysisPanel({
                         className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/60 flex items-center justify-center text-muted-foreground hover:text-gold transition-colors"
                         aria-label={t.addMoreLabel}
                       >
-                        <Plus className="h-5 w-5" />
+                        <Plus className="h-5 w-5 text-gold" />
                       </button>
                     )}
                   </div>
@@ -557,7 +557,7 @@ export function DocumentAnalysisPanel({
                   {improveStatus === "loading" ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Wand2 className="mr-2 h-4 w-4" />
+                    <Wand2 className="mr-2 h-4 w-4 text-gold" />
                   )}
                   {improveStatus === "loading" ? t.improving : t.improveCta}
                 </Button>

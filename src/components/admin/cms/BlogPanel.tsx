@@ -103,7 +103,7 @@ export function BlogPanel() {
                     <td className="px-4 py-2 text-muted-foreground">{p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("ka-GE") : "—"}</td>
                     <td className="px-4 py-2">
                       <div className="flex gap-1">
-                        <Button size="icon" variant="ghost" onClick={() => setEditing(p)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => setEditing(p)}><Pencil className="h-3.5 w-3.5 text-gold" /></Button>
                         <Button size="icon" variant="ghost" onClick={() => deletePost(p._id)}><Trash2 className="h-3.5 w-3.5 text-destructive" /></Button>
                       </div>
                     </td>

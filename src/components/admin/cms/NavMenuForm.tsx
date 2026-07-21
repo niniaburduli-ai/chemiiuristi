@@ -77,7 +77,7 @@ export function NavMenuForm({ locale = "ka" }: { locale?: Locale }) {
             onDragEnd={() => setDrag(null)}
             className="flex items-center gap-2 rounded-md border bg-background p-2"
           >
-            <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
+            <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-gold" />
             <div className="grid flex-1 grid-cols-2 gap-2">
               <div>
                 <Label className="text-xs">Label (Georgian)</Label>
@@ -99,11 +99,11 @@ export function NavMenuForm({ locale = "ka" }: { locale?: Locale }) {
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={addItem}>
-        <Plus className="mr-2 h-4 w-4" /> ლინკის დამატება
+        <Plus className="mr-2 h-4 w-4 text-gold" /> ლინკის დამატება
       </Button>
       <div className="flex items-center gap-3">
         <Button onClick={() => save("draft")} disabled={saving} variant="outline">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4 text-gold" />}
           Draft-ად შენახვა
         </Button>
         <Button onClick={() => save("published")} disabled={saving}>

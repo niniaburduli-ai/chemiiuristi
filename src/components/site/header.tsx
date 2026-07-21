@@ -98,7 +98,7 @@ export async function Header() {
                 href="/dashboard"
                 className={buttonVariants({ variant: "ghost", size: "sm" }) + " btn-hover"}
               >
-                <User2 className="h-4 w-4 mr-1" />
+                <User2 className="h-4 w-4 mr-1 text-gold" />
                 {initials}
               </Link>
               <LogoutButton />

@@ -93,7 +93,7 @@ export function DocumentResultPanel({
     return (
       <Card className="flex items-center justify-center min-h-[300px] border-dashed">
         <CardContent className="text-center text-muted-foreground text-sm py-12">
-          <FileText className="h-8 w-8 mx-auto mb-3 opacity-40" />
+          <FileText className="h-8 w-8 mx-auto mb-3 opacity-40 text-gold" />
           {emptyHint}
         </CardContent>
       </Card>
@@ -114,19 +114,19 @@ export function DocumentResultPanel({
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => setEditing((e) => !e)}>
                 {editing ? (
-                  <><Eye className="h-4 w-4 mr-1" /> მზა ტექსტი</>
+                  <><Eye className="h-4 w-4 mr-1 text-gold" /> მზა ტექსტი</>
                 ) : (
-                  <><Pencil className="h-4 w-4 mr-1" /> რედაქტირება</>
+                  <><Pencil className="h-4 w-4 mr-1 text-gold" /> რედაქტირება</>
                 )}
               </Button>
               <Button variant="outline" size="sm" onClick={copy}>
-                <Copy className="h-4 w-4 mr-1" /> კოპირება
+                <Copy className="h-4 w-4 mr-1 text-gold" /> კოპირება
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
                     <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-1" /> ჩამოტვირთვა
+                      <Download className="h-4 w-4 mr-1 text-gold" /> ჩამოტვირთვა
                     </Button>
                   }
                 />
@@ -140,7 +140,7 @@ export function DocumentResultPanel({
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                <Maximize2 className="h-4 w-4 mr-1" /> სრულ ეკრანზე
+                <Maximize2 className="h-4 w-4 mr-1 text-gold" /> სრულ ეკრანზე
               </Button>
             </div>
           </div>
@@ -173,7 +173,7 @@ export function DocumentResultPanel({
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <BookOpen className="h-4 w-4" /> სამართლებრივი საფუძვლები და წყაროები
+              <BookOpen className="h-4 w-4 text-gold" /> სამართლებრივი საფუძვლები და წყაროები
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

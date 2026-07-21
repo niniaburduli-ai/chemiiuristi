@@ -57,7 +57,7 @@ export function LanguageSwitcher({ current }: { current: Locale }) {
 
   return (
     <div className="flex items-center gap-1 rounded-md border p-0.5">
-      <Globe className="mx-1 h-3.5 w-3.5 shrink-0 text-muted-foreground animate-[spin_3s_linear_infinite]" />
+      <Globe className="mx-1 h-3.5 w-3.5 shrink-0 text-gold animate-[spin_3s_linear_infinite]" />
       {LOCALES.map((l) => {
         const Flag = LOCALE_FLAGS[l]
         return (
