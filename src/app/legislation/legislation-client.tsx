@@ -24,6 +24,9 @@ export function LegislationClient({ locale }: { locale: Locale }) {
     { id: "privacy", label: d.legislation.catPrivacy },
     { id: "constitution", label: d.legislation.catConstitution },
     { id: "finance", label: d.legislation.catFinance },
+    { id: "criminal", label: d.legislation.catCriminal },
+    { id: "business", label: d.legislation.catBusiness },
+    { id: "admin-procedure", label: d.legislation.catAdminProcedure },
   ]
 
   const filtered = LEGISLATION_DOCS.filter((doc) => {

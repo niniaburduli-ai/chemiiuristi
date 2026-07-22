@@ -227,6 +227,9 @@ const ka = {
     catPrivacy: "კონფიდენციალობა",
     catConstitution: "კონსტიტუცია",
     catFinance: "ფინანსები",
+    catCriminal: "სისხლის სამართალი",
+    catBusiness: "მეწარმეობა",
+    catAdminProcedure: "ადმ. საპროცესო",
   },
   services: {
     title: "ჩვენი სერვისები",
@@ -623,6 +626,9 @@ const en: Dict = {
     catPrivacy: "Privacy",
     catConstitution: "Constitution",
     catFinance: "Finance",
+    catCriminal: "Criminal",
+    catBusiness: "Business",
+    catAdminProcedure: "Admin. Procedure",
   },
   services: {
     title: "Services",

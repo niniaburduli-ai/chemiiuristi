@@ -111,6 +111,45 @@ export const LEGISLATION_DOCS: LegislationDoc[] = [
     tagId: "finance",
     url: "https://matsne.gov.ge/ka/document/view/4690334?publication=14",
   },
+  {
+    id: "9",
+    title: {
+      ka: "სისხლის სამართლის კოდექსი",
+      en: "Criminal Code",
+    },
+    description: {
+      ka: "მოიცავს სისხლის სამართლის დანაშაულებსა და პასუხისმგებლობას, მათ შორის: თაღლითობას, ქურდობას, ძალადობას, ფინანსურ დანაშაულებს და სხვა სამართალდარღვევებს. AI გასცემს მხოლოდ საინფორმაციო ხასიათის პასუხებს.",
+      en: "Covers criminal offenses and liability, including: fraud, theft, violence, financial crimes, and other offenses. AI provides informational answers only.",
+    },
+    tagId: "criminal",
+    url: "https://matsne.gov.ge/ka/document/view/16426?publication=296",
+  },
+  {
+    id: "10",
+    title: {
+      ka: "მეწარმეთა შესახებ კანონი",
+      en: "Law on Entrepreneurs",
+    },
+    description: {
+      ka: "არეგულირებს ბიზნესისა და კომპანიების საქმიანობას, მათ შორის: შპს-ს რეგისტრაციას, პარტნიორებს, დირექტორს, წილებს, კომპანიის მართვასა და სამეწარმეო ურთიერთობებს.",
+      en: "Regulates the activity of businesses and companies, including: LLC registration, partners, directors, shares, company management, and entrepreneurial relations.",
+    },
+    tagId: "business",
+    url: "https://matsne.gov.ge/ka/document/view/28408?publication=70",
+  },
+  {
+    id: "11",
+    title: {
+      ka: "ადმინისტრაციული საპროცესო კოდექსი",
+      en: "Administrative Procedure Code",
+    },
+    description: {
+      ka: "არეგულირებს ადმინისტრაციული დავების სასამართლოში განხილვის წესს, ადმინისტრაციული ორგანოების გადაწყვეტილებების გასაჩივრებას და ადმინისტრაციულ პროცესებს.",
+      en: "Regulates the rules for judicial review of administrative disputes, appeals against decisions of administrative bodies, and administrative processes.",
+    },
+    tagId: "admin-procedure",
+    url: "https://matsne.gov.ge/ka/document/view/16492?publication=111",
+  },
 ]
 
-export const CATEGORY_IDS = ["all", "labor", "civil", "admin", "consumer", "tax", "privacy", "constitution", "finance"] as const
+export const CATEGORY_IDS = ["all", "labor", "civil", "admin", "consumer", "tax", "privacy", "constitution", "finance", "criminal", "business", "admin-procedure"] as const

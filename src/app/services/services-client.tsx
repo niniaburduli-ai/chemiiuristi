@@ -502,7 +502,7 @@ export function ServicesPageClient({
         ) : (
           <div className="flex flex-col gap-6 md:grid md:grid-cols-[minmax(18rem,1fr)_3fr]">
             {/* Sidebar */}
-            <aside className="w-full flex flex-col gap-3 md:sticky md:top-24">
+            <aside className="w-full flex flex-col gap-3 md:sticky md:top-24 md:h-[520px] md:overflow-y-auto">
               <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
                 <div className="px-2 pb-1.5">
                   <h2 className="text-lg font-bold text-foreground">{sm.sidebarHeading}</h2>
@@ -536,7 +536,6 @@ export function ServicesPageClient({
                 </div>
                 <ul className="text-sm text-muted-foreground space-y-0.5 list-disc list-inside">
                   <li>{sm.cabinetLimitsItem}</li>
-                  <li>{sm.cabinetPlanItem}</li>
                   <li>{sm.cabinetHistoryItem}</li>
                 </ul>
                 <Link href="/dashboard" className="block mt-2">
@@ -548,7 +547,7 @@ export function ServicesPageClient({
             </aside>
 
             {/* Canvas */}
-            <section className="min-w-0 h-[700px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <section className="min-w-0 h-[520px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <div className={activeTab === "ai" ? "flex flex-col h-full min-h-0" : "hidden"}>
                 {flags.chat && <AiConsultPanel locale={locale} />}
               </div>
