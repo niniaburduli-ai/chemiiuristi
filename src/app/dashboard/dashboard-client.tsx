@@ -159,32 +159,6 @@ function ProfilePanel({
   );
 }
 
-function ReviewsPanel({ d, items }: { d: Dict; items: ReviewItem[] }) {
-  const dp = d.profile;
-  return (
-    <div className="flex flex-col h-full">
-      <header className="p-5 border-b border-border shrink-0">
-        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-          <FileSearch className="h-5 w-5 text-gold" />
-          {dp.analysisResults}
-        </h3>
-      </header>
-      <div className="flex-1 overflow-y-auto p-5">
-        {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-12">
-            {dp.noReviews}{" "}
-            <Link href="/services?tab=docs" className="underline text-gold">
-              {dp.uploadDoc}
-            </Link>
-          </p>
-        ) : (
-          <ReviewsGrid items={items} />
-        )}
-      </div>
-    </div>
-  );
-}
-
 export function DashboardClient({
   d,
   initialTab,
@@ -245,7 +219,7 @@ export function DashboardClient({
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Sidebar */}
-      <aside className="w-full md:w-72 shrink-0">
+      <aside className="w-full md:w-80 shrink-0">
         <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 md:sticky md:top-24">
           <div className="px-2 pb-1.5">
             <h2 className="text-lg font-bold text-foreground">{dp.sidebarHeading}</h2>
@@ -281,7 +255,7 @@ export function DashboardClient({
       </aside>
 
       {/* Canvas */}
-      <section className="flex-1 min-w-0 h-[700px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section className="flex-1 min-w-0 h-[520px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div className={activeTab === "limits" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <LimitsPanel
             d={d}
@@ -326,7 +300,7 @@ export function DashboardClient({
         )}
         {showReview && (
           <div className={activeTab === "reviews" ? "flex flex-col h-full min-h-0" : "hidden"}>
-            <ReviewsPanel d={d} items={reviews} />
+            <ReviewsGrid items={reviews} d={d} />
           </div>
         )}
       </section>
