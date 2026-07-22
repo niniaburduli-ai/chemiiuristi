@@ -513,14 +513,14 @@ export function ServicesPageClient({
                     key={t.key}
                     type="button"
                     onClick={() => setActiveTab(t.key)}
-                    className={`w-full flex items-center gap-3 h-10 px-4 rounded-full transition-colors text-sm font-medium ${
+                    className={`w-full flex items-center gap-2 h-10 px-3 rounded-full transition-colors text-xs font-medium ${
                       activeTab === t.key
                         ? "bg-primary text-white"
                         : "text-muted-foreground hover:bg-muted"
                     }`}
                   >
                     <t.icon className="h-4 w-4 shrink-0 text-gold" />
-                    {t.label}
+                    <span className="min-w-0 truncate">{t.label}</span>
                   </button>
                 ))}
               </div>
