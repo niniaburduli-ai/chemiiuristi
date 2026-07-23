@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -17,8 +17,8 @@ import { RiskFindingCard, isStructuredFinding } from "@/components/site/risk-fin
 import { TextDiff } from "@/components/site/text-diff";
 import { DocumentDownloadButton } from "@/components/site/document-download-button";
 import { formatDate } from "@/lib/utils";
+import { computeWordDiff } from "@/lib/diff-text";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
-import type { DiffSegment } from "@/lib/diff-text";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
 export type ReviewRevisionItem = {
@@ -28,9 +28,13 @@ export type ReviewRevisionItem = {
   recommendations: string[];
   instruction: string;
   createdAt: string | null;
-  diff: DiffSegment[];
   baseText: string;
 };
+
+function RevisionDiff({ baseText, text }: { baseText: string; text: string }) {
+  const segments = useMemo(() => computeWordDiff(baseText, text), [baseText, text]);
+  return <TextDiff segments={segments} />;
+}
 
 export type ReviewItem = {
   id: string;
@@ -267,7 +271,7 @@ function ReviewDetail({ review }: { review: ReviewItem }) {
                         filename={`${review.fileName || "document"}-corrected-${i + 1}`}
                       />
                     </div>
-                    <TextDiff segments={revision.diff} />
+                    <RevisionDiff baseText={revision.baseText} text={revision.text} />
                   </div>
 
                   {revision.findings.length > 0 && (

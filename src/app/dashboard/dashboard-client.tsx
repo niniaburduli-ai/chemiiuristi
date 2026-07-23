@@ -2,23 +2,33 @@
 
 import { useState, useActionState } from "react";
 import Link from "next/link";
-import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, type LucideIcon } from "lucide-react";
+import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, type LucideIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { ConsultationsGrid, type ConsultationItem } from "./consultations/consultations-grid";
 import { DocumentsList, type GeneratedDocItem } from "./documents/documents-list";
 import { ReviewsGrid, type ReviewItem } from "./reviews/reviews-grid";
 import { updateProfileAction, type ProfileUpdateState } from "@/actions/profile";
 import { requestPasswordResetAction, type ForgotPasswordState } from "@/actions/password-reset";
+import { CancelSubscriptionButton } from "@/components/site/cancel-subscription-button";
 import type { LimitMetric } from "@/components/site/limits-dialog";
 import type { Dict } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
 
-type Tab = "limits" | "profile" | "consultations" | "reviews" | "documents" | "templates";
+type Tab = "limits" | "profile" | "billing" | "consultations" | "reviews" | "documents" | "templates";
 
 type CustomMetric = { key: string; label: string; icon: React.ReactNode; remaining: number };
+
+export type BillingPaymentItem = {
+  id: string;
+  planLabel: string;
+  amount: string;
+  statusLabel: string;
+  paidAtLabel: string;
+};
 
 function LimitsPanel({
   d,
@@ -121,8 +131,10 @@ function ProfilePanel({
   lastName,
   personalNumber,
   phone,
+  onOpenBilling,
 }: {
   d: Dict;
+  onOpenBilling: () => void;
   name: string;
   email: string;
   initials: string;
@@ -187,10 +199,16 @@ function ProfilePanel({
           )}
         </div>
         <div className="flex items-center gap-2 mt-5 flex-wrap">
-          <Link href="/billing" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-gold")}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onOpenBilling}
+            className="border-gold"
+          >
             <CreditCard className="mr-2 h-4 w-4 text-gold" />
             {dp.subscription}
-          </Link>
+          </Button>
           <form action={resetFormAction}>
             <input type="hidden" name="email" value={email} />
             <Button type="submit" variant="outline" size="sm" disabled={resetPending} className="border-gold">
@@ -254,6 +272,95 @@ function ProfilePanel({
   );
 }
 
+function BillingPanel({
+  d,
+  locale,
+  planName,
+  planPrice,
+  isPaid,
+  statusLabel,
+  nextPaymentLabel,
+  canCancel,
+  payments,
+}: {
+  d: Dict;
+  locale: Locale;
+  planName: string;
+  planPrice: string;
+  isPaid: boolean;
+  statusLabel: string | null;
+  nextPaymentLabel: string | null;
+  canCancel: boolean;
+  payments: BillingPaymentItem[];
+}) {
+  const db = d.billing;
+  return (
+    <div className="flex flex-col h-full">
+      <header className="p-5 border-b border-border shrink-0">
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-gold" />
+          {db.currentPlan}
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {isPaid ? db.activeSub : db.freePlanLabel}
+        </p>
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-5 space-y-5">
+        <div className="rounded-xl border border-border p-4">
+          <div className="flex justify-between items-start flex-wrap gap-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-semibold">{planName}</span>
+              <span className="text-muted-foreground text-sm">— {planPrice}</span>
+            </div>
+            {statusLabel && <Badge variant={isPaid ? "default" : "secondary"}>{statusLabel}</Badge>}
+          </div>
+          {isPaid && nextPaymentLabel && (
+            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4 text-gold" />
+              {db.nextPayment} {nextPaymentLabel}
+            </div>
+          )}
+          <div className="mt-4 flex gap-2 flex-wrap">
+            <Link href="/pricing" className={buttonVariants({ size: "sm" }) + " btn-hover"}>
+              {isPaid ? db.changePlan : db.choosePlan}
+            </Link>
+            {canCancel && <CancelSubscriptionButton locale={locale} />}
+          </div>
+        </div>
+
+        <div>
+          <h4 className="text-sm font-bold text-foreground mb-3">{db.paymentHistory}</h4>
+          {payments.length === 0 ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+              <Receipt className="h-4 w-4 text-gold" />
+              {db.noPayments}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-border p-4 space-y-3">
+              {payments.map((p, i) => (
+                <div key={p.id}>
+                  <div className="flex items-center justify-between py-1 flex-wrap gap-2">
+                    <div>
+                      <div className="font-medium text-sm">{p.planLabel}</div>
+                      <div className="text-xs text-muted-foreground">{p.paidAtLabel}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm">{p.amount}</span>
+                      <Badge variant="secondary">{p.statusLabel}</Badge>
+                    </div>
+                  </div>
+                  {i < payments.length - 1 && <Separator />}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DashboardClient({
   d,
   initialTab,
@@ -279,6 +386,14 @@ export function DashboardClient({
   showGenerate,
   showReview,
   showTemplates,
+  locale,
+  billingPlanName,
+  billingPlanPrice,
+  billingIsPaid,
+  billingStatusLabel,
+  billingNextPaymentLabel,
+  billingCanCancel,
+  billingPayments,
 }: {
   d: Dict;
   initialTab?: string;
@@ -304,12 +419,21 @@ export function DashboardClient({
   showGenerate: boolean;
   showReview: boolean;
   showTemplates: boolean;
+  locale: Locale;
+  billingPlanName: string;
+  billingPlanPrice: string;
+  billingIsPaid: boolean;
+  billingStatusLabel: string | null;
+  billingNextPaymentLabel: string | null;
+  billingCanCancel: boolean;
+  billingPayments: BillingPaymentItem[];
 }) {
   const dp = d.profile;
 
   const cabinetTabs: { key: Tab; label: string; icon: LucideIcon; enabled: boolean }[] = [
-    { key: "limits", label: dp.limits, icon: BarChart3, enabled: true },
     { key: "profile", label: dp.myProfile, icon: User, enabled: true },
+    { key: "limits", label: dp.limits, icon: BarChart3, enabled: true },
+    { key: "billing", label: dp.subscription, icon: CreditCard, enabled: true },
   ];
   const historyTabs: { key: Tab; label: string; icon: LucideIcon; enabled: boolean }[] = [
     { key: "consultations", label: dp.aiConsultations, icon: MessagesSquare, enabled: true },
@@ -319,7 +443,7 @@ export function DashboardClient({
   ];
   const enabledTabs = [...cabinetTabs, ...historyTabs].filter((t) => t.enabled);
   const requested = enabledTabs.find((t) => t.key === initialTab)?.key;
-  const [activeTab, setActiveTab] = useState<Tab>(requested ?? enabledTabs[0]?.key ?? "limits");
+  const [activeTab, setActiveTab] = useState<Tab>(requested ?? "limits");
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
@@ -417,6 +541,20 @@ export function DashboardClient({
             lastName={profileLastName}
             personalNumber={profilePersonalNumber}
             phone={profilePhone}
+            onOpenBilling={() => setActiveTab("billing")}
+          />
+        </div>
+        <div className={activeTab === "billing" ? "flex flex-col h-full min-h-0" : "hidden"}>
+          <BillingPanel
+            d={d}
+            locale={locale}
+            planName={billingPlanName}
+            planPrice={billingPlanPrice}
+            isPaid={billingIsPaid}
+            statusLabel={billingStatusLabel}
+            nextPaymentLabel={billingNextPaymentLabel}
+            canCancel={billingCanCancel}
+            payments={billingPayments}
           />
         </div>
         <div className={activeTab === "consultations" ? "flex flex-col h-full min-h-0" : "hidden"}>

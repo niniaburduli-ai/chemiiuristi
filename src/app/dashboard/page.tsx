@@ -14,15 +14,18 @@ import { Subscription } from "@/lib/models/subscription";
 import { Consultation } from "@/lib/models/consultation";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { DocumentReview } from "@/lib/models/document-review";
+import { Payment } from "@/lib/models/payment";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getPlanByKey } from "@/lib/plans-db";
+import { getPlanByKey, getPlans, type PlanData } from "@/lib/plans-db";
+import { effectivePriceMinor } from "@/lib/plan-price";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { getFeatureFlags } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
-import { computeWordDiff } from "@/lib/diff-text";
+import { pick } from "@/lib/i18n/loc";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
+import type { BillingPaymentItem } from "./dashboard-client";
 import { DashboardClient } from "./dashboard-client";
 import type { ConsultationItem, RawSource } from "./consultations/consultations-grid";
 import type { GeneratedDocItem } from "./documents/documents-list";
@@ -43,7 +46,7 @@ export default async function DashboardPage({
   const dateLocale = locale === "en" ? "en-GB" : "ka-GE";
 
   await dbConnect();
-  const [userRaw, sub, flags, consultations, documents, reviews, consultationsCount, documentsCount, reviewsCount, templatesCount] =
+  const [userRaw, sub, flags, consultations, documents, reviews, consultationsCount, documentsCount, reviewsCount, templatesCount, plans, payments] =
     await Promise.all([
       User.findById(session.user.id).select("-passwordHash").lean(),
       Subscription.findOne({ userId: session.user.id }).lean(),
@@ -55,6 +58,8 @@ export default async function DashboardPage({
       GeneratedDocument.countDocuments({ userId: session.user.id, source: { $ne: "template" } }),
       DocumentReview.countDocuments({ userId: session.user.id }),
       GeneratedDocument.countDocuments({ userId: session.user.id, source: "template" }),
+      getPlans(),
+      Payment.find({ userId: session.user.id, sandbox: { $ne: true } }).sort({ paidAt: -1 }).limit(50).lean(),
     ]);
   if (!userRaw) redirect("/login");
   const user = await applyCustomPlanExpiryIfDue(await applyPlanExpiryIfDue(userRaw));
@@ -112,6 +117,38 @@ export default async function DashboardPage({
     expired: dp.statusExpired,
     failed: dp.statusFailed,
   };
+
+  const fmtAmount = (minor: number, currency = "GEL") =>
+    `${(minor / 100).toFixed(2)} ${currency === "GEL" ? "₾" : currency}`;
+  const planMap = new Map(plans.map((p) => [p.key, p]));
+  const billingPlanLabel = (key: string) => {
+    if (key === "custom") return d.billing.customPackageLabel;
+    const p = planMap.get(key);
+    return p ? pick(p.name, p.nameEn, locale) : key;
+  };
+  const billingPlanPrice = (p: PlanData) =>
+    p.priceMinor === 0 ? d.billing.freePlanLabel : `${fmtAmount(effectivePriceMinor(p), p.currency)} / ${d.pricing.perMonth}`;
+  const currentPlanData = planMap.get(plan);
+  const BILLING_STATUS_LABEL: Record<string, string> = {
+    active: d.billing.statusActive,
+    pending: d.billing.statusPending,
+    canceled: d.billing.statusCanceled,
+    declined: d.billing.statusDeclined,
+    expired: d.billing.statusExpired,
+    reversed: d.billing.statusReversed,
+  };
+  const isPaid = plan !== "free";
+  const billingStatus = user.subscriptionStatus || (isPaid ? "active" : "");
+  const billingItems: BillingPaymentItem[] = payments.map((p) => {
+    const id = String((p as unknown as { _id: unknown })._id);
+    return {
+      id,
+      planLabel: billingPlanLabel(p.plan),
+      amount: fmtAmount(p.amount, p.currency),
+      statusLabel: BILLING_STATUS_LABEL[p.status ?? "approved"] ?? d.billing.statusPaid,
+      paidAtLabel: p.paidAt ? new Date(p.paidAt).toLocaleDateString(dateLocale) : "—",
+    };
+  });
 
   const initials = (user.name ?? "?")
     .split(" ")
@@ -245,7 +282,6 @@ export default async function DashboardPage({
           recommendations: rev.recommendations as string[],
           instruction: rev.instruction,
           createdAt: rev.createdAt ? new Date(rev.createdAt).toISOString() : null,
-          diff: computeWordDiff(baseText, rev.text),
           baseText,
         };
       }),
@@ -293,7 +329,7 @@ export default async function DashboardPage({
                 )}
               </div>
             </div>
-            <Link href="/billing" className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}>
+            <Link href="/dashboard?tab=billing" className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}>
               <CreditCard className="mr-2 h-4 w-4 text-gold" />
               {dp.subscription}
             </Link>
@@ -327,6 +363,14 @@ export default async function DashboardPage({
           showGenerate={showGenerate}
           showReview={showReview}
           showTemplates={showTemplates}
+          locale={locale}
+          billingPlanName={billingPlanLabel(plan)}
+          billingPlanPrice={currentPlanData ? billingPlanPrice(currentPlanData) : d.billing.freePlanLabel}
+          billingIsPaid={isPaid}
+          billingStatusLabel={billingStatus ? BILLING_STATUS_LABEL[billingStatus] ?? billingStatus : null}
+          billingNextPaymentLabel={isPaid && user.resetAt ? new Date(user.resetAt).toLocaleDateString(dateLocale) : null}
+          billingCanCancel={isPaid && billingStatus !== "canceled"}
+          billingPayments={billingItems}
         />
       </div>
     </div>
