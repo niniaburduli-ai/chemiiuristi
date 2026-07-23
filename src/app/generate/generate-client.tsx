@@ -153,16 +153,16 @@ export function GenerateClient({ initialType }: { initialType?: string } = {}) {
         <p>ხელშეკრულება შეინახება ისტორიაში 1 თვის ვადით, რის შემდეგაც ავტომატურად წაიშლება.</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[380px_1fr] items-start">
-        <Card className="lg:sticky lg:top-4">
+      <div className="grid gap-6 lg:grid-cols-[460px_1fr] items-start">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">დოკუმენტის ტიპი და დეტალები</CardTitle>
             <CardDescription>
               აირჩიე ტიპი და შეავსე ცნობილი დეტალები
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-[8rem_1fr] gap-3 items-center">
               <Label htmlFor="doc-type">დოკუმენტის ტიპი</Label>
               <select
                 id="doc-type"
@@ -184,8 +184,8 @@ export function GenerateClient({ initialType }: { initialType?: string } = {}) {
             </div>
 
             {fields.map((f) => (
-              <div key={f.key} className="space-y-2">
-                <Label htmlFor={`field-${f.key}`}>{f.label}</Label>
+              <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                <Label htmlFor={`field-${f.key}`} className="pt-2">{f.label}</Label>
                 {f.type === "textarea" ? (
                   <Textarea
                     id={`field-${f.key}`}
@@ -204,16 +204,18 @@ export function GenerateClient({ initialType }: { initialType?: string } = {}) {
               </div>
             ))}
 
-            <div className="space-y-2">
-              <Label htmlFor="extra">დამატებითი დეტალები</Label>
-              <Textarea
-                id="extra"
-                value={extra}
-                onChange={(e) => setExtra(e.target.value)}
-                placeholder="დაამატე ნებისმიერი სხვა მნიშვნელოვანი დეტალი"
-                className="min-h-[80px]"
-              />
-              <p className="text-xs text-muted-foreground">{details.length} / 2000 სიმბოლო</p>
+            <div className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+              <Label htmlFor="extra" className="pt-2">დამატებითი დეტალები</Label>
+              <div className="space-y-1">
+                <Textarea
+                  id="extra"
+                  value={extra}
+                  onChange={(e) => setExtra(e.target.value)}
+                  placeholder="დაამატე ნებისმიერი სხვა მნიშვნელოვანი დეტალი"
+                  className="min-h-[80px]"
+                />
+                <p className="text-xs text-muted-foreground">{details.length} / 2000 სიმბოლო</p>
+              </div>
             </div>
 
             {missingRequired.length > 0 && (

@@ -20,6 +20,12 @@ import {
   LayoutTemplate,
   BookOpen,
   Rocket,
+  Handshake,
+  FileWarning,
+  Banknote,
+  PlaneTakeoff,
+  Receipt,
+  ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -66,6 +72,12 @@ const TEMPLATE_META: Record<string, { icon: LucideIcon; description: string }> =
   "power-of-attorney": { icon: Gavel, description: "წარმომადგენლობის უფლების მინიჭება სხვადასხვა ინსტანციაში" },
   "demand-letter": { icon: Mail, description: "ფორმალური მოთხოვნის წერილი დავალიანების ან ვალდებულების შესახებ" },
   "termination-notice": { icon: UserMinus, description: "შრომითი ხელშეკრულების შეწყვეტის ოფიციალური შეტყობინება" },
+  "service-agreement": { icon: Handshake, description: "შემსრულებელსა და დამკვეთს შორის მომსახურების გაწევის ხელშეკრულება" },
+  "claim-letter": { icon: FileWarning, description: "წერილი-პრეტენზია მოთხოვნის წარსადგენად სასამართლომდე" },
+  "debt-claim": { icon: Banknote, description: "დავალიანების დაფარვის ოფიციალური მოთხოვნა მოვალის მიმართ" },
+  "child-travel-consent": { icon: PlaneTakeoff, description: "მშობლის თანხმობა არასრულწლოვნის საზღვარგარეთ გასამგზავრებლად" },
+  invoice: { icon: Receipt, description: "გადახდის მოთხოვნა მიწოდებული საქონლის ან მომსახურებისთვის" },
+  "acceptance-act": { icon: ClipboardCheck, description: "საქონლის, სამუშაოს ან მომსახურების მიღება-ჩაბარების დამადასტურებელი აქტი" },
 };
 
 function AiConsultPanel({ locale }: { locale: Locale }) {

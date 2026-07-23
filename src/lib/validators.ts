@@ -116,6 +116,12 @@ export const DOC_TYPES = {
   "power-of-attorney": "მინდობილობა",
   "demand-letter": "სამართლებრივი მოთხოვნა",
   "termination-notice": "სამსახურიდან გათავისუფლება",
+  "service-agreement": "მომსახურების ხელშეკრულება",
+  "claim-letter": "წერილი-პრეტენზია",
+  "debt-claim": "დავალიანების დაფარვის მოთხოვნა",
+  "child-travel-consent": "თანხმობა არასრულწლოვნის საზღვარგარეთ გაყვანაზე",
+  invoice: "ინვოისი",
+  "acceptance-act": "მიღება-ჩაბარების აქტი",
 } as const;
 
 export type DocType = keyof typeof DOC_TYPES;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Loader2 } from "lucide-react";
+import { FileText, Loader2, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,30 @@ import { COMMON_FIELDS, QUESTION_SCHEMAS } from "@/lib/legal/document-fields";
 import { DocumentResultPanel, type DocumentResult } from "@/components/site/DocumentResultPanel";
 import { UpgradeRequiredDialog } from "@/components/site/upgrade-required-dialog";
 
+type LineItemRow = { desc: string; qty: string; price: string };
+
+/** Invoice "items" answer is stored as "desc;qty;price" lines (parsed by
+ * buildInvoiceItemsTable in lib/legal/templates.ts) — this UI edits that same
+ * string as separate name/quantity/price columns instead of raw text. */
+function parseItemRows(raw: string): LineItemRow[] {
+  const rows = raw
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [desc = "", qty = "", price = ""] = line.split(";").map((p) => p.trim());
+      return { desc, qty, price };
+    });
+  return rows.length > 0 ? rows : [{ desc: "", qty: "", price: "" }];
+}
+
+function serializeItemRows(rows: LineItemRow[]): string {
+  return rows
+    .filter((r) => r.desc.trim() || r.qty.trim() || r.price.trim())
+    .map((r) => `${r.desc};${r.qty};${r.price}`)
+    .join("\n");
+}
+
 const QUOTA_STRINGS = {
   title: "კრედიტები ამოწურულია",
   body: "თქვენ გამოწურეთ ამ სერვისის უფასო კრედიტები. გასაგრძელებლად გთხოვთ განაახლოთ პაკეტი.",
@@ -29,8 +53,14 @@ const QUOTA_STRINGS = {
 export const TEMPLATE_DOC_TYPES = [
   { value: "rental-agreement", label: "ქირავნობის ხელშეკრულება" },
   { value: "employment-contract", label: "შრომის ხელშეკრულება" },
+  { value: "service-agreement", label: "მომსახურების ხელშეკრულება" },
   { value: "power-of-attorney", label: "მინდობილობა" },
   { value: "termination-notice", label: "სამსახურიდან გათავისუფლება" },
+  { value: "claim-letter", label: "წერილი-პრეტენზია" },
+  { value: "debt-claim", label: "დავალიანების დაფარვის მოთხოვნა" },
+  { value: "child-travel-consent", label: "თანხმობა არასრულწლოვნის საზღვარგარეთ გაყვანაზე" },
+  { value: "invoice", label: "ინვოისი" },
+  { value: "acceptance-act", label: "მიღება-ჩაბარების აქტი" },
 ];
 
 export function TemplatesClient({ initialType }: { initialType?: string } = {}) {
@@ -81,20 +111,20 @@ export function TemplatesClient({ initialType }: { initialType?: string } = {}) 
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <SubPageHeader
-        backHref="/dashboard"
+        backHref="/services?tab=templatesFill"
         icon={<FileText className="h-5 w-5 text-gold" />}
         title="მზა შაბლონები"
         subtitle="შეავსე ველები — დოკუმენტი მზადდება მყისიერად, AI-ს გარეშე"
       />
 
-      <div className="grid gap-6 lg:grid-cols-[380px_1fr] items-start">
-        <Card className="lg:sticky lg:top-4">
+      <div className="grid gap-6 lg:grid-cols-[460px_1fr] items-start">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">შაბლონის ტიპი და დეტალები</CardTitle>
             <CardDescription>აირჩიე ტიპი და შეავსე მონაცემები</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-[8rem_1fr] gap-3 items-center">
               <Label htmlFor="template-type">დოკუმენტის ტიპი</Label>
               <select
                 id="template-type"
@@ -114,26 +144,84 @@ export function TemplatesClient({ initialType }: { initialType?: string } = {}) 
               </select>
             </div>
 
-            {fields.map((f) => (
-              <div key={f.key} className="space-y-2">
-                <Label htmlFor={`field-${f.key}`}>{f.label}</Label>
-                {f.type === "textarea" ? (
-                  <Textarea
-                    id={`field-${f.key}`}
-                    value={answers[f.key] ?? ""}
-                    onChange={(e) => setAnswer(f.key, e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                ) : (
-                  <Input
-                    id={`field-${f.key}`}
-                    type={f.type}
-                    value={answers[f.key] ?? ""}
-                    onChange={(e) => setAnswer(f.key, e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
+            {fields.map((f) => {
+              if (f.key === "items") {
+                const rows = parseItemRows(answers.items ?? "");
+                const updateRow = (idx: number, patch: Partial<LineItemRow>) => {
+                  const next = rows.map((r, i) => (i === idx ? { ...r, ...patch } : r));
+                  setAnswer("items", serializeItemRows(next));
+                };
+                const addRow = () => setAnswer("items", serializeItemRows([...rows, { desc: "", qty: "", price: "" }]));
+                const removeRow = (idx: number) => {
+                  const next = rows.filter((_, i) => i !== idx);
+                  setAnswer("items", serializeItemRows(next.length ? next : [{ desc: "", qty: "", price: "" }]));
+                };
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                    <Label className="pt-2">{f.label}</Label>
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-[1fr_5rem_6rem_1.75rem] gap-2 px-0.5 text-xs text-muted-foreground">
+                        <span>დასახელება</span>
+                        <span>რაოდ.</span>
+                        <span>ერთ. ფასი</span>
+                        <span />
+                      </div>
+                      <div className="space-y-2">
+                        {rows.map((row, idx) => (
+                          <div key={idx} className="grid grid-cols-[1fr_5rem_6rem_1.75rem] gap-2">
+                            <Input
+                              value={row.desc}
+                              onChange={(e) => updateRow(idx, { desc: e.target.value })}
+                            />
+                            <Input
+                              value={row.qty}
+                              onChange={(e) => updateRow(idx, { qty: e.target.value })}
+                            />
+                            <Input
+                              value={row.price}
+                              onChange={(e) => updateRow(idx, { price: e.target.value })}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-7"
+                              disabled={rows.length <= 1}
+                              onClick={() => removeRow(idx)}
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                      <Button type="button" variant="outline" size="sm" onClick={addRow}>
+                        <Plus className="h-3.5 w-3.5 mr-1" /> პოზიციის დამატება
+                      </Button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                  <Label htmlFor={`field-${f.key}`} className="pt-2">{f.label}</Label>
+                  {f.type === "textarea" ? (
+                    <Textarea
+                      id={`field-${f.key}`}
+                      value={answers[f.key] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                      className="min-h-[80px]"
+                    />
+                  ) : (
+                    <Input
+                      id={`field-${f.key}`}
+                      type={f.type}
+                      value={answers[f.key] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                    />
+                  )}
+                </div>
+              );
+            })}
 
             {missingRequired.length > 0 && (
               <p className="text-xs text-muted-foreground">

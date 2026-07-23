@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { renderMarkdownBold } from "@/lib/markdown-bold";
+import { renderDocumentBody } from "@/lib/markdown-bold";
 import { parseDocumentLegalBasis } from "@/lib/legal/citations";
 import {
   Dialog,
@@ -162,7 +162,7 @@ export function DocumentResultPanel({
             />
           ) : (
             <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
-              {renderMarkdownBold(normalizeSpacing(result.content))}
+              {renderDocumentBody(normalizeSpacing(result.content))}
             </div>
           )}
           {saving && <p className="text-xs text-muted-foreground mt-2">ინახება...</p>}
@@ -201,7 +201,7 @@ export function DocumentResultPanel({
             <DialogTitle>{result.title}</DialogTitle>
           </DialogHeader>
           <div className="text-sm whitespace-pre-wrap leading-relaxed">
-            {renderMarkdownBold(normalizeSpacing(result.content))}
+            {renderDocumentBody(normalizeSpacing(result.content))}
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <DropdownMenu>
