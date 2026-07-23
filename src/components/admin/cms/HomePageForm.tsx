@@ -1,16 +1,16 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./ImageUpload"
 import {
-  Eye, EyeOff, Loader2, Plus, Save, Trash2, ChevronUp, ChevronDown,
+  Eye, EyeOff, Loader2, Plus, Save, Trash2, ChevronUp, ChevronDown, ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type {
-  HomePageData, HomePageServiceCard, HomePageStatCard, HomePageFeature, HomePagePlan,
+  HomePageData, HomePageServiceCard, HomePageStatCard, HomePageFeature,
   HomePageHowItWorksItem,
 } from "@/types/cms"
 
@@ -92,14 +92,31 @@ function Reorder({
   )
 }
 
-function SectionHeader({
-  title, visible, onToggle,
-}: { title: string; visible: boolean; onToggle: () => void }) {
+/** Collapsible section card — keeps large field groups out of the way until opened. */
+function CollapsibleCard({
+  title, right, defaultOpen = false, children,
+}: {
+  title: ReactNode
+  right?: ReactNode
+  defaultOpen?: boolean
+  children: ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="flex items-center justify-between">
-      <h3 className="font-medium">{title}</h3>
-      <Vis value={visible} onChange={onToggle} />
-    </div>
+    <section className="rounded-lg border">
+      <div className="flex items-center justify-between gap-2 p-4">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex flex-1 items-center gap-2 text-left font-medium"
+        >
+          <ChevronRight className={cn("h-4 w-4 shrink-0 text-gold transition-transform", open && "rotate-90")} />
+          {title}
+        </button>
+        {right}
+      </div>
+      {open && <div className="space-y-4 border-t p-4">{children}</div>}
+    </section>
   )
 }
 
@@ -306,59 +323,6 @@ export function HomePageForm() {
     })
   }
 
-  // ── Plan helpers ──────────────────────────────────────────────────────────────
-
-  function addPlan() {
-    setData((p) => ({
-      ...p,
-      plans: [
-        ...p.plans,
-        { _id: uid(), name: "", price: "0", badge: "", ctaText: "", ctaHref: "/register", plan: "", highlighted: false, visible: true, order: p.plans.length, items: [] },
-      ],
-    }))
-  }
-
-  function updPlan(i: number, patch: Partial<HomePagePlan>) {
-    setData((p) => {
-      const plans = [...p.plans]
-      plans[i] = { ...plans[i], ...patch }
-      return { ...p, plans }
-    })
-  }
-
-  function delPlan(i: number) {
-    setData((p) => ({
-      ...p,
-      plans: p.plans.filter((_, j) => j !== i).map((pl, idx) => ({ ...pl, order: idx })),
-    }))
-  }
-
-  function addPlanItem(pi: number) {
-    setData((p) => {
-      const plans = [...p.plans]
-      plans[pi] = { ...plans[pi], items: [...plans[pi].items, ""] }
-      return { ...p, plans }
-    })
-  }
-
-  function updPlanItem(pi: number, ii: number, val: string) {
-    setData((p) => {
-      const plans = [...p.plans]
-      const items = [...plans[pi].items]
-      items[ii] = val
-      plans[pi] = { ...plans[pi], items }
-      return { ...p, plans }
-    })
-  }
-
-  function delPlanItem(pi: number, ii: number) {
-    setData((p) => {
-      const plans = [...p.plans]
-      plans[pi] = { ...plans[pi], items: plans[pi].items.filter((_, j) => j !== ii) }
-      return { ...p, plans }
-    })
-  }
-
   const sec = data.sections
 
   return (
@@ -380,13 +344,16 @@ export function HomePageForm() {
       </section>
 
       {/* ── Hero ── */}
-      <section className="space-y-4 rounded-lg border p-4">
-        <SectionHeader
-          title="Hero სექცია"
-          visible={sec.hero}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, hero: !p.sections.hero } }))}
-        />
-
+      <CollapsibleCard
+        title="Hero სექცია"
+        defaultOpen
+        right={
+          <Vis
+            value={sec.hero}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, hero: !p.sections.hero } }))}
+          />
+        }
+      >
         <BiInput
           label="Title"
           kaValue={data.hero.title}
@@ -500,15 +467,18 @@ export function HomePageForm() {
             </div>
           ))}
         </div>
-      </section>
+      </CollapsibleCard>
 
       {/* ── Stats ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <SectionHeader
-          title="სტატისტიკა"
-          visible={sec.stats}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, stats: !p.sections.stats } }))}
-        />
+      <CollapsibleCard
+        title="სტატისტიკა"
+        right={
+          <Vis
+            value={sec.stats}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, stats: !p.sections.stats } }))}
+          />
+        }
+      >
 
         <BiInput
           label="სექციის სათაური"
@@ -605,16 +575,18 @@ export function HomePageForm() {
             <Plus className="mr-1 h-3 w-3 text-gold" /> Add Stat
           </Button>
         </div>
-      </section>
+      </CollapsibleCard>
 
       {/* ── Features ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <SectionHeader
-          title='Features ("რატომ ჩვენ")'
-          visible={sec.features}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, features: !p.sections.features } }))}
-        />
-
+      <CollapsibleCard
+        title='Features ("რატომ ჩვენ")'
+        right={
+          <Vis
+            value={sec.features}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, features: !p.sections.features } }))}
+          />
+        }
+      >
         <BiInput
           label="სექციის სათაური"
           kaValue={data.featuresHeading}
@@ -663,16 +635,18 @@ export function HomePageForm() {
             <Plus className="mr-1 h-3 w-3 text-gold" /> Add Feature
           </Button>
         </div>
-      </section>
+      </CollapsibleCard>
 
       {/* ── How It Works ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <SectionHeader
-          title='როგორ მუშაობს ("How it Works")'
-          visible={sec.howItWorks}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, howItWorks: !p.sections.howItWorks } }))}
-        />
-
+      <CollapsibleCard
+        title='როგორ მუშაობს ("How it Works")'
+        right={
+          <Vis
+            value={sec.howItWorks}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, howItWorks: !p.sections.howItWorks } }))}
+          />
+        }
+      >
         <BiInput
           label="სექციის სათაური"
           kaValue={data.howItWorksHeading}
@@ -726,16 +700,18 @@ export function HomePageForm() {
             </div>
           ))}
         </div>
-      </section>
+      </CollapsibleCard>
 
       {/* ── Pricing ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <SectionHeader
-          title="პაკეტები (Pricing)"
-          visible={sec.pricing}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, pricing: !p.sections.pricing } }))}
-        />
-
+      <CollapsibleCard
+        title="პაკეტები (Pricing)"
+        right={
+          <Vis
+            value={sec.pricing}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, pricing: !p.sections.pricing } }))}
+          />
+        }
+      >
         <BiInput
           label="სექციის სათაური"
           kaValue={data.pricingHeading}
@@ -747,97 +723,18 @@ export function HomePageForm() {
         <p className="rounded-md border border-dashed bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
           ფასები და პაკეტები იმართება „გეგმები&quot; ტაბიდან — ეს სექცია ავტომატურად ასახავს მათ. აქ მხოლოდ სათაურსა და ხილვადობას აკონტროლებ.
         </p>
-
-        <div className="hidden space-y-3">
-          {data.plans.map((plan, pi) => (
-            <div key={plan._id} className="rounded border p-3 space-y-3">
-              <div className="flex items-start gap-2">
-                <Reorder
-                  onUp={() => setData((p) => ({ ...p, plans: moveItem(p.plans, pi, -1) }))}
-                  onDown={() => setData((p) => ({ ...p, plans: moveItem(p.plans, pi, 1) }))}
-                  isFirst={pi === 0}
-                  isLast={pi === data.plans.length - 1}
-                />
-                <div className="flex-1 grid gap-2 sm:grid-cols-2">
-                  <div>
-                    <Label className="text-xs">Name</Label>
-                    <Input value={plan.name} onChange={(e) => updPlan(pi, { name: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Price (₾)</Label>
-                    <Input value={plan.price} onChange={(e) => updPlan(pi, { price: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Badge (empty = none)</Label>
-                    <Input value={plan.badge} onChange={(e) => updPlan(pi, { badge: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Plan type</Label>
-                    <select
-                      value={plan.plan}
-                      onChange={(e) => updPlan(pi, { plan: e.target.value })}
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-                    >
-                      <option value="">Free (renders Link)</option>
-                      <option value="standard">standard</option>
-                      <option value="premium">premium</option>
-                    </select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">CTA Text</Label>
-                    <Input value={plan.ctaText} onChange={(e) => updPlan(pi, { ctaText: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">CTA Href</Label>
-                    <Input value={plan.ctaHref} onChange={(e) => updPlan(pi, { ctaHref: e.target.value })} />
-                  </div>
-                  <div className="flex items-center gap-2 sm:col-span-2">
-                    <input
-                      type="checkbox"
-                      id={`hl-${plan._id}`}
-                      checked={plan.highlighted}
-                      onChange={(e) => updPlan(pi, { highlighted: e.target.checked })}
-                      className="h-4 w-4"
-                    />
-                    <label htmlFor={`hl-${plan._id}`} className="text-xs text-muted-foreground cursor-pointer">
-                      Highlighted (featured card style)
-                    </label>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1 shrink-0">
-                  <Vis value={plan.visible} onChange={(v) => updPlan(pi, { visible: v })} />
-                  <DeleteBtn onClick={() => delPlan(pi)} />
-                </div>
-              </div>
-
-              <div className="space-y-1.5 pl-8 border-t pt-3">
-                <Label className="text-xs">Feature bullets</Label>
-                {plan.items.map((item, ii) => (
-                  <div key={ii} className="flex gap-2">
-                    <Input value={item} onChange={(e) => updPlanItem(pi, ii, e.target.value)} />
-                    <DeleteBtn onClick={() => delPlanItem(pi, ii)} />
-                  </div>
-                ))}
-                <Button type="button" size="sm" variant="ghost" onClick={() => addPlanItem(pi)}>
-                  <Plus className="mr-1 h-3 w-3 text-gold" /> Add bullet
-                </Button>
-              </div>
-            </div>
-          ))}
-          <Button type="button" size="sm" variant="outline" onClick={addPlan}>
-            <Plus className="mr-1 h-3 w-3 text-gold" /> Add Plan
-          </Button>
-        </div>
-      </section>
+      </CollapsibleCard>
 
       {/* ── FAQ ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <SectionHeader
-          title="კითხვა-პასუხი (FAQ)"
-          visible={sec.faq}
-          onToggle={() => setData((p) => ({ ...p, sections: { ...p.sections, faq: !p.sections.faq } }))}
-        />
-
+      <CollapsibleCard
+        title="კითხვა-პასუხი (FAQ)"
+        right={
+          <Vis
+            value={sec.faq}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, faq: !p.sections.faq } }))}
+          />
+        }
+      >
         <BiInput
           label="სექციის სათაური"
           kaValue={data.faqHeading}
@@ -849,11 +746,10 @@ export function HomePageForm() {
         <p className="rounded-md border border-dashed bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
           კითხვები და პასუხები იმართება „კითხვა-პასუხი (FAQ)&quot; ტაბიდან — ეს სექცია ავტომატურად ასახავს გამოქვეყნებულ ჩანაწერებს. აქ მხოლოდ სათაურსა და ხილვადობას აკონტროლებ.
         </p>
-      </section>
+      </CollapsibleCard>
 
       {/* ── CTA button (hero) ── */}
-      <section className="space-y-3 rounded-lg border p-4">
-        <h3 className="font-medium">სარეგისტრაციო ღილაკი (Hero)</h3>
+      <CollapsibleCard title="სარეგისტრაციო ღილაკი (Hero)">
         <BiInput
           label="Button text"
           kaValue={data.ctaSection.buttonText}
@@ -868,7 +764,7 @@ export function HomePageForm() {
             onChange={(e) => setData((p) => ({ ...p, ctaSection: { ...p.ctaSection, buttonHref: e.target.value } }))}
           />
         </div>
-      </section>
+      </CollapsibleCard>
 
       {/* Save */}
       <div className="flex items-center gap-3">
