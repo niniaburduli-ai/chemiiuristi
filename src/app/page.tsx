@@ -177,7 +177,7 @@ export default async function Home() {
           </div>
 
           {/* Directional scrim — protects text legibility on the left without dimming the statue where it needs to pop (right/lower) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/85 to-transparent lg:via-slate-900/35 lg:to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/55 to-transparent lg:via-slate-900/35 lg:to-transparent pointer-events-none" />
 
           <div className="relative container mx-auto px-4">
             <div className="flex flex-col justify-center min-h-[420px] lg:min-h-[500px] py-10 lg:py-14 max-w-[640px] gap-4">
@@ -285,7 +285,7 @@ export default async function Home() {
                   <div
                     className={`mx-auto flex-1 ${
                       sections.features !== false && features.length > 0
-                        ? "flex flex-col justify-evenly w-[65%]"
+                        ? "flex flex-col justify-evenly gap-4 w-[65%]"
                         : `grid gap-3 ${statsGrid(visibleCardCount)}`
                     }`}
                   >
