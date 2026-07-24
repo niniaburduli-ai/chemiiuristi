@@ -522,9 +522,9 @@ export function ServicesPageClient({
         {enabledTabs.length === 0 ? (
           <p className="text-center text-muted-foreground py-16">{sm.templatesNoResults}</p>
         ) : (
-          <div className="flex flex-col gap-6 md:grid md:grid-cols-[minmax(18rem,1fr)_3fr]">
+          <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
             {/* Sidebar */}
-            <aside className="w-full flex flex-col gap-3 md:sticky md:top-24 md:h-[520px] md:overflow-y-auto">
+            <aside className="w-full md:w-80 shrink-0 flex flex-col gap-3">
               <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
                 <div className="px-2 pb-1.5">
                   <h2 className="text-lg font-bold text-foreground">{sm.sidebarHeading}</h2>
@@ -552,22 +552,23 @@ export function ServicesPageClient({
               </div>
 
               <div className="bg-card border border-border rounded-2xl p-3 shrink-0">
-                <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex items-center gap-2 mb-2">
                   <User className="h-5 w-5 text-gold" />
                   <h3 className="text-lg font-bold text-foreground">{sm.cabinetTitle}</h3>
                 </div>
-                <ul className="text-sm text-muted-foreground space-y-0.5 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
+                  <li>{d.profile.subscription}</li>
                   <li>{sm.cabinetLimitsItem}</li>
                   <li>{sm.cabinetHistoryItem}</li>
                 </ul>
-                <Link href="/dashboard" className={buttonVariants({ className: "w-full h-9 rounded-full mt-2" })}>
+                <Link href="/dashboard" className={buttonVariants({ className: "w-full h-9 rounded-full mt-3" })}>
                   {sm.cabinetCta}
                 </Link>
               </div>
             </aside>
 
             {/* Canvas */}
-            <section className="min-w-0 h-[520px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <section className="flex-1 min-w-0 md:h-full bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <div className={activeTab === "ai" ? "flex flex-col h-full min-h-0" : "hidden"}>
                 {flags.chat && <AiConsultPanel locale={locale} />}
               </div>

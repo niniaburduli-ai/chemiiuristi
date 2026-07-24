@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["pdf-parse", "tesseract.js"],
   allowedDevOrigins: ["192.168.1.2"],
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 5,
+  },
 };
 
 export default nextConfig;
