@@ -168,15 +168,19 @@ export default async function Home() {
                 sizes="(max-width: 1024px) 100vw, 62vw"
                 className="object-contain drop-shadow-[0_10px_50px_rgba(0,0,0,0.45)]"
               />
-              <Image
-                src="/kartlis_deda_scale.png"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(max-width: 1024px) 47vw, 29vw"
-                className="animate-scale-sway object-contain"
+              <div
+                className="absolute animate-scale-sway"
                 style={{ left: "52.78%", top: "20.57%", width: "46.67%", height: "20.42%" }}
-              />
+              >
+                <Image
+                  src="/kartlis_deda_scale.png"
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(max-width: 1024px) 47vw, 29vw"
+                  className="object-contain"
+                />
+              </div>
             </div>
           </div>
 
