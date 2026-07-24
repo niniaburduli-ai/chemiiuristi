@@ -6,6 +6,7 @@ import { DocumentReview } from "@/lib/models/document-review";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { splitQuota, applyQuotaSplit, totalRemaining } from "@/lib/quota";
 import { callOpenRouterChat } from "@/lib/ai-call";
+import { maskPII, unmaskPII } from "@/lib/privacy/pii-mask";
 import { ReviewDocTextSchema } from "@/lib/validators";
 import {
   ANALYSIS_SYSTEM_PROMPT,
@@ -192,18 +193,20 @@ export async function POST(req: Request) {
     );
   }
 
+  const { masked: maskedText, map: piiMap } = maskPII(text);
+
   let raw: string;
   let costUsd = 0;
   try {
     const result = await callOpenRouterChat(
       [
         { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
-        { role: "user", content: `გაანალიზე ეს დოკუმენტი:\n\n${text}` },
+        { role: "user", content: `გაანალიზე ეს დოკუმენტი:\n\n${maskedText}` },
       ],
       undefined,
       6000
     );
-    raw = result.content;
+    raw = unmaskPII(result.content, piiMap);
     costUsd = result.costUsd;
   } catch (err) {
     return NextResponse.json(
