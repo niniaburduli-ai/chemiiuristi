@@ -12,6 +12,8 @@ import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-exp
 import { splitQuota, applyQuotaSplit } from "@/lib/quota";
 import { DelimiterSplitter } from "@/lib/streaming/delimiter-splitter";
 import { encodeMeta } from "@/lib/streaming/chat-protocol";
+import { maskPII, unmaskPII } from "@/lib/privacy/pii-mask";
+import { PiiUnmaskStream } from "@/lib/privacy/pii-unmask-stream";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -113,10 +115,11 @@ export async function POST(req: Request) {
 
   const locale = parsed.data.locale;
   const typeName = docTypeLabel(parsed.data.type, locale);
+  const { masked: maskedDetails, map: piiMap } = maskPII(parsed.data.details);
   const userMsg =
     locale === "en"
-      ? `Document type: ${typeName}\n\nDetails:\n${parsed.data.details}`
-      : `დოკუმენტის ტიპი: ${typeName}\n\nდეტალები:\n${parsed.data.details}`;
+      ? `Document type: ${typeName}\n\nDetails:\n${maskedDetails}`
+      : `დოკუმენტის ტიპი: ${typeName}\n\nდეტალები:\n${maskedDetails}`;
 
   let deltas: AsyncGenerator<string, number, unknown>;
   try {
@@ -153,6 +156,7 @@ export async function POST(req: Request) {
       // Only the prefix (document body) is forwarded live; the citation
       // block is buffered silently and processed after the stream ends.
       const splitter = new DelimiterSplitter(CITATIONS_DELIM);
+      const piiStream = new PiiUnmaskStream(piiMap);
       let full = "";
       let midStreamError = false;
       let generationCostUsd = 0;
@@ -161,12 +165,14 @@ export async function POST(req: Request) {
         while (!r.done) {
           full += r.value;
           const safe = splitter.push(r.value);
-          if (safe) controller.enqueue(encoder.encode(safe));
+          if (safe) controller.enqueue(encoder.encode(piiStream.push(safe)));
           r = await deltas.next();
         }
         generationCostUsd = r.value ?? 0;
         const { prose } = splitter.finish();
-        if (prose) controller.enqueue(encoder.encode(prose));
+        if (prose) controller.enqueue(encoder.encode(piiStream.push(prose)));
+        const trailing = piiStream.finish();
+        if (trailing) controller.enqueue(encoder.encode(trailing));
       } catch {
         midStreamError = true;
       }
@@ -193,7 +199,7 @@ export async function POST(req: Request) {
       // rare case, but the authoritative `content` below (what's actually
       // saved, and what the client swaps to once the stream ends) is always
       // fully stripped either way.
-      const content = body_.replace(/^#{1,6}\s*/gm, "");
+      const content = unmaskPII(body_.replace(/^#{1,6}\s*/gm, ""), piiMap);
       const citationsSection =
         delimIndex === -1 ? "" : full.slice(delimIndex + CITATIONS_DELIM.length).trim();
 
@@ -214,6 +220,7 @@ export async function POST(req: Request) {
           await setCachedCitations(parsed.data.type, verified.text, locale);
         }
       }
+      legalBasis = unmaskPII(legalBasis, piiMap);
 
       const title = `${typeName} — ${new Date().toISOString().slice(0, 10)}`;
 
