@@ -6,6 +6,7 @@ import { User } from "@/lib/models/user";
 import { DocumentReview } from "@/lib/models/document-review";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { callOpenRouterChat } from "@/lib/ai-call";
+import { maskPII, unmaskPII } from "@/lib/privacy/pii-mask";
 import { DocumentImproveSchema } from "@/lib/validators";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
 import {
@@ -92,6 +93,7 @@ export async function POST(req: Request) {
     findings: currentFindings,
     instruction,
   });
+  const { masked: maskedUserMessage, map: piiMap } = maskPII(userMessage);
 
   let raw: string;
   let costUsd = 0;
@@ -99,12 +101,12 @@ export async function POST(req: Request) {
     const result = await callOpenRouterChat(
       [
         { role: "system", content: IMPROVEMENT_SYSTEM_PROMPT },
-        { role: "user", content: userMessage },
+        { role: "user", content: maskedUserMessage },
       ],
       undefined,
       16000
     );
-    raw = result.content;
+    raw = unmaskPII(result.content, piiMap);
     costUsd = result.costUsd;
   } catch (err) {
     return NextResponse.json(
