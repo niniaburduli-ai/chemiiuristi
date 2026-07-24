@@ -66,14 +66,17 @@ export const ANSWER_MODEL_FREE_2 =
  * Escalation ladder for the grounded answer call. Tried in order (see the
  * tier loop in app/api/chat/route.ts) until one produces a verified-citation
  * answer; the last rung's output is accepted even if still unverified.
+ *
+ * free1/free2 are defined above and wired into modelForTier, but are
+ * deliberately NOT in the active order below — a live test showed free
+ * models producing inconsistent, hedging/clarifying-question answers where
+ * the paid model reliably gave a direct one, and there's no free (zero-cost)
+ * way to catch that the way the citation check catches fabricated law
+ * articles. Reintroducing them is a one-line change ("free1", "free2", ...)
+ * if that's revisited later.
  */
 export type AnswerTier = "free1" | "free2" | "cheap" | "complex";
-export const ANSWER_TIER_ORDER: AnswerTier[] = [
-  "free1",
-  "free2",
-  "cheap",
-  "complex",
-];
+export const ANSWER_TIER_ORDER: AnswerTier[] = ["cheap", "complex"];
 
 function modelForTier(tier: AnswerTier): string {
   switch (tier) {

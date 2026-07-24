@@ -566,9 +566,13 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
                   </div>
                 </td>
                 <td>
-                  <span className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">
-                    {formatModelTier(c.modelTier)}
-                  </span>
+                  {c.modelTier ? (
+                    <span className="rounded-full border px-2 py-0.5 text-xs whitespace-nowrap text-muted-foreground">
+                      {formatModelTier(c.modelTier)}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">უცნობი (ძველი ჩანაწერი)</span>
+                  )}
                 </td>
                 <td className="text-muted-foreground">{formatDate(c.createdAt)}</td>
                 <td className="text-right">
