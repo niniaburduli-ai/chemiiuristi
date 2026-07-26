@@ -23,6 +23,7 @@ import {
   Scale,
   Star,
   Loader2,
+  FileStack,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -52,6 +53,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { DOC_TYPES } from "@/lib/validators";
+import {
+  STEP_QUANTITIES,
+  DEFAULT_CUSTOM_RATES,
+  type CustomPlanRatesData,
+  type CustomService,
+} from "@/lib/custom-plan-rates-config";
 
 export type UploadRow = {
   id: string;
@@ -129,6 +136,42 @@ function formatCostUsd(costUsd: number): string {
   return `$${usdStr} (~${gelStr} ₾)`;
 }
 
+/** GEL minor units (tetri) to a "₾X.XX" string. */
+function formatGel(minor: number): string {
+  return `₾${(minor / 100).toFixed(2)}`;
+}
+
+/** Maps a lazily-loaded admin section to the matching custom-plan-rates service key. */
+const SERVICE_BY_SECTION: Partial<Record<AdminSection, CustomService>> = {
+  consultations: "consultations",
+  documents: "docGeneration",
+  reviews: "docReview",
+  templates: "docTemplates",
+};
+
+/** Client-facing price note for a service tab — the current per-unit rate
+ * charged to custom-plan buyers, sourced from CustomPlanRates (editable in
+ * the "ინდ. პაკეტის ფასები" panel). Distinct from the AI cost column shown
+ * per row, which is what the service costs us, not the customer. */
+function ServicePriceNote({
+  service,
+  rates,
+}: {
+  service: CustomService;
+  rates: CustomPlanRatesData | null;
+}) {
+  if (!rates) return null;
+  const qty = STEP_QUANTITIES[0];
+  const totalMinor = rates[service][0];
+  const unitMinor = totalMinor / qty;
+  return (
+    <p className="mb-3 text-xs text-muted-foreground">
+      მომხმარებლის ფასი: <span className="font-medium text-foreground">{formatGel(unitMinor)}</span> / ერთეული
+      {" "}({formatGel(totalMinor)} — {qty}-ცალიანი პაკეტი)
+    </p>
+  );
+}
+
 export type GeneratedDocRow = {
   id: string;
   title: string;
@@ -176,7 +219,7 @@ function SectionLoading() {
 }
 
 type AdminSection =
-  | "overview" | "users" | "consultations" | "documents" | "reviews" | "feedback"
+  | "overview" | "users" | "consultations" | "documents" | "templates" | "reviews" | "feedback"
   | "files" | "cms" | "theme" | "plans" | "custom-plan-rates" | "features" | "database";
 
 type SectionCounts = {
@@ -184,6 +227,7 @@ type SectionCounts = {
   users: number;
   consultations: number;
   generatedDocs: number;
+  templates: number;
   reviews: number;
   feedback: number;
 };
@@ -214,6 +258,31 @@ function useLazySection<T>(url: string, active: boolean) {
   return [rows, setRows] as const;
 }
 
+/** Fetches the customer-facing custom-plan rate table once, the first time
+ * any of the four service tabs it's shown alongside is opened. */
+function useCustomRates(active: boolean) {
+  const [rates, setRates] = useState<CustomPlanRatesData | null>(null);
+
+  useEffect(() => {
+    if (!active || rates !== null) return;
+    let cancelled = false;
+    fetch("/api/admin/custom-plan-rates")
+      .then((r) => r.json())
+      .then(({ data }) => {
+        if (!cancelled) setRates(data?.rates ?? DEFAULT_CUSTOM_RATES);
+      })
+      .catch(() => {
+        if (!cancelled) setRates(DEFAULT_CUSTOM_RATES);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, rates === null]);
+
+  return rates;
+}
+
 export function AdminDashboard({
   currentUserId,
   counts,
@@ -233,9 +302,11 @@ export function AdminDashboard({
     "/api/admin/generated-documents",
     section === "documents"
   );
+  const [templates] = useLazySection<GeneratedDocRow>("/api/admin/templates", section === "templates");
   const [reviews] = useLazySection<ReviewRow>("/api/admin/reviews", section === "reviews");
   const [feedback] = useLazySection<FeedbackRow>("/api/admin/feedback", section === "feedback");
   const [uploads, setUploads] = useLazySection<UploadRow>("/api/admin/uploads", section === "files");
+  const rates = useCustomRates(section in SERVICE_BY_SECTION);
 
   const NAV: { group: string; items: { id: AdminSection; label: string; icon: LucideIcon; count?: number }[] }[] = [
     {
@@ -245,6 +316,7 @@ export function AdminDashboard({
         { id: "users", label: "მომხმარებლები", icon: Users, count: counts.users },
         { id: "consultations", label: "კონსულტაციები", icon: MessagesSquare, count: counts.consultations },
         { id: "documents", label: "დოკუმენტები", icon: FileText, count: counts.generatedDocs },
+        { id: "templates", label: "შაბლონები", icon: FileStack, count: counts.templates },
         { id: "reviews", label: "მიმოხილვები", icon: FileSearch, count: counts.reviews },
         { id: "feedback", label: "შეფასებები", icon: Star, count: counts.feedback },
         { id: "files", label: "ფაილები", icon: ImageIcon, count: counts.uploads },
@@ -331,13 +403,36 @@ export function AdminDashboard({
         : <UsersTable initial={users} currentUserId={currentUserId} onUsersChange={setUsers} />;
       break;
     case "consultations":
-      content = consultations === null ? <SectionLoading /> : <ConsultationsTable initial={consultations} />;
+      content = consultations === null ? <SectionLoading /> : (
+        <>
+          <ServicePriceNote service="consultations" rates={rates} />
+          <ConsultationsTable initial={consultations} />
+        </>
+      );
       break;
     case "documents":
-      content = generatedDocs === null ? <SectionLoading /> : <GeneratedDocsTable initial={generatedDocs} />;
+      content = generatedDocs === null ? <SectionLoading /> : (
+        <>
+          <ServicePriceNote service="docGeneration" rates={rates} />
+          <GeneratedDocsTable initial={generatedDocs} />
+        </>
+      );
+      break;
+    case "templates":
+      content = templates === null ? <SectionLoading /> : (
+        <>
+          <ServicePriceNote service="docTemplates" rates={rates} />
+          <GeneratedDocsTable initial={templates} emptyLabel="შაბლონები არ არის" />
+        </>
+      );
       break;
     case "reviews":
-      content = reviews === null ? <SectionLoading /> : <ReviewsTable initial={reviews} />;
+      content = reviews === null ? <SectionLoading /> : (
+        <>
+          <ServicePriceNote service="docReview" rates={rates} />
+          <ReviewsTable initial={reviews} />
+        </>
+      );
       break;
     case "feedback":
       content = feedback === null ? <SectionLoading /> : <FeedbackTable initial={feedback} />;
@@ -695,7 +790,7 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
 
 /* -------------------------------- Generated Docs -------------------------------- */
 
-function GeneratedDocsTable({ initial }: { initial: GeneratedDocRow[] }) {
+function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტები არ არის" }: { initial: GeneratedDocRow[]; emptyLabel?: string }) {
   return (
     <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
@@ -710,7 +805,7 @@ function GeneratedDocsTable({ initial }: { initial: GeneratedDocRow[] }) {
         </thead>
         <tbody>
           {initial.length === 0 && (
-            <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">დოკუმენტები არ არის</td></tr>
+            <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{emptyLabel}</td></tr>
           )}
           {initial.map((d) => (
             <tr key={d.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">

@@ -13,7 +13,7 @@ export async function GET() {
   }
 
   await dbConnect();
-  const items = await GeneratedDocument.find({ source: { $ne: "template" } })
+  const items = await GeneratedDocument.find({ source: "template" })
     .select("userId title type costUsd createdAt")
     .sort({ createdAt: -1 })
     .limit(500)

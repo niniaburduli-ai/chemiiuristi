@@ -21,12 +21,13 @@ export default async function AdminPage() {
   // section loads lazily from its own API route the first time that tab is
   // opened (see AdminDashboard), so the initial page load never has to pull
   // every collection (with populated owners) up front.
-  const [uploads, users, consultations, generatedDocs, reviews, feedback] =
+  const [uploads, users, consultations, generatedDocs, templates, reviews, feedback] =
     await Promise.all([
       Upload.estimatedDocumentCount(),
       User.estimatedDocumentCount(),
       Consultation.estimatedDocumentCount(),
-      GeneratedDocument.estimatedDocumentCount(),
+      GeneratedDocument.countDocuments({ source: { $ne: "template" } }),
+      GeneratedDocument.countDocuments({ source: "template" }),
       DocumentReview.estimatedDocumentCount(),
       Feedback.estimatedDocumentCount(),
     ]);
@@ -35,7 +36,7 @@ export default async function AdminPage() {
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <AdminDashboard
         currentUserId={session.user.id}
-        counts={{ uploads, users, consultations, generatedDocs, reviews, feedback }}
+        counts={{ uploads, users, consultations, generatedDocs, templates, reviews, feedback }}
       />
     </div>
   );
