@@ -81,7 +81,7 @@ export function ConsultationsGrid({ items, d }: { items: ConsultationItem[]; d: 
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-12 px-5">
             {dp.noConsultations}{" "}
-            <Link href="/chat" className="underline text-gold">
+            <Link href="/services?tab=ai" className="underline text-gold">
               {dp.startChat}
             </Link>
           </p>
