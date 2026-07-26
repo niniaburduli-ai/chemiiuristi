@@ -4,7 +4,7 @@ import { getDict } from "@/lib/i18n/dictionaries"
 import { PageHero } from "@/components/site/PageHero"
 import { LegislationClient } from "./legislation-client"
 import { JsonLd } from "@/components/site/JsonLd"
-import { buildMetadata, breadcrumbJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
+import { buildMetadata, breadcrumbJsonLd, enPath, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -32,14 +32,22 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LegislationPage() {
   const locale = await getLocale()
+  const isEn = locale === "en"
   const d = getDict(locale)
   return (
     <div>
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "მთავარი", path: "/" },
-          { name: "კანონმდებლობა", path: "/legislation" },
-        ])}
+        data={breadcrumbJsonLd(
+          isEn
+            ? [
+                { name: "Home", path: enPath("/") },
+                { name: "Legislation", path: enPath("/legislation") },
+              ]
+            : [
+                { name: "მთავარი", path: "/" },
+                { name: "კანონმდებლობა", path: "/legislation" },
+              ]
+        )}
       />
       <PageHero title={d.legislation.title} subtitle={d.legislation.subtitle} />
       <LegislationClient locale={locale} />

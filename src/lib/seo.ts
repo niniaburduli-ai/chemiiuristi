@@ -87,9 +87,21 @@ export const KEYWORDS_EN = [
   "traffic fines",
   "know your rights",
   "online lawyer",
-  "legal help Georgia",
-  "Georgian law",
   "legal documents",
+  // Georgia (country) disambiguation — "Georgia" alone collides with the US
+  // state in search, so pair it with "country" / "Tbilisi" / nationality terms.
+  "lawyer in Georgia country",
+  "Georgian lawyer",
+  "Tbilisi lawyer",
+  "law firm Tbilisi",
+  "legal help Georgia country",
+  "Georgia law firm",
+  "Republic of Georgia lawyer",
+  "Georgian law explained in English",
+  "immigration lawyer Georgia country",
+  "business lawyer Tbilisi",
+  "expat legal advice Georgia",
+  "online lawyer Georgia country",
 ] as const
 
 export const DEFAULT_KEYWORDS: string[] = [...KEYWORDS_KA, ...KEYWORDS_EN]
@@ -186,7 +198,7 @@ export function buildMetadata(opts: BuildMetaOpts): Metadata {
       url,
       title,
       description,
-      siteName: SITE_NAME_KA,
+      siteName: locale === "en" ? SITE_NAME_EN : SITE_NAME_KA,
       locale: locale === "en" ? "en_US" : "ka_GE",
       alternateLocale: locale === "en" ? ["ka_GE"] : ["en_US"],
       ...(publishedTime ? { publishedTime } : {}),
@@ -207,45 +219,48 @@ export function buildMetadata(opts: BuildMetaOpts): Metadata {
 /* ------------------------------------------------------------------ */
 
 /** Organization + LegalService — describes the business to search engines. */
-export function organizationJsonLd(sameAs?: string[]) {
+export function organizationJsonLd(sameAs?: string[], locale: Locale = "ka") {
+  const isEn = locale === "en"
   return {
     "@context": "https://schema.org",
     "@type": ["Organization", "LegalService"],
     "@id": `${SITE_URL}/#organization`,
-    name: SITE_NAME_KA,
-    alternateName: SITE_NAME_EN,
+    name: isEn ? SITE_NAME_EN : SITE_NAME_KA,
+    alternateName: isEn ? SITE_NAME_KA : SITE_NAME_EN,
     url: SITE_URL,
     logo: absUrl("/icon"),
     image: absUrl("/opengraph-image"),
-    description:
-      "AI იურისტი — ხელმისაწვდომი იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი საქართველოს კანონმდებლობის საფუძველზე.",
+    description: isEn
+      ? "AI lawyer — accessible legal consultation, contract review and generation, and risk analysis grounded in Georgian law (Republic of Georgia)."
+      : "AI იურისტი — ხელმისაწვდომი იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი საქართველოს კანონმდებლობის საფუძველზე.",
     areaServed: { "@type": "Country", name: "Georgia" },
     availableLanguage: ["ka", "en"],
     knowsLanguage: ["ka", "en"],
-    serviceType: [
-      "იურიდიული კონსულტაცია",
-      "ხელშეკრულების შემოწმება",
-      "ხელშეკრულების გენერირება",
-      "რისკების ანალიზი",
-    ],
+    serviceType: isEn
+      ? ["Legal consultation", "Contract review", "Contract generation", "Risk analysis"]
+      : ["იურიდიული კონსულტაცია", "ხელშეკრულების შემოწმება", "ხელშეკრულების გენერირება", "რისკების ანალიზი"],
     ...(sameAs && sameAs.length ? { sameAs } : {}),
   }
 }
 
 /** WebSite + SearchAction — enables the sitelinks search box in Google. */
-export function webSiteJsonLd() {
+export function webSiteJsonLd(locale: Locale = "ka") {
+  const isEn = locale === "en"
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     url: SITE_URL,
-    name: SITE_NAME_KA,
-    alternateName: SITE_NAME_EN,
-    inLanguage: "ka",
+    name: isEn ? SITE_NAME_EN : SITE_NAME_KA,
+    alternateName: isEn ? SITE_NAME_KA : SITE_NAME_EN,
+    inLanguage: locale,
     publisher: { "@id": `${SITE_URL}/#organization` },
     potentialAction: {
       "@type": "SearchAction",
-      target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/legislation?q={search_term_string}` },
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}${isEn ? "/en/legislation" : "/legislation"}?q={search_term_string}`,
+      },
       "query-input": "required name=search_term_string",
     },
   }

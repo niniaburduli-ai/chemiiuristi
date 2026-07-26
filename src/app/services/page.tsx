@@ -6,7 +6,7 @@ import { getLocale } from "@/lib/i18n/locale"
 import { getVisiblePlans } from "@/lib/plans-db"
 import { ServicesPageClient } from "./services-client"
 import { JsonLd } from "@/components/site/JsonLd"
-import { buildMetadata, breadcrumbJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
+import { buildMetadata, breadcrumbJsonLd, enPath, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -48,13 +48,21 @@ export default async function ServicesPage({
   ])
   const upgradePlan =
     plans.find((p) => p.highlighted && p.active) ?? plans.find((p) => !p.isFree && p.active) ?? null
+  const isEn = locale === "en"
   return (
     <>
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "მთავარი", path: "/" },
-          { name: "მომსახურებები", path: "/services" },
-        ])}
+        data={breadcrumbJsonLd(
+          isEn
+            ? [
+                { name: "Home", path: enPath("/") },
+                { name: "Services", path: enPath("/services") },
+              ]
+            : [
+                { name: "მთავარი", path: "/" },
+                { name: "მომსახურებები", path: "/services" },
+              ]
+        )}
       />
       <ServicesPageClient
         locale={locale}

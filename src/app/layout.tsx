@@ -142,7 +142,7 @@ export default async function RootLayout({
         {/* Admin-editable theme: overrides globals.css tokens (see lib/theme.ts). */}
         <style id="cms-theme" dangerouslySetInnerHTML={{ __html: themeCss }} />
         {/* Site-wide structured data: Organization/LegalService + WebSite search box. */}
-        <JsonLd data={[organizationJsonLd(sameAs), webSiteJsonLd()]} />
+        <JsonLd data={[organizationJsonLd(sameAs, locale), webSiteJsonLd(locale)]} />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <Header />
           <TestModeBanner />
