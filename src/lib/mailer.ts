@@ -2,6 +2,24 @@ import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
 import { dbConnect } from "@/lib/db";
 import { EmailLog, computeExpireAt, type EmailType } from "@/lib/models/EmailLog";
+import { SITE_URL } from "@/lib/seo";
+
+const LOGO_URL = `${SITE_URL}/logo-themis.png`;
+
+/** Brand shell (navy header + gold logo, cream card body) wrapped around each email's own content. `accentColor` is the thin status bar under the header — green for success, red for failure, amber for reminders, gold as the default. */
+function emailShell(bodyHtml: string, accentColor = "#E6A817"): string {
+  return `
+  <div style="margin:0;padding:24px;background:#FAF8F3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#10182B">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#FFF7E6;border-radius:16px;border:1px solid #E8D9AE;overflow:hidden">
+      <tr><td style="background:#0B1220;padding:20px 32px;text-align:center">
+        <img src="${LOGO_URL}" alt="Chemiiuristi" width="32" height="32" style="display:inline-block;vertical-align:middle">
+        <span style="display:inline-block;vertical-align:middle;margin-left:10px;color:#FFFFFF;font-size:16px;font-weight:700;letter-spacing:.02em">ჩემი იურისტი</span>
+      </td></tr>
+      <tr><td style="height:4px;background:${accentColor}"></td></tr>
+      <tr><td style="padding:32px">${bodyHtml}</td></tr>
+    </table>
+  </div>`;
+}
 
 /**
  * Gmail SMTP transport, created once and reused across hot reloads (same
@@ -82,30 +100,24 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
     "If you didn't request this, you can safely ignore this email.",
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#4338ca"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">პაროლის აღდგენა</h1>
-        <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#52525b">
-          მიიღეთ ეს წერილი, რადგან მოითხოვეთ პაროლის აღდგენა. დააჭირეთ ღილაკს ახალი პაროლის დასაყენებლად. ბმული მოქმედებს <strong>1 საათი</strong>.
-        </p>
-        <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#4338ca;color:#ffffff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600">
-          ახალი პაროლის დაყენება
-        </a>
-        <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          თუ ღილაკი არ მუშაობს, დააკოპირეთ ეს ბმული ბრაუზერში:<br>
-          <a href="${resetUrl}" style="color:#4338ca;word-break:break-all">${resetUrl}</a>
-        </p>
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          თუ ეს თქვენ არ მოგითხოვიათ, უგულებელყავით ეს წერილი.<br>
-          <em>If you didn't request a password reset, you can safely ignore this email.</em>
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">პაროლის აღდგენა</h1>
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#5E6674">
+      მიიღეთ ეს წერილი, რადგან მოითხოვეთ პაროლის აღდგენა. დააჭირეთ ღილაკს ახალი პაროლის დასაყენებლად. ბმული მოქმედებს <strong>1 საათი</strong>.
+    </p>
+    <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#E6A817;color:#0B1220;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700">
+      ახალი პაროლის დაყენება
+    </a>
+    <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#8A8370">
+      თუ ღილაკი არ მუშაობს, დააკოპირეთ ეს ბმული ბრაუზერში:<br>
+      <a href="${resetUrl}" style="color:#0B1220;word-break:break-all">${resetUrl}</a>
+    </p>
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      თუ ეს თქვენ არ მოგითხოვიათ, უგულებელყავით ეს წერილი.<br>
+      <em>If you didn't request a password reset, you can safely ignore this email.</em>
+    </p>
+  `);
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -134,23 +146,17 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
     "You can start asking the AI lawyer questions, generate a document template, or review an existing document right away.",
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#4338ca"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">კეთილი იყოს თქვენი მობრძანება, ${name}!</h1>
-        <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#52525b">
-          მადლობთ, რომ დარეგისტრირდით „ჩემი იურისტი“-ზე. შეგიძლიათ დაუყოვნებლივ დაუსვათ კითხვა AI იურისტს, დააგენერიროთ დოკუმენტის შაბლონი ან შეამოწმოთ არსებული დოკუმენტი.
-        </p>
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          Welcome, ${name}!<br>
-          Thanks for registering with Chemiiuristi. You can start asking the AI lawyer questions, generate a document template, or review an existing document right away.
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">კეთილი იყოს თქვენი მობრძანება, ${name}!</h1>
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#5E6674">
+      მადლობთ, რომ დარეგისტრირდით „ჩემი იურისტი“-ზე. შეგიძლიათ დაუყოვნებლივ დაუსვათ კითხვა AI იურისტს, დააგენერიროთ დოკუმენტის შაბლონი ან შეამოწმოთ არსებული დოკუმენტი.
+    </p>
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      Welcome, ${name}!<br>
+      Thanks for registering with Chemiiuristi. You can start asking the AI lawyer questions, generate a document template, or review an existing document right away.
+    </p>
+  `);
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -212,23 +218,17 @@ export async function sendPaymentConfirmationEmail(
     .filter((line) => line !== "")
     .join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#16a34a"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა დადასტურებულია</h1>
-        <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#52525b">
-          თქვენი გადახდა <strong>${majorAmount} ${opts.currency}</strong> წარმატებით დადასტურდა — ${opts.planNameKa}.
-        </p>
-        ${quotas ? `<pre style="margin:0 0 20px;font:inherit;white-space:pre-wrap;font-size:13px;color:#3f3f46">${quotas}</pre>` : ""}
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          Your payment (${majorAmount} ${opts.currency}) was confirmed — ${opts.planNameEn}.
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა დადასტურებულია</h1>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#5E6674">
+      თქვენი გადახდა <strong>${majorAmount} ${opts.currency}</strong> წარმატებით დადასტურდა — ${opts.planNameKa}.
+    </p>
+    ${quotas ? `<pre style="margin:0 0 20px;font:inherit;white-space:pre-wrap;font-size:13px;color:#10182B">${quotas}</pre>` : ""}
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      Your payment (${majorAmount} ${opts.currency}) was confirmed — ${opts.planNameEn}.
+    </p>
+  `, "#16a34a");
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -273,22 +273,16 @@ export async function sendPaymentFailedEmail(
     "Please update your payment method on the billing page to restore full access.",
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#dc2626"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ვერ შესრულდა</h1>
-        <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#52525b">
-          თქვენი გამოწერის განახლება ვერ მოხერხდა: <strong>${reasonKa}</strong>. თქვენი გეგმა დაბრუნდა უფასო პაკეტზე. გთხოვთ, განაახლოთ გადახდის მეთოდი ბილინგის გვერდზე.
-        </p>
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          Your subscription renewal failed: ${reasonEn}. Your plan has been reverted to the free tier. Please update your payment method on the billing page.
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ვერ შესრულდა</h1>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#5E6674">
+      თქვენი გამოწერის განახლება ვერ მოხერხდა: <strong>${reasonKa}</strong>. თქვენი გეგმა დაბრუნდა უფასო პაკეტზე. გთხოვთ, განაახლოთ გადახდის მეთოდი ბილინგის გვერდზე.
+    </p>
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      Your subscription renewal failed: ${reasonEn}. Your plan has been reverted to the free tier. Please update your payment method on the billing page.
+    </p>
+  `, "#dc2626");
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -319,22 +313,16 @@ export async function sendRenewalReminderEmail(
     `Just a heads-up: your ${opts.planNameEn} subscription renews tomorrow and ${majorAmount} ${opts.currency} will be charged.`,
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#d97706"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ხვალ განხორციელდება</h1>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#52525b">
-          შეგახსენებთ, რომ ხვალ განახლდება თქვენი გამოწერა (<strong>${opts.planNameKa}</strong>) და ჩამოგეჭრებათ <strong>${majorAmount} ${opts.currency}</strong>.
-        </p>
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          Just a heads-up: your ${opts.planNameEn} subscription renews tomorrow and ${majorAmount} ${opts.currency} will be charged.
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ხვალ განხორციელდება</h1>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#5E6674">
+      შეგახსენებთ, რომ ხვალ განახლდება თქვენი გამოწერა (<strong>${opts.planNameKa}</strong>) და ჩამოგეჭრებათ <strong>${majorAmount} ${opts.currency}</strong>.
+    </p>
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      Just a heads-up: your ${opts.planNameEn} subscription renews tomorrow and ${majorAmount} ${opts.currency} will be charged.
+    </p>
+  `, "#d97706");
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -363,22 +351,16 @@ export async function sendPaymentRetryReminderEmail(to: string, name: string): P
     "Please update your payment method on the billing page to restore full access.",
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#d97706"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ჯერ არ შესრულებულა</h1>
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#52525b">
-          თანხის უკმარისობის გამო თქვენი გადახდა ვერ შესრულდა და გეგმა დაბრუნდა უფასო პაკეტზე. გთხოვთ, განაახლოთ გადახდის მეთოდი ბილინგის გვერდზე.
-        </p>
-        <hr style="border:none;border-top:1px solid #e4e4e7;margin:24px 0">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa">
-          Your payment couldn't go through due to insufficient funds, and your plan reverted to the free tier. Please update your payment method on the billing page.
-        </p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">გადახდა ჯერ არ შესრულებულა</h1>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#5E6674">
+      თანხის უკმარისობის გამო თქვენი გადახდა ვერ შესრულდა და გეგმა დაბრუნდა უფასო პაკეტზე. გთხოვთ, განაახლოთ გადახდის მეთოდი ბილინგის გვერდზე.
+    </p>
+    <hr style="border:none;border-top:1px solid #E8D9AE;margin:24px 0">
+    <p style="margin:0;font-size:12px;line-height:1.6;color:#8A8370">
+      Your payment couldn't go through due to insufficient funds, and your plan reverted to the free tier. Please update your payment method on the billing page.
+    </p>
+  `, "#d97706");
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
@@ -412,17 +394,11 @@ export async function sendFeedbackEmail(
     feedback.message,
   ].join("\n");
 
-  const html = `
-  <div style="margin:0;padding:24px;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e4e4e7;overflow:hidden">
-      <tr><td style="height:4px;background:#4338ca"></td></tr>
-      <tr><td style="padding:32px">
-        <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">ახალი უკუკავშირი</h1>
-        ${stars ? `<p style="margin:0 0 16px;font-size:20px;letter-spacing:2px;color:#f59e0b">${stars}</p>` : ""}
-        <p style="margin:0;font-size:14px;line-height:1.6;color:#3f3f46;white-space:pre-wrap">${escapedMessage}</p>
-      </td></tr>
-    </table>
-  </div>`;
+  const html = emailShell(`
+    <h1 style="margin:0 0 8px;font-size:20px;font-weight:700">ახალი უკუკავშირი</h1>
+    ${stars ? `<p style="margin:0 0 16px;font-size:20px;letter-spacing:2px;color:#E6A817">${stars}</p>` : ""}
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#10182B;white-space:pre-wrap">${escapedMessage}</p>
+  `);
 
   try {
     await transport.sendMail({ from: fromAddress(), to, subject, text, html });
