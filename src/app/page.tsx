@@ -220,6 +220,10 @@ export default async function Home() {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gold leading-[1.05] tracking-tight animate-fade-up delay-150">
                 {heroTitle}
               </h1>
+              {/* Latin transliteration of the brand — no page renders it in visible text otherwise (only in <title>/meta), so Google has nothing to match "chemi iuristi" Latin-script queries against. */}
+              <p className="text-sm md:text-base font-medium text-gold/80 tracking-wide -mt-2 animate-fade-up delay-200">
+                Chemi Iuristi
+              </p>
               <p className="text-lg md:text-xl font-semibold text-white leading-snug animate-fade-up delay-300 max-w-lg [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
                 {heroSubtitle}
               </p>
