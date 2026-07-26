@@ -102,9 +102,25 @@ export async function Footer() {
 
         {/* Col 1 — brand */}
         <div className="flex flex-col gap-2 w-max max-w-xs">
-          <div>
-            <p className="font-bold text-lg leading-tight text-gold">{siteName}</p>
-            <p className="text-white text-sm mt-0.5">{tagline}</p>
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="inline-block h-11 w-[33px] shrink-0 bg-gold"
+              style={{
+                WebkitMaskImage: "url(/logo-themis.png)",
+                maskImage: "url(/logo-themis.png)",
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
+            />
+            <div>
+              <p className="font-bold text-lg leading-tight text-gold">{siteName}</p>
+              <p className="text-white text-sm mt-0.5">{tagline}</p>
+            </div>
           </div>
           <p className="text-slate-400 text-sm leading-relaxed">
             {d.footer.brandBlurb}

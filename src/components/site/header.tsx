@@ -55,12 +55,28 @@ export async function Header() {
             contactEmail={contactEmail}
             contactAddress={contactAddress}
           />
-          <Link href="/" className="flex flex-col items-start leading-tight min-w-0 group">
-            <span className="text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80 shrink-0">
-              {siteName}
-            </span>
-            <span className="text-xs text-foreground font-normal truncate min-w-0">
-              {tagline}
+          <Link href="/" className="flex items-center gap-2 min-w-0 group">
+            <span
+              aria-hidden="true"
+              className="inline-block h-9 w-[27px] shrink-0 bg-gold transition-opacity group-hover:opacity-80"
+              style={{
+                WebkitMaskImage: "url(/logo-themis.png)",
+                maskImage: "url(/logo-themis.png)",
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
+            />
+            <span className="flex flex-col items-start leading-tight min-w-0">
+              <span className="text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80 shrink-0">
+                {siteName}
+              </span>
+              <span className="text-xs text-foreground font-normal truncate min-w-0">
+                {tagline}
+              </span>
             </span>
           </Link>
         </div>
