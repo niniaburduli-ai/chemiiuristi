@@ -52,9 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title: {
       default: isEn
-        ? "Chemi Iuristi — AI Legal Consultation for Georgia"
-        : "ჩემი იურისტი — AI იურიდიული კონსულტაცია ქართულად",
-      template: isEn ? "%s | Chemi Iuristi" : "%s | ჩემი იურისტი",
+        ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation for Georgia"
+        : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია ქართულად",
+      template: isEn ? "%s | Chemi Iuristi (My Lawyer)" : "%s | ჩემი იურისტი (Chemi Iuristi)",
     },
     description: isEn
       ? "AI lawyer — accessible legal consultation in plain language. Contract review and generation, risk analysis, and legal advice grounded in Georgian law."

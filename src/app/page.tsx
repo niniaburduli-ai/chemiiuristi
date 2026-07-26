@@ -37,8 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const isEn = locale === "en"
   return buildMetadata({
     title: isEn
-      ? "Chemi Iuristi — AI Legal Consultation for Georgia"
-      : "ჩემი იურისტი — AI იურიდიული კონსულტაცია ქართულად",
+      ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation for Georgia"
+      : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია ქართულად",
     description: isEn
       ? "AI lawyer — accessible legal consultation in plain language. Contract review and generation, risk analysis, and legal advice grounded in Georgian law."
       : "AI იურისტი — ხელმისაწვდომი იურიდიული კონსულტაცია მარტივ ენაზე. ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
@@ -220,9 +220,9 @@ export default async function Home() {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gold leading-[1.05] tracking-tight animate-fade-up delay-150">
                 {heroTitle}
               </h1>
-              {/* Latin transliteration of the brand — no page renders it in visible text otherwise (only in <title>/meta), so Google has nothing to match "chemi iuristi" Latin-script queries against. */}
+              {/* Latin transliteration of the brand — no page renders it in visible text otherwise (only in <title>/meta), so Google has nothing to match "chemi iuristi" / "my lawyer" Latin-script queries against. */}
               <p className="text-sm md:text-base font-medium text-gold/80 tracking-wide -mt-2 animate-fade-up delay-200">
-                Chemi Iuristi
+                Chemi Iuristi · My Lawyer
               </p>
               <p className="text-lg md:text-xl font-semibold text-white leading-snug animate-fade-up delay-300 max-w-lg [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
                 {heroSubtitle}
