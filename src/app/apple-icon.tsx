@@ -5,28 +5,9 @@ import { join } from "node:path"
 export const size = { width: 180, height: 180 }
 export const contentType = "image/png"
 
-// Apple touch icon.
+// Apple touch icon — same Themis artwork as icon.png, full bleed (Apple rounds corners itself).
 export default async function AppleIcon() {
-  const bold = await readFile(join(process.cwd(), "src/app/_og/NotoSansGeorgian-700.ttf"))
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#0f172a",
-          color: "#c9a227",
-          fontSize: 120,
-          fontWeight: 700,
-          fontFamily: "Noto",
-        }}
-      >
-        ჩ
-      </div>
-    ),
-    { ...size, fonts: [{ name: "Noto", data: bold, weight: 700, style: "normal" }] }
-  )
+  const png = await readFile(join(process.cwd(), "src/app/icon.png"))
+  const src = `data:image/png;base64,${png.toString("base64")}`
+  return new ImageResponse(<img src={src} width={size.width} height={size.height} />, size)
 }

@@ -3,13 +3,12 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 
 // Shared renderer for the installable-PWA icons referenced from manifest.ts.
-// `maskable` keeps the monogram inside the inner ~80% safe zone so Android's
-// adaptive-icon mask never clips it; the dark background bleeds to the edges.
+// `maskable` keeps the artwork inside the inner ~66% safe zone so Android's
+// adaptive-icon mask never clips it; the navy background bleeds to the edges.
 export async function renderPwaIcon(size: number, opts: { maskable?: boolean } = {}) {
-  const bold = await readFile(
-    join(process.cwd(), "src/app/_og/NotoSansGeorgian-700.ttf")
-  )
-  const glyphRatio = opts.maskable ? 0.5 : 0.62
+  const png = await readFile(join(process.cwd(), "src/app/icon.png"))
+  const src = `data:image/png;base64,${png.toString("base64")}`
+  const inner = Math.round(size * (opts.maskable ? 0.66 : 1))
 
   return new ImageResponse(
     (
@@ -21,19 +20,11 @@ export async function renderPwaIcon(size: number, opts: { maskable?: boolean } =
           alignItems: "center",
           justifyContent: "center",
           background: "#0f172a",
-          color: "#c9a227",
-          fontSize: Math.round(size * glyphRatio),
-          fontWeight: 700,
-          fontFamily: "Noto",
         }}
       >
-        ჩ
+        <img src={src} width={inner} height={inner} />
       </div>
     ),
-    {
-      width: size,
-      height: size,
-      fonts: [{ name: "Noto", data: bold, weight: 700, style: "normal" }],
-    }
+    { width: size, height: size }
   )
 }
