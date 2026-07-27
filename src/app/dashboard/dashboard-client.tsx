@@ -436,8 +436,8 @@ export function DashboardClient({
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
       {/* Sidebar */}
-      <aside className="w-full md:w-80 shrink-0 space-y-3">
-        <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 md:sticky md:top-24">
+      <aside className="w-full md:w-80 shrink-0 flex flex-col gap-3">
+        <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
           <div className="px-2 pb-1.5">
             <h2 className="text-lg font-bold text-foreground">{dp.sidebarHeading}</h2>
           </div>
@@ -458,7 +458,7 @@ export function DashboardClient({
           ))}
         </div>
 
-        <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5">
+        <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
           <div className="px-2 pb-1.5">
             <h2 className="text-lg font-bold text-foreground">{dp.serviceHistoryHeading}</h2>
           </div>
@@ -479,7 +479,7 @@ export function DashboardClient({
           ))}
         </div>
 
-        <div className="bg-card border border-border rounded-2xl p-3 space-y-3">
+        <div className="bg-card border border-border rounded-2xl p-3 space-y-3 shrink-0">
           <div className="px-2 pb-1.5">
             <h2 className="text-lg font-bold text-foreground">{dp.servicesCardTitle}</h2>
           </div>
@@ -492,7 +492,7 @@ export function DashboardClient({
         </div>
 
         {isFreePlan && (
-          <div className="bg-card border border-border rounded-2xl p-3 mt-3">
+          <div className="bg-card border border-border rounded-2xl p-3 shrink-0">
             <p className="text-sm font-bold text-foreground mb-1">{dp.upgradeTitle}</p>
             <p className="text-xs text-muted-foreground mb-3">{dp.upgradeBody}</p>
             <Link href="/pricing" className={buttonVariants({ size: "sm" }) + " w-full"}>
@@ -504,7 +504,7 @@ export function DashboardClient({
       </aside>
 
       {/* Canvas */}
-      <section className="flex-1 min-w-0 min-h-[520px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section className="flex-1 min-w-0 h-[70vh] min-h-[520px] md:h-full bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div className={activeTab === "limits" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <LimitsPanel
             d={d}
