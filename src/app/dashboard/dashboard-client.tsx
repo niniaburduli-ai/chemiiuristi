@@ -434,7 +434,7 @@ export function DashboardClient({
   const [activeTab, setActiveTab] = useState<Tab>(requested ?? "limits");
 
   return (
-    <div className="flex flex-col md:flex-row gap-6">
+    <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
       {/* Sidebar */}
       <aside className="w-full md:w-80 shrink-0 space-y-3">
         <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 md:sticky md:top-24">
