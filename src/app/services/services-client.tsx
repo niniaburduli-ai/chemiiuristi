@@ -540,7 +540,7 @@ export function ServicesPageClient({
         {enabledTabs.length === 0 ? (
           <p className="text-center text-muted-foreground py-16">{sm.templatesNoResults}</p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px_minmax(0,1fr)] md:items-stretch">
+          <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
             {/* Sidebar */}
             <aside className="w-full md:w-80 shrink-0 flex flex-col gap-3">
               <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
@@ -586,7 +586,7 @@ export function ServicesPageClient({
             </aside>
 
             {/* Canvas */}
-            <section className="min-w-0 h-[70vh] min-h-[480px] md:h-auto md:min-h-[480px] md:max-h-[70vh] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <section className="md:flex-1 min-w-0 h-[70vh] min-h-[480px] md:h-full bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <div className={activeTab === "ai" ? "flex flex-col h-full min-h-0" : "hidden"}>
                 {flags.chat && <AiConsultPanel locale={locale} />}
               </div>
