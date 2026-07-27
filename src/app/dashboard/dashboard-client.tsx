@@ -434,7 +434,7 @@ export function DashboardClient({
   const [activeTab, setActiveTab] = useState<Tab>(requested ?? "limits");
 
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px_minmax(0,1fr)] md:items-stretch">
       {/* Sidebar */}
       <aside className="w-full md:w-80 shrink-0 flex flex-col gap-3">
         <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
@@ -504,7 +504,7 @@ export function DashboardClient({
       </aside>
 
       {/* Canvas */}
-      <section className="flex-1 min-w-0 h-[70vh] min-h-[520px] md:h-full md:min-h-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section className="min-w-0 h-[70vh] min-h-[520px] md:h-auto md:min-h-[560px] md:max-h-[70vh] bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div className={activeTab === "limits" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <LimitsPanel
             d={d}
