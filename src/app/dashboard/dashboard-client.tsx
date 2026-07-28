@@ -343,15 +343,15 @@ function BillingPanel({
 
         <div ref={historySectionRef}>
           <h4 className="text-sm font-bold text-foreground mb-3">{db.paymentHistory}</h4>
-          {payments.length === 0 ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-              <Receipt className="h-4 w-4 text-gold" />
-              {db.noPayments}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-border p-4">
-              <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
-                {payments.map((p, i) => (
+          <div className="rounded-xl border border-border p-4">
+            <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
+              {payments.length === 0 ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <Receipt className="h-4 w-4 text-gold" />
+                  {db.noPayments}
+                </div>
+              ) : (
+                payments.map((p, i) => (
                   <div key={p.id}>
                     <div className="flex items-center justify-between py-1 flex-wrap gap-2">
                       <div>
@@ -365,10 +365,10 @@ function BillingPanel({
                     </div>
                     {i < payments.length - 1 && <Separator />}
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
