@@ -43,6 +43,16 @@ ${STRICT_BREVITY_RULE}
 - გამონაკლისი ზემოთ მოცემულ წესთან: დეტალებში შეიძლება გხვდეს ნიშნები ზუსტად ამ ფორმატით — [ID_1], [PHONE_1], [EMAIL_1], [BANK_1]. ეს არ არის ცარიელი placeholder; ეს რეალური პირადი მონაცემია დაცული სახით. გამოიყენე ეს ნიშნები ზუსტად ისე, როგორც წერია, სწორ ადგილას დოკუმენტში — არასოდეს შეცვალო, თარგმნო ან წაშალო.
 - დოკუმენტი უნდა იყოს სრულად შევსებული, დასრულებული და პირდაპირ გამოსაყენებელი, ყოველგვარი ხელით შესავსები ველის გარეშე.
 
+სამართლებრივი საფუძვლის ჩართვა ტექსტში (კრიტიკულია):
+- სადაც დოკუმენტი ეყრდნობა კონკრეტულ კანონს, პირდაპირ ტექსტში (არა მხოლოდ ბოლოს) ჩართე მუხლზე მითითება, ბუნებრივ წინადადებაში (მაგ. „საქართველოს სამოქალაქო კოდექსის 405-ე მუხლის საფუძველზე..." ან „...რაც ეწინააღმდეგება მომხმარებელთა უფლებების დაცვის შესახებ კანონის მე-9 მუხლს"), ისე როგორც იურისტი წერდა რეალურ დოკუმენტში.
+- ტექსტში ნახსენები ყველა მუხლი ${CITATIONS_DELIM}-ის შემდეგ სექციაშიც უნდა გამეორდეს ზუსტად იმავე მითითებით — არასოდეს ახსენო მუხლი მხოლოდ ტექსტში ისე, რომ არ ჩამოთვალო წყაროების სექციაში, და პირიქით.
+
+დაბალი-რისკიანობის წესები (დოკუმენტების ანალიზის ხელსაწყოს მიერ ხშირად გამოვლენილი პრობლემების თავიდან ასაცილებლად):
+- ვადა: ყოველთვის მიუთითე ზუსტი, კონკრეტული ვადა კალენდარულ დღეებში და ცალსახად ჩაწერე, რომ ის აითვლება დოკუმენტის ჩაბარების/მიღების დღიდან. არასოდეს დატოვო ვადა ბუნდოვნად („გონივრულ ვადაში" და ამის მსგავსი).
+- ფინანსური მოთხოვნა: თუ მოთხოვნილია თანხა, პირგასამტეხლო ან ზიანის ანაზღაურება, მიუთითე ან ზუსტი თანხა, ან ზუსტი გამოთვლის წესი (განაკვეთი, ბაზა, პერიოდი). არასოდეს დატოვო ბუნდოვნად ისე, რომ ადრესატმა ვერ გამოთვალოს ზუსტი თანხობრივი რისკი.
+- შედეგის/ესკალაციის პუნქტი: ცალსახად ჩაწერე, რა მოხდება, თუ ადრესატი ვადაში არ შეასრულებს მოთხოვნას (მაგ. სასამართლოსთვის ან შესაბამისი ორგანოსთვის მიმართვის უფლება), და დაასაბუთე ეს იმ მუხლით, რომელიც ამ უფლებას ანიჭებს.
+- მოთხოვნის სიცხადე: გამოიყენე ცალსახა, დაჟინებული მოთხოვნის ენა („მოვითხოვ"/„ვითხოვ") და ზუსტად ჩამოაყალიბე, რა კონკრეტულ ქმედებას ან შედეგს ითხოვ — არასოდეს დატოვო მოთხოვნილი შედეგი ბუნდოვნად.
+
 დოკუმენტის ტექსტის დასრულების შემდეგ, ცალკე სტრიქონზე დაწერე ზუსტად: ${CITATIONS_DELIM}
 შემდეგ, იმ ტექსტის შემდეგ, ჩამოთვალე საქართველოს კანონმდებლობის ის მუხლები, რომლებსაც დოკუმენტი ეფუძნება, შემდეგი ფორმატით:
 <კანონის/კოდექსის სრული დასახელება>:
@@ -68,6 +78,16 @@ Data (critical):
 - Never leave a blank field, square brackets [ ], or other placeholder text in the output. If some additional detail (e.g. phone, email) was not provided in the details at all — simply omit that detail from the document instead of writing an empty placeholder.
 - Exception to the rule above: the details may contain tokens in exactly this format — [ID_1], [PHONE_1], [EMAIL_1], [BANK_1]. These are not the empty placeholders the rule above tells you to avoid; they are real personal data in protected form. Use these tokens exactly as written, in the correct place in the document — never alter, translate, or remove them.
 - The document must be fully filled in, complete, and ready to use as-is, with no fields left for manual completion.
+
+Embedding the legal basis in the text (critical):
+- Wherever the document relies on a specific law, cite the article inline, in the body (not only at the end), as a natural clause (e.g., "pursuant to Article 405 of the Civil Code of Georgia..." or "...in breach of Article 9 of the Law on Consumer Rights Protection"), the way a lawyer would draft it in a real document.
+- Every article mentioned in the body must also appear in the section after ${CITATIONS_DELIM}, with the exact same reference — never cite an article only in the body without listing it in the sources section, or vice versa.
+
+Low-risk drafting rules (to prevent problems the site's own document-analysis tool commonly flags):
+- Deadline: always state an exact, concrete deadline in calendar days, and explicitly note that it runs from the date of receipt/delivery of the document. Never leave the deadline vague ("within a reasonable time" or similar).
+- Financial demand: if a sum, penalty, or damages is claimed, state either the exact amount or the exact calculation method (rate, base, period). Never leave it vague such that the recipient cannot compute the exact financial exposure.
+- Consequence/escalation clause: explicitly state what happens if the recipient fails to comply within the deadline (e.g., the right to pursue court or administrative action), grounded in the article that grants that right.
+- Clarity of the demand: use assertive, unambiguous demand language ("I demand" / "I hereby require") and state precisely what action or outcome is demanded — never leave the requested outcome vague.
 
 After finishing the document text, on its own line write exactly: ${CITATIONS_DELIM}
 Then, after that line, list the articles of Georgian legislation the document is based on, in this format:
