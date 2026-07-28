@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ConsultationsGrid, type ConsultationItem } from "./consultations/consultations-grid";
 import { DocumentsList, type GeneratedDocItem } from "./documents/documents-list";
 import { ReviewsGrid, type ReviewItem } from "./reviews/reviews-grid";
@@ -608,13 +608,12 @@ export function DashboardClient({
         )}
       </section>
 
-      {/* Mobile: history content opens in a sheet instead of the inline canvas */}
-      <Sheet open={historySheetTab !== null} onOpenChange={(open) => !open && setHistorySheetTab(null)}>
-        <SheetContent
-          side="right"
-          className="!w-full sm:!max-w-md p-0 flex flex-col bg-background"
-          aria-label={historySheetTab ? historyTabs.find((t) => t.key === historySheetTab)?.label : undefined}
-        >
+      {/* Mobile: history opens in a fixed-height, centered, internally-scrollable modal */}
+      <Dialog open={historySheetTab !== null} onOpenChange={(open) => !open && setHistorySheetTab(null)}>
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md h-[75vh] max-h-[640px] p-0 gap-0 flex flex-col overflow-hidden bg-background">
+          <DialogTitle className="sr-only">
+            {historySheetTab ? historyTabs.find((t) => t.key === historySheetTab)?.label : ""}
+          </DialogTitle>
           {historySheetTab === "consultations" && <ConsultationsGrid items={consultations} d={d} />}
           {historySheetTab === "documents" && <DocumentsList docs={documents} d={d} />}
           {historySheetTab === "templates" && (
@@ -628,8 +627,8 @@ export function DashboardClient({
             />
           )}
           {historySheetTab === "reviews" && <ReviewsGrid items={reviews} d={d} />}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
