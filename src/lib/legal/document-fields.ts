@@ -145,6 +145,8 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "dueDate", label: "გადახდის ვადა", labelEn: "Payment due date", type: "date", required: true },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Payment method (cash/bank transfer)", type: "text", required: true },
     { key: "bankAccount", label: "საბანკო ანგარიშის №", labelEn: "Bank account No.", type: "text" },
+    { key: "latePenaltyPercent", label: "საურავის განაკვეთი %, ვადის გადაცილებისას (არასავალდებულო)", labelEn: "Late-payment penalty rate %, if any (optional)", type: "text" },
+    { key: "latePenaltyPeriod", label: "პერიოდი (მაგ. „დღეში\", „თვეში\") — თუ ზემოთ განაკვეთი მიუთითეთ", labelEn: "Period (e.g. \"per day\", \"per month\") — if a rate was entered above", type: "text" },
   ],
   "acceptance-act": [
     { key: "actNumber", label: "აქტის №", labelEn: "Act No.", type: "text" },

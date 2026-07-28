@@ -418,7 +418,7 @@ const DEBT_CLAIM_BODY = `მოთხოვნა (პრეტენზია) 
 გადახდის მეთოდი: **[PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
 
 **4. შედეგები დაუკმაყოფილებლობის შემთხვევაში**
-თუ მითითებულ ვადაში დავალიანება არ დაიფარება, კრედიტორი უფლებამოსილია მიმართოს სასამართლოს დავალიანების, დარიცხული პროცენტისა და პირგასამტეხლოს (ასეთის არსებობისას), აგრეთვე სასამართლო ხარჯების გადახდევინების მოთხოვნით, მათ შორის — გამარტივებული (ბრძანების გამოცემის) წარმოების წესით, საქართველოს სამოქალაქო საპროცესო კოდექსით დადგენილი წესით.
+თუ მითითებულ ვადაში დავალიანება არ დაიფარება, კრედიტორი უფლებამოსილია მიმართოს სასამართლოს ზემოთ მითითებული სრული თანხის — **[TOTAL_AMOUNT]** (მათ შორის დარიცხული პროცენტი/საურავი: **[INTEREST_AMOUNT]**) — და სასამართლო ხარჯების გადახდევინების მოთხოვნით, მათ შორის გამარტივებული (ბრძანების გამოცემის) წარმოების წესით, საქართველოს სამოქალაქო საპროცესო კოდექსით დადგენილი წესით. პრაქტიკულად ეს ნიშნავს, რომ ვადის გადაცილების შემდეგ მოვალის ვალდებულება არ იზღუდება ძირითადი თანხით — მას ემატება ზემოთ მითითებული პროცენტი/საურავი და სასამართლო/აღსრულების ხარჯები.
 
 კრედიტორი: **[CREDITOR_NAME]**     ხელმოწერა: ____________`;
 
@@ -443,7 +443,7 @@ Please repay the above debt in full, no later than: **[NEW_DEADLINE]**.
 Payment method: **[PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
 
 **4. Consequences of Non-Compliance**
-If the debt is not repaid within the stated deadline, the Creditor shall be entitled to apply to court for recovery of the debt, accrued interest, and penalty (if any), as well as court costs, including through simplified (order-for-payment) proceedings, in accordance with the procedure established by the Civil Procedure Code of Georgia.
+If the debt is not repaid within the stated deadline, the Creditor shall be entitled to apply to court for the full amount stated above — **[TOTAL_AMOUNT]** (including accrued interest/penalty: **[INTEREST_AMOUNT]**) — plus court costs, including through simplified (order-for-payment) proceedings, in accordance with the procedure established by the Civil Procedure Code of Georgia. In practice, this means that after the deadline passes, the Debtor's liability is not limited to the principal amount — the interest/penalty stated above, plus court and enforcement costs, are added to it.
 
 Creditor: **[CREDITOR_NAME]**     Signature: ____________`;
 
@@ -503,7 +503,7 @@ const INVOICE_BODY = `ინვოისი № **[INVOICE_NUMBER]**
 
 წინამდებარე დოკუმენტი წარმოადგენს გადახდის მოთხოვნას ზემოაღნიშნული საქონლის/მომსახურების მისაწოდებლად ან უკვე მიწოდებულის საფასურის დასაფარად და არ ჩაითვლება საგადასახადო კანონმდებლობით გათვალისწინებულ ანგარიშ-ფაქტურად RS.ge-ს მონაცემთა ერთიან ცხრილში რეგისტრაციის გაგებით.
 
-გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს მოსთხოვოს მიმღებს მხარეთა შორის შეთანხმებული ან კანონმდებლობით დადგენილი საურავი/პროცენტი. მხარეთა შორის დავა წყდება მოლაპარაკებით, ხოლო შეთანხმების მიუღწევლობისას — სასამართლოში, საქართველოს კანონმდებლობით დადგენილი წესით.
+[LATE_PENALTY_CLAUSE] მხარეთა შორის დავა წყდება მოლაპარაკებით, ხოლო შეთანხმების მიუღწევლობისას — სასამართლოში, საქართველოს კანონმდებლობით დადგენილი წესით.
 
 გამომწერი: **[SELLER]**     ხელმოწერა/ბეჭედი: ____________`;
 
@@ -523,7 +523,7 @@ City of **[CITY]**                                                              
 
 This document constitutes a request for payment for the above goods/services to be supplied, or already supplied, and shall not be regarded as a tax invoice within the meaning of registration in RS.ge's unified data table under the tax legislation.
 
-If payment is delayed past the due date, the Issuer shall be entitled to claim a penalty/interest as agreed between the Parties or as established by the legislation. Disputes between the Parties shall be resolved through negotiation and, failing agreement, in court, in accordance with the procedure established by the legislation of Georgia.
+[LATE_PENALTY_CLAUSE] Disputes between the Parties shall be resolved through negotiation and, failing agreement, in court, in accordance with the procedure established by the legislation of Georgia.
 
 Issuer: **[SELLER]**     Signature/Seal: ____________`;
 
@@ -757,6 +757,52 @@ function buildInvoiceItemsTable(raw: string, locale: Locale): string {
   return [header, ...rows].join("\n");
 }
 
+/** Extract the first numeric value from freeform text (e.g. "950 ლარი" -> 950,
+ * "0,1%" -> 0.1). Returns null when no number is found, so callers can fall
+ * back to a non-computed rendering instead of a fabricated figure. */
+function parseNumericAmount(text: string): number | null {
+  const m = text.match(/\d+(?:[.,]\d+)?/);
+  if (!m) return null;
+  const n = parseFloat(m[0].replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Build the invoice's late-payment clause. Never invents a rate — only
+ * activates once the user states one — and when the rate is a plain
+ * percentage, appends a real, computed worked example (30-day delay against
+ * the invoice's own total) instead of a generic legal reference, so the
+ * consequence is concrete rather than a bare citation. */
+function buildLatePenaltyClause(
+  percentRaw: string,
+  periodRaw: string,
+  totalAmountRaw: string,
+  locale: Locale
+): string {
+  const percent = percentRaw.trim();
+  if (!percent) {
+    return locale === "en"
+      ? "If payment is delayed past the due date, the Issuer shall be entitled to claim a penalty/interest as agreed between the Parties or as established by the legislation."
+      : "გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს მოსთხოვოს მიმღებს მხარეთა შორის შეთანხმებული ან კანონმდებლობით დადგენილი საურავი/პროცენტი.";
+  }
+  const period = periodRaw.trim() || (locale === "en" ? "per day" : "დღეში");
+  const base =
+    locale === "en"
+      ? `If payment is delayed past the due date, the Issuer shall be entitled to charge a penalty of ${percent}% ${period} on the outstanding amount.`
+      : `გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს დაარიცხოს საურავი გადაუხდელ თანხაზე ${percent}% ${period}.`;
+
+  const rate = parseNumericAmount(percent);
+  const total = parseNumericAmount(totalAmountRaw);
+  if (rate == null || total == null) return base;
+
+  const exampleDays = 30;
+  const exampleTotal = (total * (rate / 100) * exampleDays).toFixed(2);
+  const example =
+    locale === "en"
+      ? ` For example, a ${exampleDays}-day delay would add approximately ${exampleTotal} to the amount due (${percent}% × ${exampleDays} days on ${totalAmountRaw.trim()}).`
+      : ` მაგალითად, ${exampleDays} დღის დაგვიანება დაამატებს დაახლოებით ${exampleTotal}-ს გადასახდელ თანხას (${percent}% × ${exampleDays} დღე, ჯამურ თანხაზე ${totalAmountRaw.trim()}).`;
+  return base + example;
+}
+
 /** Add `days` calendar days to an ISO ("YYYY-MM-DD") date string, returning
  * an ISO date string. Returns "" if `iso` doesn't parse, so callers can fall
  * back to the standard "—" empty-value rendering. */
@@ -793,6 +839,14 @@ export function renderTemplate(
   }
   if (type === "termination-notice") {
     values.SETTLEMENT_DEADLINE = addCalendarDays(answers.lastDay ?? "", 7);
+  }
+  if (type === "invoice") {
+    values.LATE_PENALTY_CLAUSE = buildLatePenaltyClause(
+      answers.latePenaltyPercent ?? "",
+      answers.latePenaltyPeriod ?? "",
+      answers.totalAmount ?? "",
+      locale
+    );
   }
   const def = TEMPLATES[type];
   const chosenBody = locale === "en" ? def.bodyEn : def.body;
