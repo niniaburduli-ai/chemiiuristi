@@ -46,7 +46,7 @@ function paymentKey(): string {
 export function isSandboxCredentials(): boolean {
   return process.env.FLITT_PAYMENT_KEY === "test";
 }
-function appUrl(): string {
+export function appUrl(): string {
   return (process.env.APP_URL || process.env.AUTH_URL || "http://localhost:3000").replace(/\/$/, "");
 }
 
@@ -119,7 +119,7 @@ export async function createSubscriptionCheckout(
     // (amount / count / interval) is NOT shown or editable on checkout.
     recurring_data: { amount, period: "month", every: 1, quantity: 120, state: "hidden" },
     server_callback_url: `${appUrl()}/api/flitt/callback`,
-    response_url: `${appUrl()}/billing?status=success`,
+    response_url: `${appUrl()}/api/flitt/return`,
     merchant_data: JSON.stringify({ userId: user.id, plan: plan.key }),
     sender_email: user.email,
     lang: "ka",
@@ -169,7 +169,7 @@ export async function createOneTimeCheckout(
     currency: "GEL",
     amount: item.amountMinor,
     server_callback_url: `${appUrl()}/api/flitt/callback`,
-    response_url: `${appUrl()}/billing?status=success`,
+    response_url: `${appUrl()}/api/flitt/return`,
     merchant_data: JSON.stringify(item.merchantData),
     sender_email: user.email,
     lang: "ka",
