@@ -172,8 +172,8 @@ function ProfilePanel({
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-lg font-bold text-foreground truncate">{name}</p>
-            <p className="text-sm text-gold truncate">{email}</p>
+            <p className="text-base sm:text-lg font-bold text-foreground break-words">{name}</p>
+            <p className="text-xs sm:text-sm text-gold break-words">{email}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 mt-4 flex-wrap">

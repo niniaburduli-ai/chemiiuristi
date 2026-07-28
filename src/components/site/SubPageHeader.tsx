@@ -21,7 +21,7 @@ export function SubPageHeader({
           <ArrowLeft className="h-4 w-4 text-gold" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2 break-words">
             {icon}
             {title}
           </h1>
