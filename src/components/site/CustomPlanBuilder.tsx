@@ -34,7 +34,6 @@ export function CustomPlanBuilder({
     heading: string
     subtitle: string
     buildAndPay: string
-    selectAtLeastOne: string
     minAmount: string
     checkoutError: string
     networkError: string
@@ -219,15 +218,12 @@ export function CustomPlanBuilder({
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-          ) : total === null ? (
-            strings.selectAtLeastOne
+          ) : belowMinimum ? (
+            strings.minAmount
           ) : (
             strings.buildAndPay
           )}
         </button>
-        {belowMinimum && (
-          <p className="mt-2 text-xs text-center text-red-600">{strings.minAmount}</p>
-        )}
       </div>
     </div>
   )

@@ -64,7 +64,6 @@ export default async function PricingPage() {
             heading: d.pricing.customTitle,
             subtitle: d.pricing.customSubtitle,
             buildAndPay: d.pricing.customBuildAndPay,
-            selectAtLeastOne: d.pricing.customSelectOne,
             minAmount: d.pricing.customMinAmount,
             checkoutError: d.pricing.customCheckoutError,
             networkError: d.pricing.customNetworkError,
