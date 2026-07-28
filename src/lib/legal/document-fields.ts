@@ -73,6 +73,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "employeeAddress", label: "თანამშრომლის მისამართი", labelEn: "Employee's address", type: "text", required: true },
     { key: "reason", label: "საფუძველი", labelEn: "Grounds", type: "text", required: true },
     { key: "lastDay", label: "ბოლო სამუშაო დღე", labelEn: "Last working day", type: "date", required: true },
+    { key: "compensationAmount", label: "კომპენსაციის ოდენობა (კანონით გათვალისწინების შემთხვევაში)", labelEn: "Compensation amount (if provided by law)", type: "text" },
   ],
   "service-agreement": [
     { key: "executor", label: "შემსრულებელი (სახელი, გვარი / დასახელება)", labelEn: "Contractor (full name / entity name)", type: "text", required: true },
@@ -130,6 +131,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "escort", label: "თანმხლები პირი (სახელი, გვარი, პ/ნ) ან „დამოუკიდებლად“", labelEn: "Accompanying person (full name, personal No.) or \"traveling alone\"", type: "text", required: true },
     { key: "destination", label: "დანიშნულების ქვეყანა/ქვეყნები", labelEn: "Destination country/countries", type: "text", required: true },
     { key: "travelPeriod", label: "მოგზაურობის პერიოდი", labelEn: "Travel period", type: "text", required: true },
+    { key: "otherParentStatus", label: "მეორე მშობლის თანხმობის სტატუსი (თანხმობა ცალკე მოცემულია / მშობელი გარდაცვლილია ან მშობლის უფლება შეზღუდულია / ერთადერთი კანონიერი წარმომადგენელია და სხვ.)", labelEn: "Status of the other parent's consent (given separately / parent deceased or parental rights restricted / sole legal guardian, etc.)", type: "textarea", required: true },
   ],
   invoice: [
     { key: "invoiceNumber", label: "ინვოისის №", labelEn: "Invoice No.", type: "text", required: true },

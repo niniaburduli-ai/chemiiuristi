@@ -42,18 +42,19 @@ const RENTAL_BODY = `ბინის ქირავნობის ხელშ
 **3. ქირა და გადახდის წესი**
 3.1. ყოველთვიური ქირა შეადგენს **[RENT]**-ს.
 3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
-3.3. ქირა გადაიხდება ყოველი საანგარიშო პერიოდის დასრულებისას, თუ მხარეები სხვაგვარად არ შეთანხმდებიან.
-3.4. დამქირავებელს შეიძლება დაეკისროს ვალდებულების უზრუნველყოფის თანხის (დეპოზიტის) წარდგენა, რომელიც არ აღემატება ერთი თვის ქირის სამმაგ ოდენობას; წინასწარ გადახდილ თანხას ერიცხება კანონით დადგენილი პროცენტი და უბრუნდება დამქირავებელს ხელშეკრულების დასრულებისას.
+3.3. ქირა გადაიხდება ყოველი კალენდარული თვის ბოლო დღემდე, თუ მხარეები სხვაგვარად არ შეთანხმდებიან.
+3.4. დამქირავებელს შეიძლება დაეკისროს ვალდებულების უზრუნველყოფის თანხის (დეპოზიტის) წარდგენა, რომელიც არ აღემატება ერთი თვის ქირის სამმაგ ოდენობას; წინასწარ გადახდილ თანხას ერიცხება კანონით დადგენილი პროცენტი და ბრუნდება დამქირავებელს ხელშეკრულების დასრულებიდან არაუგვიანეს 10 კალენდარული დღისა, ფართისთვის მიყენებული ზიანის ან წარმოშობილი დავალიანების არსებობის შემთხვევაში — შესაბამისი თანხის გამოკლებით.
 
 **4. მხარეთა უფლება-მოვალეობები**
-4.1. გამქირავებელი გადასცემს ფართს გამართულ, დანიშნულებისამებრ გამოსაყენებელ მდგომარეობაში.
-4.2. დამქირავებელი იყენებს ფართს დანიშნულებისამებრ და ზრუნავს მის შენარჩუნებაზე.
-4.3. ხელშეკრულების შეწყვეტისას დამქირავებელი აბრუნებს ფართს იმ მდგომარეობაში, რომელშიც მიიღო, ნორმალური ცვეთის გათვალისწინებით.
+4.1. გამქირავებელი გადასცემს ფართს გამართულ, საცხოვრებლად გამოსაყენებელ მდგომარეობაში.
+4.2. დამქირავებელი იყენებს ფართს საცხოვრებლად და ზრუნავს მის შენარჩუნებაზე.
+4.3. ხელშეკრულების შეწყვეტისას დამქირავებელი აბრუნებს ფართს იმ მდგომარეობაში, რომელშიც მიიღო, ნორმალური ცვეთის (ჩვეულებრივი, დროთა განმავლობაში წარმოშობილი გაცვეთის) გათვალისწინებით.
 
 **5. ხელშეკრულების ვადამდე შეწყვეტა**
 5.1. თუ დამქირავებელი არ იხდის ქირას ზედიზედ სამი თვის განმავლობაში, გამქირავებელს უფლება აქვს მოშალოს ხელშეკრულება ვადამდე.
-5.2. განუსაზღვრელი ვადის შემთხვევაში, ნებისმიერ მხარეს შეუძლია მოშალოს ხელშეკრულება წერილობითი შეტყობინებით, სამთვიანი ვადის დაცვით, თუ მხარეები სხვა ვადაზე არ შეთანხმდნენ.
-5.3. ხელშეკრულების შეწყვეტა ფორმდება წერილობით.
+5.2. თუ მუხლი 2-ით განსაზღვრული ვადა ამოიწურება, მხარეები ახალ წერილობით შეთანხმებას არ დებენ და დამქირავებელი აგრძელებს ფართით სარგებლობას გამქირავებლის წინააღმდეგობის გარეშე, ხელშეკრულება ითვლება გაგრძელებულად განუსაზღვრელი ვადით; ამ შემთხვევაში ნებისმიერ მხარეს შეუძლია მოშალოს ხელშეკრულება წერილობითი შეტყობინებით, სამთვიანი ვადის დაცვით, თუ მხარეები სხვა ვადაზე არ შეთანხმდნენ.
+5.3. დამქირავებელს ასევე უფლება აქვს ვადამდე შეწყვიტოს ხელშეკრულება არანაკლებ ერთი თვით ადრე გაგზავნილი წერილობითი შეტყობინებით.
+5.4. ხელშეკრულების შეწყვეტა ფორმდება წერილობით.
 
 **6. ფორს-მაჟორი**
 მხარეები თავისუფლდებიან პასუხისმგებლობისგან, თუ ვალდებულების შეუსრულებლობა გამოწვეულია დაუძლეველი ძალის გარემოებით (სტიქიური უბედურება, ომი, ეპიდემია და სხვა), რომლის თავიდან აცილება მხარეთა გონივრულ კონტროლს აღემატება.
@@ -83,18 +84,19 @@ This Agreement shall remain in force for a period of **[DURATION]**, commencing 
 **3. Rent and Payment Terms**
 3.1. The monthly rent shall be **[RENT]**.
 3.2. Payment method: **[PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
-3.3. Rent shall be paid at the end of each billing period, unless the Parties agree otherwise.
-3.4. The Tenant may be required to provide a security deposit not exceeding three times the monthly rent; the statutory rate of interest shall accrue on the sum advanced, and it shall be returned to the Tenant upon termination of the Agreement.
+3.3. Rent shall be paid no later than the last day of each calendar month, unless the Parties agree otherwise.
+3.4. The Tenant may be required to provide a security deposit not exceeding three times the monthly rent; the statutory rate of interest shall accrue on the sum advanced, and it shall be returned to the Tenant no later than 10 calendar days after termination of the Agreement, less any amount for damage caused to the Premises or outstanding debt owed by the Tenant.
 
 **4. Rights and Obligations of the Parties**
-4.1. The Landlord shall deliver the Premises in proper, fit-for-purpose condition.
-4.2. The Tenant shall use the Premises for their intended purpose and take due care to preserve them.
-4.3. Upon termination of the Agreement, the Tenant shall return the Premises in the condition in which they were received, ordinary wear and tear excepted.
+4.1. The Landlord shall deliver the Premises in proper condition, fit for residential use.
+4.2. The Tenant shall use the Premises for residential purposes and take due care to preserve them.
+4.3. Upon termination of the Agreement, the Tenant shall return the Premises in the condition in which they were received, ordinary wear and tear (normal deterioration occurring over time through ordinary use) excepted.
 
 **5. Early Termination of the Agreement**
 5.1. If the Tenant fails to pay rent for three consecutive months, the Landlord shall be entitled to terminate the Agreement early.
-5.2. Where the Agreement is for an indefinite term, either Party may terminate it by written notice, subject to a three-month notice period, unless the Parties agree on a different period.
-5.3. Termination of the Agreement shall be made in writing.
+5.2. If the term specified in Article 2 expires, the Parties do not enter into a new written agreement, and the Tenant continues to use the Premises without objection from the Landlord, the Agreement shall be deemed continued for an indefinite term; in that case, either Party may terminate it by written notice, subject to a three-month notice period, unless the Parties agree on a different period.
+5.3. The Tenant may also terminate the Agreement early by giving the Landlord written notice at least one month in advance.
+5.4. Termination of the Agreement shall be made in writing.
 
 **6. Force Majeure**
 The Parties shall be released from liability where failure to perform an obligation results from circumstances of insurmountable force (natural disaster, war, epidemic, and the like) that are beyond the Parties' reasonable control and could not have been avoided.
@@ -116,7 +118,7 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 ერთის მხრივ, **[EMPLOYER]** (ს/ნ **[EMPLOYER_ID]**, მისამართი: [EMPLOYER_ADDRESS]) (შემდგომში — „დამსაქმებელი“) და მეორეს მხრივ, **[EMPLOYEE]** (პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS]) (შემდგომში — „დასაქმებული“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
 
 **1. ხელშეკრულების საგანი**
-დამსაქმებელი დასაქმებულს იღებს **[POSITION]**-ის პოზიციაზე **[START_DATE]**-დან, ხოლო დასაქმებული თანხმობას აცხადებს შეასრულოს დაკისრებული სამუშაო წინამდებარე ხელშეკრულებით დადგენილი პირობების შესაბამისად.
+დამსაქმებელი დასაქმებულს იღებს **[POSITION]**-ის პოზიციაზე **[START_DATE]**-დან, ხოლო დასაქმებული თანხმობას აცხადებს შეასრულოს დაკისრებული სამუშაო წინამდებარე ხელშეკრულებით დადგენილი პირობების შესაბამისად. დასაქმებულის კონკრეტული ფუნქციები და მოვალეობები განისაზღვრება დამსაქმებლის მიერ დამტკიცებული თანამდებობრივი ინსტრუქციით ან წერილობითი დავალებებით, წინამდებარე ხელშეკრულების ფარგლებში.
 
 **2. ხელშეკრულების ვადა**
 ხელშეკრულება დადებულია განუსაზღვრელი ვადით, თუ მხარეები წერილობით სხვაგვარად არ შეთანხმდებიან.
@@ -135,7 +137,7 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 5.3. დასაქმებულს ეძლევა კანონმდებლობით გათვალისწინებული ანაზღაურებადი და ანაზღაურების გარეშე შვებულება.
 
 **6. ხელშეკრულების შეწყვეტა**
-ხელშეკრულების შეწყვეტა ხდება საქართველოს შრომის კოდექსის 47-ე და 48-ე მუხლებით დადგენილი საფუძვლებითა და წესით, წინასწარი წერილობითი შეტყობინებით. საბოლოო ანგარიშსწორება ხდება შეწყვეტიდან არაუგვიანეს 7 კალენდარული დღისა.
+ხელშეკრულების შეწყვეტა ხდება საქართველოს შრომის კოდექსის 47-ე და 48-ე მუხლებით დადგენილი საფუძვლებითა და წესით, წინასწარი წერილობითი შეტყობინებით. ეს საფუძვლები, სხვა კანონისმიერ შემთხვევებთან ერთად, მოიცავს მხარეთა შეთანხმებას, დასაქმებულის ინიციატივას, დამსაქმებლის ეკონომიკურ, ტექნოლოგიურ ან ორგანიზაციულ გარემოებებს და დასაქმებულის მიერ ხელშეკრულებით ან შინაგანაწესით გათვალისწინებული ვალდებულების არსებით დარღვევას. საბოლოო ანგარიშსწორება ხდება შეწყვეტიდან არაუგვიანეს 7 კალენდარული დღისა.
 
 **7. დავების გადაწყვეტა**
 შრომითი დავები წყდება მხარეთა მოლაპარაკებით, ხოლო შეთანხმების მიუღწევლობისას — სასამართლოში, საქართველოს კანონმდებლობით დადგენილი წესით.
@@ -154,7 +156,7 @@ City of **[CITY]**                                                              
 Between, on the one part, **[EMPLOYER]** (ID no. **[EMPLOYER_ID]**, address: [EMPLOYER_ADDRESS]) (hereinafter — the "Employer"), and, on the other part, **[EMPLOYEE]** (personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS]) (hereinafter — the "Employee"; together — the "Parties"), have entered into this Agreement as follows:
 
 **1. Subject Matter of the Agreement**
-The Employer engages the Employee in the position of **[POSITION]** as of **[START_DATE]**, and the Employee agrees to perform the assigned work in accordance with the terms set out in this Agreement.
+The Employer engages the Employee in the position of **[POSITION]** as of **[START_DATE]**, and the Employee agrees to perform the assigned work in accordance with the terms set out in this Agreement. The Employee's specific functions and duties shall be determined by the job description approved by the Employer or by written assignments, within the scope of this Agreement.
 
 **2. Term of the Agreement**
 This Agreement is concluded for an indefinite term, unless the Parties agree otherwise in writing.
@@ -173,7 +175,7 @@ Working time and rest periods shall be determined in accordance with the Labour 
 5.3. The Employee shall be entitled to paid and unpaid leave as provided by the legislation.
 
 **6. Termination of the Agreement**
-This Agreement shall be terminated on the grounds and in the manner established by Articles 47 and 48 of the Labour Code of Georgia, upon prior written notice. Final settlement shall be made no later than 7 calendar days after termination.
+This Agreement shall be terminated on the grounds and in the manner established by Articles 47 and 48 of the Labour Code of Georgia, upon prior written notice. These grounds, among other statutory cases, include mutual agreement of the Parties, the Employee's own initiative, the Employer's economic, technological, or organizational circumstances, and a material breach by the Employee of an obligation under this Agreement or the internal regulations. Final settlement shall be made no later than 7 calendar days after termination.
 
 **7. Dispute Resolution**
 Labour disputes shall be resolved through negotiation between the Parties and, failing agreement, in court, in accordance with the procedure established by the legislation of Georgia.
@@ -194,13 +196,16 @@ const POWER_OF_ATTORNEY_BODY = `მინდობილობა
 **მინდობის ფარგლები:**
 [SCOPE]
 
+**მნიშვნელოვანი გაფრთხილება:** კანონმდებლობით განსაზღვრულ შემთხვევებში (მათ შორის, უძრავი ქონების განკარგვა ან რეგისტრაცია, სასამართლო წარმომადგენლობა) მინდობილობის იურიდიული ძალისთვის აუცილებელია სანოტარო დამოწმება — წინააღმდეგ შემთხვევაში მასზე დაფუძნებული გარიგება შესაძლოა ბათილად იქნას ცნობილი. მინდობელი ვალდებულია წინასწარ დარწმუნდეს, სჭირდება თუ არა კონკრეტულ შემთხვევას ასეთი დამოწმება.
+
 მინდობილი პირი ვალდებულია იმოქმედოს მინდობელის ინტერესების შესაბამისად, ამ მინდობილობის ფარგლების გადაცილების გარეშე.
 
-**უფლებამოსილების შეწყვეტა:** უფლებამოსილება წყდება მისი ვადის გასვლით (თუ ვადა განისაზღვრა), მინდობილი პირის უარით, მინდობელის მიერ გაუქმებით, მინდობელის გარდაცვალებით ან დავალების შესრულებით. თუ ვადა არ არის მითითებული, მინდობილობა მოქმედებს გაუქმებამდე. უფლებამოსილების გაუქმებისას მინდობილი პირი ვალდებულია დაუბრუნოს მინდობელს მინდობილობის საბუთი.
+**უფლებამოსილების შეწყვეტა:** უფლებამოსილება წყდება მისი ვადის გასვლით (თუ ვადა განისაზღვრა), მინდობილი პირის უარით, მინდობელის მიერ გაუქმებით, მინდობელის გარდაცვალებით ან დავალების შესრულებით. თუ ვადა არ არის მითითებული, მინდობილობა მოქმედებს გაუქმებამდე. უფლებამოსილების გაუქმებისას მინდობილი პირი ვალდებულია დაუბრუნოს მინდობელს მინდობილობის საბუთი დაუყოვნებლივ, არაუგვიანეს 5 კალენდარული დღისა.
 
-**შენიშვნა:** კანონმდებლობით განსაზღვრულ შემთხვევებში (მაგ. უძრავი ქონების განკარგვა, სასამართლო წარმომადგენლობა) მინდობილობა საჭიროებს სანოტარო დამოწმებას.
+მინდობელი: **[PRINCIPAL]**     ხელმოწერა: ____________
 
-მინდობელი: **[PRINCIPAL]**     ხელმოწერა: ____________`;
+**სანოტარო დამოწმება (საჭიროების შემთხვევაში):**
+ნოტარიუსი: ____________     ხელმოწერა/ბეჭედი: ____________     თარიღი: ____________`;
 
 const POWER_OF_ATTORNEY_BODY_EN = `POWER OF ATTORNEY
 
@@ -211,13 +216,16 @@ I, **[PRINCIPAL]** (personal no. **[PRINCIPAL_ID]**, registered at: [PRINCIPAL_A
 **Scope of Authority:**
 [SCOPE]
 
+**Important warning:** In cases specified by law (including disposal or registration of immovable property, representation before a court), notarial certification is required for this power of attorney to have legal effect — otherwise, a transaction based on it may be declared invalid. The Principal must confirm in advance whether such certification is required for the specific case at hand.
+
 The Agent shall act in accordance with the Principal's interests and shall not exceed the scope of this power of attorney.
 
-**Termination of Authority:** The authority granted hereunder shall terminate upon expiry of its term (where a term is specified), renunciation by the Agent, revocation by the Principal, the Principal's death, or completion of the assigned task. If no term is specified, this power of attorney shall remain in effect until revoked. Upon revocation of authority, the Agent shall return the instrument of this power of attorney to the Principal.
+**Termination of Authority:** The authority granted hereunder shall terminate upon expiry of its term (where a term is specified), renunciation by the Agent, revocation by the Principal, the Principal's death, or completion of the assigned task. If no term is specified, this power of attorney shall remain in effect until revoked. Upon revocation of authority, the Agent shall return the instrument of this power of attorney to the Principal immediately, no later than 5 calendar days thereafter.
 
-**Note:** In cases specified by law (e.g., disposal of immovable property, representation before a court), this power of attorney requires notarial certification.
+Principal: **[PRINCIPAL]**     Signature: ____________
 
-Principal: **[PRINCIPAL]**     Signature: ____________`;
+**Notarial certification (where required):**
+Notary: ____________     Signature/Seal: ____________     Date: ____________`;
 
 const TERMINATION_NOTICE_BODY = `შეტყობინება შრომითი ხელშეკრულების შეწყვეტის შესახებ
 
@@ -232,9 +240,9 @@ const TERMINATION_NOTICE_BODY = `შეტყობინება შრომ�
 
 **შრომითი ურთიერთობის ბოლო დღე:** **[LAST_DAY]**
 
-შეტყობინება გამოგზავნილია საქართველოს შრომის კოდექსის 48-ე მუხლით დადგენილი წინასწარი გაფრთხილების ვადის დაცვით. კანონით გათვალისწინებულ შემთხვევებში დასაქმებულს ეკუთვნის შესაბამისი კომპენსაცია.
+შეტყობინება გამოგზავნილია საქართველოს შრომის კოდექსის 48-ე მუხლით დადგენილი წინასწარი გაფრთხილების ვადის დაცვით. კანონით გათვალისწინებულ შემთხვევებში დასაქმებულს ეკუთვნის შესაბამისი კომპენსაცია (ოდენობა: **[COMPENSATION_AMOUNT]**, ასეთის მითითების შემთხვევაში).
 
-საბოლოო ანგარიშსწორება განხორციელდება შრომითი ურთიერთობის შეწყვეტიდან არაუგვიანეს 7 კალენდარული დღისა (შრომის კოდექსის 44-ე მუხლი).
+საბოლოო ანგარიშსწორება განხორციელდება არაუგვიანეს **[SETTLEMENT_DEADLINE]**-ისა (შრომითი ურთიერთობის შეწყვეტიდან არაუგვიანეს 7 კალენდარული დღისა, შრომის კოდექსის 44-ე მუხლის შესაბამისად).
 
 დასაქმებულს უფლება აქვს, კანონმდებლობით დადგენილი წესით მოითხოვოს შეწყვეტის საფუძვლის წერილობითი დასაბუთება და გაასაჩივროს გადაწყვეტილება სასამართლოში.
 
@@ -253,9 +261,9 @@ We hereby notify you that the employment agreement concluded with you is termina
 
 **Last day of the employment relationship:** **[LAST_DAY]**
 
-This notice has been given in compliance with the advance notice period established by Article 48 of the Labour Code of Georgia. Where provided by law, the Employee shall be entitled to corresponding compensation.
+This notice has been given in compliance with the advance notice period established by Article 48 of the Labour Code of Georgia. Where provided by law, the Employee shall be entitled to corresponding compensation (amount: **[COMPENSATION_AMOUNT]**, where specified).
 
-Final settlement shall be made no later than 7 calendar days after termination of the employment relationship (Article 44 of the Labour Code).
+Final settlement shall be made no later than **[SETTLEMENT_DEADLINE]** (no later than 7 calendar days after termination of the employment relationship, in accordance with Article 44 of the Labour Code).
 
 The Employee is entitled, in the manner established by law, to request written justification of the grounds for termination and to appeal the decision in court.
 
@@ -277,6 +285,7 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 3.1. მომსახურების საფასური შეადგენს **[PRICE]**-ს.
 3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
 3.3. მხარეთა შეთანხმებით შესაძლებელია ავანსის ან ეტაპობრივი ანგარიშსწორების გამოყენება.
+3.4. თუ მხარეები ეტაპობრივ ან სხვაგვარ გადახდის გრაფიკზე არ შეთანხმდებიან, დამკვეთი ვალდებულია საფასური სრულად გადაიხადოს მომსახურების დასრულებისა და შესაბამისი მოთხოვნის მიღებიდან არაუგვიანეს 5 სამუშაო დღისა.
 
 **4. მხარეთა უფლება-მოვალეობები**
 4.1. შემსრულებელი ვალდებულია მომსახურება გასწიოს ჯეროვნად, კეთილსინდისიერად და შეთანხმებული ხარისხის დაცვით.
@@ -287,7 +296,7 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 მხარე, რომელიც არღვევს ხელშეკრულებით ნაკისრ ვალდებულებას, ვალდებულია აანაზღაუროს მეორე მხარისთვის ამით მიყენებული ზიანი საქართველოს კანონმდებლობით დადგენილი წესით.
 
 **6. ხელშეკრულების შეწყვეტა**
-ნებისმიერ მხარეს შეუძლია ხელშეკრულების შეწყვეტა მოითხოვოს მეორე მხარისთვის გონივრული ვადით ადრე გაგზავნილი წერილობითი შეტყობინებით, უკვე გაწეული მომსახურების ანაზღაურების პირობით.
+ნებისმიერ მხარეს შეუძლია ხელშეკრულების შეწყვეტა მოითხოვოს მეორე მხარისთვის არანაკლებ 5 სამუშაო დღით ადრე გაგზავნილი წერილობითი შეტყობინებით, უკვე გაწეული მომსახურების ანაზღაურების პირობით.
 
 **7. ფორს-მაჟორი**
 მხარეები თავისუფლდებიან პასუხისმგებლობისგან, თუ ვალდებულების შეუსრულებლობა გამოწვეულია დაუძლეველი ძალის გარემოებით, რომლის თავიდან აცილება მხარეთა გონივრულ კონტროლს აღემატება.
@@ -318,6 +327,7 @@ The services shall be rendered within the following period: **[DEADLINE]**.
 3.1. The fee for the services shall be **[PRICE]**.
 3.2. Payment method: **[PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
 3.3. By agreement of the Parties, an advance payment or staged settlement may be used.
+3.4. If the Parties do not agree on a staged or other payment schedule, the Client shall pay the fee in full no later than 5 business days after the services are completed and the corresponding request is received.
 
 **4. Rights and Obligations of the Parties**
 4.1. The Contractor shall render the services properly, in good faith, and to the agreed standard of quality.
@@ -328,7 +338,7 @@ The services shall be rendered within the following period: **[DEADLINE]**.
 A Party that breaches an obligation under this Agreement shall compensate the other Party for damage thereby caused, in the manner established by the legislation of Georgia.
 
 **6. Termination of the Agreement**
-Either Party may request termination of the Agreement by sending the other Party written notice a reasonable time in advance, subject to payment for services already rendered.
+Either Party may request termination of the Agreement by sending the other Party written notice at least 5 business days in advance, subject to payment for services already rendered.
 
 **7. Force Majeure**
 The Parties shall be released from liability where failure to perform an obligation results from circumstances of insurmountable force that are beyond the Parties' reasonable control and could not have been avoided.
@@ -399,7 +409,7 @@ const DEBT_CLAIM_BODY = `მოთხოვნა (პრეტენზია) 
 
 **2. დავალიანების ოდენობა**
 ძირითადი თანხა: **[PRINCIPAL_AMOUNT]**
-დარიცხული პროცენტი/საურავი: **[INTEREST_AMOUNT]**
+დარიცხული პროცენტი/საურავი: **[INTEREST_AMOUNT]** (დარიცხვის საფუძველი და განაკვეთი: იხ. ზემოთ, დავალიანების საფუძველში მითითებული პირობები, ან კანონმდებლობით დადგენილი წესი)
 სულ გადასახდელი: **[TOTAL_AMOUNT]**
 დაბრუნების თავდაპირველი ვადა: **[ORIGINAL_DUE_DATE]**
 
@@ -424,7 +434,7 @@ Debtor: **[DEBTOR_NAME]**, address: [DEBTOR_ADDRESS]
 
 **2. Amount of the Debt**
 Principal amount: **[PRINCIPAL_AMOUNT]**
-Accrued interest/penalty: **[INTEREST_AMOUNT]**
+Accrued interest/penalty: **[INTEREST_AMOUNT]** (basis and rate: see the terms stated above, under the basis of the debt, or as established by the legislation)
 Total amount due: **[TOTAL_AMOUNT]**
 Original due date for repayment: **[ORIGINAL_DUE_DATE]**
 
@@ -446,12 +456,16 @@ const CHILD_TRAVEL_CONSENT_BODY = `თანხმობა არასრუ�
 **დანიშნულების ქვეყანა/ქვეყნები:** [DESTINATION]
 **მოგზაურობის პერიოდი:** [TRAVEL_PERIOD]
 **თანმხლები პირი:** [ESCORT]
+**მეორე მშობლის თანხმობის სტატუსი:** [OTHER_PARENT_STATUS]
 
 წინამდებარე თანხმობა გაცემულია „საქართველოს მოქალაქეების საქართველოდან გასვლისა და საქართველოში შემოსვლის წესების შესახებ“ საქართველოს კანონის მე-8 მუხლის შესაბამისად, რომლის თანახმად, 18 წლამდე ასაკის პირის საზღვარგარეთ გასვლისას საჭიროა კანონიერი წარმომადგენლის თანხმობა, ხოლო მეორე მშობლის თანხმობის არარსებობის შემთხვევაში საკმარისია ერთი კანონიერი წარმომადგენლის ნოტარიულად დამოწმებული თანხმობა, რომელშიც მითითებული უნდა იყოს დანიშნულების ქვეყანა და მოგზაურობის პერიოდი.
 
 **შენიშვნა:** საზღვრის კვეთისას ეს დოკუმენტი, როგორც წესი, საჭიროებს ნოტარიულ დამოწმებას; საზღვარგარეთ გამოსაყენებლად შესაძლოა დამატებით საჭირო გახდეს აპოსტილი ან თარგმანი მიმღები ქვეყნის მოთხოვნების შესაბამისად.
 
-მშობელი/კანონიერი წარმომადგენელი: **[PARENT_NAME]**     ხელმოწერა: ____________`;
+მშობელი/კანონიერი წარმომადგენელი: **[PARENT_NAME]**     ხელმოწერა: ____________
+
+**სანოტარო დამოწმება:**
+ნოტარიუსი: ____________     ხელმოწერა/ბეჭედი: ____________     თარიღი: ____________`;
 
 const CHILD_TRAVEL_CONSENT_BODY_EN = `CONSENT TO A MINOR'S TRAVEL ABROAD
 
@@ -462,12 +476,16 @@ I, **[PARENT_NAME]** (personal no. **[PARENT_ID]**, address: [PARENT_ADDRESS], t
 **Destination country/countries:** [DESTINATION]
 **Travel period:** [TRAVEL_PERIOD]
 **Accompanying person:** [ESCORT]
+**Status of the other parent's consent:** [OTHER_PARENT_STATUS]
 
 This consent is given pursuant to Article 8 of the Law of Georgia "On the Rules for the Exit of Georgian Citizens from Georgia and Entry into Georgia," under which the consent of a legal guardian is required for a person under 18 years of age to travel abroad, and, in the absence of the other parent's consent, the notarized consent of a single legal guardian shall suffice, provided that it states the destination country and the travel period.
 
 **Note:** For purposes of crossing the border, this document generally requires notarial certification; use abroad may additionally require an apostille or translation, depending on the requirements of the receiving country.
 
-Parent/legal guardian: **[PARENT_NAME]**     Signature: ____________`;
+Parent/legal guardian: **[PARENT_NAME]**     Signature: ____________
+
+**Notarial certification:**
+Notary: ____________     Signature/Seal: ____________     Date: ____________`;
 
 const INVOICE_BODY = `ინვოისი № **[INVOICE_NUMBER]**
 
@@ -484,6 +502,8 @@ const INVOICE_BODY = `ინვოისი № **[INVOICE_NUMBER]**
 **გადახდის მეთოდი:** [PAYMENT_METHOD]. **საბანკო ანგარიში:** [BANK_ACCOUNT]
 
 წინამდებარე დოკუმენტი წარმოადგენს გადახდის მოთხოვნას ზემოაღნიშნული საქონლის/მომსახურების მისაწოდებლად ან უკვე მიწოდებულის საფასურის დასაფარად და არ ჩაითვლება საგადასახადო კანონმდებლობით გათვალისწინებულ ანგარიშ-ფაქტურად RS.ge-ს მონაცემთა ერთიან ცხრილში რეგისტრაციის გაგებით.
+
+გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს მოსთხოვოს მიმღებს მხარეთა შორის შეთანხმებული ან კანონმდებლობით დადგენილი საურავი/პროცენტი. მხარეთა შორის დავა წყდება მოლაპარაკებით, ხოლო შეთანხმების მიუღწევლობისას — სასამართლოში, საქართველოს კანონმდებლობით დადგენილი წესით.
 
 გამომწერი: **[SELLER]**     ხელმოწერა/ბეჭედი: ____________`;
 
@@ -502,6 +522,8 @@ City of **[CITY]**                                                              
 **Payment method:** [PAYMENT_METHOD]. **Bank account:** [BANK_ACCOUNT]
 
 This document constitutes a request for payment for the above goods/services to be supplied, or already supplied, and shall not be regarded as a tax invoice within the meaning of registration in RS.ge's unified data table under the tax legislation.
+
+If payment is delayed past the due date, the Issuer shall be entitled to claim a penalty/interest as agreed between the Parties or as established by the legislation. Disputes between the Parties shall be resolved through negotiation and, failing agreement, in court, in accordance with the procedure established by the legislation of Georgia.
 
 Issuer: **[SELLER]**     Signature/Seal: ____________`;
 
@@ -524,6 +546,8 @@ const ACCEPTANCE_ACT_BODY = `მიღება-ჩაბარების ა�
 
 მხარეები ადასტურებენ, რომ ზემოაღნიშნული საქონელი/სამუშაო/მომსახურება გადაცემულია (შესრულებულია) შეთანხმებული მოცულობით და ხარისხით. აქტზე ხელმოწერის მომენტიდან შესაბამისი ვალდებულება ითვლება შესრულებულად იმ ნაწილში, რომელშიც არ არის დაფიქსირებული პრეტენზია.
 
+წინამდებარე აქტის ხელმოწერა არ ართმევს მიმღებ მხარეს უფლებას, მოითხოვოს ისეთი ნაკლის აღმოფხვრა ან ზიანის ანაზღაურება, რომელიც ვერ იქნებოდა შემჩნეული ჩვეულებრივი დათვალიერებით მიღება-ჩაბარების მომენტში (ფარული ნაკლი) და გამოვლინდა მოგვიანებით, კანონმდებლობით დადგენილი ვადებისა და წესის შესაბამისად.
+
 მიმცემი: **[PROVIDER]**     ხელმოწერა: ____________
 მიმღები: **[RECEIVER]**     ხელმოწერა: ____________`;
 
@@ -545,6 +569,8 @@ This act confirms that the transferring party has delivered, and the receiving p
 **Parties' remarks/objections:** [OBJECTIONS]
 
 The Parties confirm that the above goods/work/services have been transferred (performed) in the agreed volume and quality. As of the moment of signing this act, the corresponding obligation shall be deemed performed to the extent no objection has been recorded.
+
+Signing this act does not deprive the receiving party of the right to demand remedy of a defect, or compensation for damage, that could not have been discovered upon ordinary inspection at the time of transfer (a latent defect) and comes to light later, in accordance with the time limits and procedure established by the legislation.
 
 Transferring party: **[PROVIDER]**     Signature: ____________
 Receiving party: **[RECEIVER]**     Signature: ____________`;
@@ -657,7 +683,7 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
   },
   "termination-notice": {
     employer: "EMPLOYER", employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS",
-    reason: "REASON", lastDay: "LAST_DAY",
+    reason: "REASON", lastDay: "LAST_DAY", compensationAmount: "COMPENSATION_AMOUNT",
     city: "CITY", docDate: "DOC_DATE",
   },
   "service-agreement": {
@@ -685,7 +711,7 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
   "child-travel-consent": {
     parentName: "PARENT_NAME", parentId: "PARENT_ID", parentAddress: "PARENT_ADDRESS", parentPhone: "PARENT_PHONE",
     childName: "CHILD_NAME", childDob: "CHILD_DOB", childDocument: "CHILD_DOCUMENT",
-    escort: "ESCORT", destination: "DESTINATION", travelPeriod: "TRAVEL_PERIOD",
+    escort: "ESCORT", destination: "DESTINATION", travelPeriod: "TRAVEL_PERIOD", otherParentStatus: "OTHER_PARENT_STATUS",
     city: "CITY", docDate: "DOC_DATE",
   },
   invoice: {
@@ -731,6 +757,16 @@ function buildInvoiceItemsTable(raw: string, locale: Locale): string {
   return [header, ...rows].join("\n");
 }
 
+/** Add `days` calendar days to an ISO ("YYYY-MM-DD") date string, returning
+ * an ISO date string. Returns "" if `iso` doesn't parse, so callers can fall
+ * back to the standard "—" empty-value rendering. */
+function addCalendarDays(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Replace every `[PLACEHOLDER]` token in `body` using `values` (keyed by placeholder name, not form key). Missing/blank values render as `—`. */
 function fillTemplate(body: string, values: Record<string, string>): string {
   return body.replace(/\[([A-Z_]+)\]/g, (_match, key: string) => {
@@ -754,6 +790,9 @@ export function renderTemplate(
   for (const [formKey, placeholder] of Object.entries(map)) {
     const raw = answers[formKey] ?? "";
     values[placeholder] = type === "invoice" && formKey === "items" ? buildInvoiceItemsTable(raw, locale) : raw;
+  }
+  if (type === "termination-notice") {
+    values.SETTLEMENT_DEADLINE = addCalendarDays(answers.lastDay ?? "", 7);
   }
   const def = TEMPLATES[type];
   const chosenBody = locale === "en" ? def.bodyEn : def.body;

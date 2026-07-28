@@ -204,7 +204,12 @@ export async function POST(req: Request) {
         { role: "user", content: `გაანალიზე ეს დოკუმენტი:\n\n${maskedText}` },
       ],
       undefined,
-      6000
+      // Was 6000 — live testing surfaced real cases (denser findings sets,
+      // e.g. a fully-clause'd contract) where the model's JSON response gets
+      // cut mid-string at that ceiling, so parseAnalysisResponse throws and
+      // the user sees "AI returned an unreadable response" for no real fault
+      // of the input document.
+      9000
     );
     raw = unmaskPII(result.content, piiMap);
     costUsd = result.costUsd;

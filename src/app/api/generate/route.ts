@@ -52,6 +52,7 @@ ${STRICT_BREVITY_RULE}
 - ფინანსური მოთხოვნა: თუ მოთხოვნილია თანხა, პირგასამტეხლო ან ზიანის ანაზღაურება, მიუთითე ან ზუსტი თანხა, ან ზუსტი გამოთვლის წესი (განაკვეთი, ბაზა, პერიოდი). არასოდეს დატოვო ბუნდოვნად ისე, რომ ადრესატმა ვერ გამოთვალოს ზუსტი თანხობრივი რისკი.
 - შედეგის/ესკალაციის პუნქტი: ცალსახად ჩაწერე, რა მოხდება, თუ ადრესატი ვადაში არ შეასრულებს მოთხოვნას (მაგ. სასამართლოსთვის ან შესაბამისი ორგანოსთვის მიმართვის უფლება), და დაასაბუთე ეს იმ მუხლით, რომელიც ამ უფლებას ანიჭებს.
 - მოთხოვნის სიცხადე: გამოიყენე ცალსახა, დაჟინებული მოთხოვნის ენა („მოვითხოვ"/„ვითხოვ") და ზუსტად ჩამოაყალიბე, რა კონკრეტულ ქმედებას ან შედეგს ითხოვ — არასოდეს დატოვო მოთხოვნილი შედეგი ბუნდოვნად.
+- იურისდიქცია: დოკუმენტის ბოლოს, ხელმოწერამდე, ერთი წინადადებით მიუთითე, რომ დავის შემთხვევაში საკითხს განიხილავს საქართველოს სასამართლო, საქართველოს კანონმდებლობით დადგენილი წესით (საკუთარი კონკრეტული სასამართლოს დასახელების გამოგონების გარეშე).
 
 დოკუმენტის ტექსტის დასრულების შემდეგ, ცალკე სტრიქონზე დაწერე ზუსტად: ${CITATIONS_DELIM}
 შემდეგ, იმ ტექსტის შემდეგ, ჩამოთვალე საქართველოს კანონმდებლობის ის მუხლები, რომლებსაც დოკუმენტი ეფუძნება, შემდეგი ფორმატით:
@@ -88,6 +89,7 @@ Low-risk drafting rules (to prevent problems the site's own document-analysis to
 - Financial demand: if a sum, penalty, or damages is claimed, state either the exact amount or the exact calculation method (rate, base, period). Never leave it vague such that the recipient cannot compute the exact financial exposure.
 - Consequence/escalation clause: explicitly state what happens if the recipient fails to comply within the deadline (e.g., the right to pursue court or administrative action), grounded in the article that grants that right.
 - Clarity of the demand: use assertive, unambiguous demand language ("I demand" / "I hereby require") and state precisely what action or outcome is demanded — never leave the requested outcome vague.
+- Jurisdiction: near the end, before the signature, state in one sentence that any dispute will be resolved by the courts of Georgia, in accordance with the legislation of Georgia (without inventing the name of a specific court).
 
 After finishing the document text, on its own line write exactly: ${CITATIONS_DELIM}
 Then, after that line, list the articles of Georgian legislation the document is based on, in this format:
