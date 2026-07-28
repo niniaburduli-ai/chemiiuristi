@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useRef } from "react";
 import Link from "next/link";
 import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, type LucideIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -432,6 +432,14 @@ export function DashboardClient({
   const enabledTabs = [...cabinetTabs, ...historyTabs].filter((t) => t.enabled);
   const requested = enabledTabs.find((t) => t.key === initialTab)?.key;
   const [activeTab, setActiveTab] = useState<Tab>(requested ?? "limits");
+  const canvasRef = useRef<HTMLElement>(null);
+
+  const selectTab = (key: Tab) => {
+    setActiveTab(key);
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      canvasRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
@@ -445,7 +453,7 @@ export function DashboardClient({
             <button
               key={t.key}
               type="button"
-              onClick={() => setActiveTab(t.key)}
+              onClick={() => selectTab(t.key)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
                 activeTab === t.key
                   ? "bg-primary text-primary-foreground"
@@ -466,7 +474,7 @@ export function DashboardClient({
             <button
               key={t.key}
               type="button"
-              onClick={() => setActiveTab(t.key)}
+              onClick={() => selectTab(t.key)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
                 activeTab === t.key
                   ? "bg-primary text-primary-foreground"
@@ -504,7 +512,10 @@ export function DashboardClient({
       </aside>
 
       {/* Canvas */}
-      <section className="flex-1 min-w-0 h-[70vh] min-h-[520px] md:h-full md:min-h-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section
+        ref={canvasRef}
+        className="flex-1 min-w-0 h-[70vh] min-h-[520px] md:h-full md:min-h-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col"
+      >
         <div className={activeTab === "limits" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <LimitsPanel
             d={d}
