@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { Feedback } from "@/lib/models/Feedback";
 import { FeedbackCreateSchema } from "@/lib/validators";
@@ -29,8 +30,16 @@ export async function POST(req: Request) {
     );
   }
 
+  const session = await auth();
+
   await dbConnect();
-  await Feedback.create({ rating: parsed.data.rating, message: parsed.data.message });
+  await Feedback.create({
+    rating: parsed.data.rating,
+    message: parsed.data.message,
+    ...(session?.user?.id
+      ? { userId: session.user.id, userEmail: session.user.email, userName: session.user.name }
+      : {}),
+  });
 
   try {
     const siteConfig = await getSiteConfig();

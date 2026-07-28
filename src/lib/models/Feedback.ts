@@ -6,6 +6,12 @@ const FeedbackSchema = new Schema(
     message: { type: String, trim: true, maxlength: 2000, default: "" },
     // Manually reviewed by an admin before it can appear as a public testimonial.
     isApproved: { type: Boolean, default: false },
+    // Snapshot of the submitter's identity at submission time, if logged in
+    // (never collected from an anonymous submitter). Admin-only — the public
+    // testimonial card never shows email/name, only derived initials.
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
+    userEmail: { type: String, required: false },
+    userName: { type: String, required: false },
   },
   { timestamps: true }
 );

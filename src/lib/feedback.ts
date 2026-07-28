@@ -13,13 +13,22 @@ export type ApprovedFeedback = {
 
 const INITIAL_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-/** No name is ever collected on submission — a stable, id-derived pair of
- * letters gives each testimonial card a visual identity without implying a
- * real one. Deterministic so it doesn't change across reloads. */
+/** A submitter who wasn't logged in has no name to derive from — a stable,
+ * id-derived pair of letters gives their card a visual identity without
+ * implying a real one. Deterministic so it doesn't change across reloads. */
 function initialsFromId(id: string): string {
   const a = id.charCodeAt(id.length - 4) % INITIAL_LETTERS.length;
   const b = id.charCodeAt(id.length - 1) % INITIAL_LETTERS.length;
   return `${INITIAL_LETTERS[a]}.${INITIAL_LETTERS[b]}.`;
+}
+
+/** Real initials from the logged-in submitter's name, e.g. "Nino Burduli" -> "N.B." */
+function initialsFromName(name: string): string | null {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return null;
+  const first = parts[0][0];
+  const last = parts[parts.length - 1][0];
+  return `${first.toUpperCase()}.${last.toUpperCase()}.`;
 }
 
 /** Admin-approved testimonials for the public homepage section. */
@@ -34,7 +43,7 @@ export async function getApprovedFeedback(limit = 24): Promise<ApprovedFeedback[
       const id = String((f as { _id: unknown })._id);
       return {
         id,
-        initials: initialsFromId(id),
+        initials: (f.userName && initialsFromName(f.userName)) || initialsFromId(id),
         rating: f.rating ?? null,
         message: f.message ?? "",
         createdAt: (f as { createdAt?: Date }).createdAt?.toISOString() ?? null,

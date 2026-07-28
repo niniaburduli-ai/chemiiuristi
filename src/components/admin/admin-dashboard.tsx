@@ -197,6 +197,7 @@ export type FeedbackRow = {
   rating: number | null;
   message: string;
   isApproved: boolean;
+  userEmail: string | null;
   createdAt: string | null;
 };
 
@@ -937,6 +938,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+            <th>მომხმარებელი</th>
             <th>შეფასება</th>
             <th>შეტყობინება</th>
             <th>თარიღი</th>
@@ -946,11 +948,12 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
         </thead>
         <tbody>
           {rows.length === 0 && (
-            <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
+            <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
           )}
           {rows.map((f) => (
             <React.Fragment key={f.id}>
               <tr className="border-b [&>td]:px-4 [&>td]:py-3">
+                <td className="text-muted-foreground">{f.userEmail ?? "ანონიმური"}</td>
                 <td><StarRating rating={f.rating} /></td>
                 <td className="max-w-[320px] truncate text-muted-foreground">{f.message || "—"}</td>
                 <td className="text-muted-foreground">{formatDate(f.createdAt)}</td>
@@ -977,7 +980,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
               </tr>
               {expanded === f.id && (
                 <tr key={`${f.id}-exp`} className="border-b bg-muted/20">
-                  <td colSpan={5} className="px-4 py-3">
+                  <td colSpan={6} className="px-4 py-3">
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{f.message}</p>
                   </td>
                 </tr>

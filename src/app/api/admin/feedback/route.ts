@@ -20,6 +20,7 @@ export async function GET() {
       rating: f.rating ?? null,
       message: f.message ?? "",
       isApproved: f.isApproved ?? false,
+      userEmail: f.userEmail ?? null,
       createdAt: (f as { createdAt?: Date }).createdAt?.toISOString() ?? null,
     })),
   });

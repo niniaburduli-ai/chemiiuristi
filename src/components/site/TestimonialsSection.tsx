@@ -46,7 +46,6 @@ export function TestimonialsSection({
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                   {f.initials || <User className="h-4 w-4" />}
                 </div>
-                <span className="text-xs text-muted-foreground">{f.initials}</span>
               </div>
             </div>
           ))}
