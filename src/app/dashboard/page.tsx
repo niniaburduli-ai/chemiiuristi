@@ -14,7 +14,7 @@ import { GeneratedDocument } from "@/lib/models/generated-document";
 import { DocumentReview } from "@/lib/models/document-review";
 import { Payment } from "@/lib/models/payment";
 import { Badge } from "@/components/ui/badge";
-import { getPlanByKey, getPlans, type PlanData } from "@/lib/plans-db";
+import { getPlans, type PlanData } from "@/lib/plans-db";
 import { effectivePriceMinor } from "@/lib/plan-price";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { getFeatureFlags } from "@/lib/features";
@@ -63,7 +63,10 @@ export default async function DashboardPage({
 
   const isAdmin = user.role === "admin";
   const plan = user.plan ?? "free";
-  const planData = await getPlanByKey(plan);
+  // `plans` was already fetched above — look up the current plan there
+  // instead of issuing a second, sequential DB round trip for the same doc.
+  const planMap = new Map(plans.map((p) => [p.key, p]));
+  const planData = planMap.get(plan) ?? null;
 
   const consultLimit = planData?.consultations ?? 9;
   const showGenerate = flags.generate && planData ? planData.includeDocGeneration : false;
@@ -117,7 +120,6 @@ export default async function DashboardPage({
 
   const fmtAmount = (minor: number, currency = "GEL") =>
     `${(minor / 100).toFixed(2)} ${currency === "GEL" ? "₾" : currency}`;
-  const planMap = new Map(plans.map((p) => [p.key, p]));
   const billingPlanLabel = (key: string) => {
     if (key === "custom") return d.billing.customPackageLabel;
     const p = planMap.get(key);
@@ -125,7 +127,6 @@ export default async function DashboardPage({
   };
   const billingPlanPrice = (p: PlanData) =>
     p.priceMinor === 0 ? d.billing.freePlanLabel : `${fmtAmount(effectivePriceMinor(p), p.currency)} / ${d.pricing.perMonth}`;
-  const currentPlanData = planMap.get(plan);
   const BILLING_STATUS_LABEL: Record<string, string> = {
     active: d.billing.statusActive,
     pending: d.billing.statusPending,
@@ -358,7 +359,7 @@ export default async function DashboardPage({
           showTemplates={showTemplates}
           locale={locale}
           billingPlanName={billingPlanLabel(plan)}
-          billingPlanPrice={currentPlanData ? billingPlanPrice(currentPlanData) : d.billing.freePlanLabel}
+          billingPlanPrice={planData ? billingPlanPrice(planData) : d.billing.freePlanLabel}
           billingIsPaid={isPaid}
           billingStatusLabel={billingStatus ? BILLING_STATUS_LABEL[billingStatus] ?? billingStatus : null}
           billingNextPaymentLabel={isPaid && user.resetAt ? new Date(user.resetAt).toLocaleDateString(dateLocale) : null}
