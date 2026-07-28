@@ -2,13 +2,12 @@
 
 import { useState, useActionState } from "react";
 import Link from "next/link";
-import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, History, type LucideIcon } from "lucide-react";
+import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, type LucideIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ConsultationsGrid, type ConsultationItem } from "./consultations/consultations-grid";
 import { DocumentsList, type GeneratedDocItem } from "./documents/documents-list";
 import { ReviewsGrid, type ReviewItem } from "./reviews/reviews-grid";
@@ -430,17 +429,9 @@ export function DashboardClient({
     { key: "documents", label: dp.generatedDocs, icon: FileText, enabled: showGenerate },
     { key: "templates", label: dp.usedTemplates, icon: LayoutList, enabled: showTemplates },
   ];
-  const historyHints: Partial<Record<Tab, string>> = {
-    consultations: dp.consultationsHistoryHint,
-    reviews: dp.reviewsHistoryHint,
-    documents: dp.documentsHistoryHint,
-    templates: dp.templatesHistoryHint,
-  };
-
   const enabledTabs = [...cabinetTabs, ...historyTabs].filter((t) => t.enabled);
   const requested = enabledTabs.find((t) => t.key === initialTab)?.key;
   const [activeTab, setActiveTab] = useState<Tab>(requested ?? "limits");
-  const [historySheetTab, setHistorySheetTab] = useState<Tab | null>(null);
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:h-[calc(100vh-260px)] md:min-h-[560px]">
@@ -467,7 +458,7 @@ export function DashboardClient({
           ))}
         </div>
 
-        <div className="hidden md:block bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
+        <div className="bg-card border border-border rounded-2xl p-3 space-y-1.5 shrink-0">
           <div className="px-2 pb-1.5">
             <h2 className="text-lg font-bold text-foreground">{dp.serviceHistoryHeading}</h2>
           </div>
@@ -485,34 +476,6 @@ export function DashboardClient({
               <t.icon className="h-4 w-4 shrink-0 text-gold" />
               {t.label}
             </button>
-          ))}
-        </div>
-
-        {/* Mobile: each service history section as its own compact card */}
-        <div className="md:hidden flex flex-col gap-3 shrink-0">
-          <h2 className="px-1 text-lg font-bold text-foreground">{dp.serviceHistoryHeading}</h2>
-          {historyTabs.filter((t) => t.enabled).map((t) => (
-            <div key={t.key} className="bg-card border border-border rounded-2xl p-4 flex flex-col gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0">
-                  <t.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-base font-bold text-foreground truncate">{t.label}</h3>
-                  <p className="text-xs text-muted-foreground truncate">{historyHints[t.key]}</p>
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => setHistorySheetTab(t.key)}
-              >
-                <History className="h-4 w-4 mr-1.5 text-gold" />
-                {dp.viewHistoryCta}
-              </Button>
-            </div>
           ))}
         </div>
 
@@ -581,16 +544,16 @@ export function DashboardClient({
             payments={billingPayments}
           />
         </div>
-        <div className={activeTab === "consultations" ? "hidden md:flex md:flex-col md:h-full md:min-h-0" : "hidden"}>
+        <div className={activeTab === "consultations" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <ConsultationsGrid items={consultations} d={d} />
         </div>
         {showGenerate && (
-          <div className={activeTab === "documents" ? "hidden md:flex md:flex-col md:h-full md:min-h-0" : "hidden"}>
+          <div className={activeTab === "documents" ? "flex flex-col h-full min-h-0" : "hidden"}>
             <DocumentsList docs={documents} d={d} />
           </div>
         )}
         {showTemplates && (
-          <div className={activeTab === "templates" ? "hidden md:flex md:flex-col md:h-full md:min-h-0" : "hidden"}>
+          <div className={activeTab === "templates" ? "flex flex-col h-full min-h-0" : "hidden"}>
             <DocumentsList
               docs={templates}
               d={d}
@@ -602,33 +565,11 @@ export function DashboardClient({
           </div>
         )}
         {showReview && (
-          <div className={activeTab === "reviews" ? "hidden md:flex md:flex-col md:h-full md:min-h-0" : "hidden"}>
+          <div className={activeTab === "reviews" ? "flex flex-col h-full min-h-0" : "hidden"}>
             <ReviewsGrid items={reviews} d={d} />
           </div>
         )}
       </section>
-
-      {/* Mobile: history opens in a fixed-height, centered, internally-scrollable modal */}
-      <Dialog open={historySheetTab !== null} onOpenChange={(open) => !open && setHistorySheetTab(null)}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md h-[75vh] max-h-[640px] p-0 gap-0 flex flex-col overflow-hidden bg-background">
-          <DialogTitle className="sr-only">
-            {historySheetTab ? historyTabs.find((t) => t.key === historySheetTab)?.label : ""}
-          </DialogTitle>
-          {historySheetTab === "consultations" && <ConsultationsGrid items={consultations} d={d} />}
-          {historySheetTab === "documents" && <DocumentsList docs={documents} d={d} />}
-          {historySheetTab === "templates" && (
-            <DocumentsList
-              docs={templates}
-              d={d}
-              heading={d.profile.usedTemplates}
-              emptyText={d.profile.noTemplates}
-              emptyCta={d.profile.fillTemplate}
-              emptyHref="/services?tab=templates"
-            />
-          )}
-          {historySheetTab === "reviews" && <ReviewsGrid items={reviews} d={d} />}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
