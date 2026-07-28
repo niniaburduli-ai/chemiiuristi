@@ -16,6 +16,9 @@ import {
 
 type ServiceMeta = { key: CustomService; label: string }
 
+/** Minimum total (in minor units) required to proceed to checkout. */
+const MIN_TOTAL_MINOR = 500
+
 export function CustomPlanBuilder({
   rates,
   discountRates,
@@ -32,6 +35,7 @@ export function CustomPlanBuilder({
     subtitle: string
     buildAndPay: string
     selectAtLeastOne: string
+    minAmount: string
     checkoutError: string
     networkError: string
   }
@@ -93,9 +97,10 @@ export function CustomPlanBuilder({
   const gel = total !== null ? fmt(total) : "0"
   const hasDiscount = total !== null && regularTotal !== null && total < regularTotal
   const discountPercent = hasDiscount ? Math.round((1 - total / regularTotal) * 100) : 0
+  const belowMinimum = total !== null && total < MIN_TOTAL_MINOR
 
   async function buildAndPay() {
-    if (total === null || loading) return
+    if (total === null || belowMinimum || loading) return
     setLoading(true)
     try {
       const res = await fetch("/api/checkout/custom", {
@@ -209,7 +214,7 @@ export function CustomPlanBuilder({
         <button
           type="button"
           onClick={buildAndPay}
-          disabled={total === null || loading}
+          disabled={total === null || belowMinimum || loading}
           className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
         >
           {loading ? (
@@ -220,6 +225,9 @@ export function CustomPlanBuilder({
             strings.buildAndPay
           )}
         </button>
+        {belowMinimum && (
+          <p className="mt-2 text-xs text-center text-red-600">{strings.minAmount}</p>
+        )}
       </div>
     </div>
   )

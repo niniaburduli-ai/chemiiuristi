@@ -50,6 +50,7 @@ const ka = {
     customDocAnalysis: "დოკუმენტის ანალიზი",
     customBuildAndPay: "შექმენით და გადაიხადეთ",
     customSelectOne: "აირჩიეთ სულ მცირე ერთი სერვისი",
+    customMinAmount: "აირჩიე მინიმუმ 5 ლარის სერვისი",
     customCheckoutError: "გადახდის გვერდი ვერ გაიხსნა.",
     customNetworkError: "სერვისთან კავშირი ვერ დამყარდა.",
   },
@@ -192,6 +193,8 @@ const ka = {
   billing: {
     title: "ბილინგი",
     subtitle: "გადახდის მართვა და გადახდების ისტორია",
+    managePaymentCta: "გადახდის მართვა",
+    paymentHistoryCta: "გადახდის ისტორია",
     currentPlan: "მიმდინარე გეგმა",
     activeSub: "აქტიური სუბსკრიფცია",
     freePlanLabel: "უფასო გეგმა",
@@ -509,6 +512,7 @@ const en: Dict = {
     customDocAnalysis: "Document analysis",
     customBuildAndPay: "Build & pay",
     customSelectOne: "Select at least one service",
+    customMinAmount: "Select at least 5 GEL worth of services",
     customCheckoutError: "Could not open the checkout page.",
     customNetworkError: "Could not reach the server.",
   },
@@ -651,6 +655,8 @@ const en: Dict = {
   billing: {
     title: "Billing",
     subtitle: "Manage payments and view payment history",
+    managePaymentCta: "Manage payment",
+    paymentHistoryCta: "Payment history",
     currentPlan: "Current plan",
     activeSub: "Active subscription",
     freePlanLabel: "Free plan",
