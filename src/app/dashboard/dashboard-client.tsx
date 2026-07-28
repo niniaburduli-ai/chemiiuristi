@@ -282,12 +282,17 @@ function BillingPanel({
   payments: BillingPaymentItem[];
 }) {
   const db = d.billing;
+  const planSectionRef = useRef<HTMLDivElement>(null);
+  const historySectionRef = useRef<HTMLDivElement>(null);
+  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) =>
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   return (
     <div className="flex flex-col h-full">
       <header className="p-5 border-b border-border shrink-0">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-gold" />
-          {db.currentPlan}
+          {db.title}
         </h3>
         <p className="text-xs text-muted-foreground mt-0.5">
           {isPaid ? db.activeSub : db.freePlanLabel}
@@ -295,7 +300,26 @@ function BillingPanel({
       </header>
 
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
-        <div className="rounded-xl border border-border p-4">
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => scrollTo(planSectionRef)}
+            className="rounded-xl border border-border p-3 flex items-center gap-2 text-left hover:bg-muted transition-colors"
+          >
+            <CreditCard className="h-4 w-4 shrink-0 text-gold" />
+            <span className="text-sm font-medium text-foreground">{db.managePaymentCta}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollTo(historySectionRef)}
+            className="rounded-xl border border-border p-3 flex items-center gap-2 text-left hover:bg-muted transition-colors"
+          >
+            <Receipt className="h-4 w-4 shrink-0 text-gold" />
+            <span className="text-sm font-medium text-foreground">{db.paymentHistoryCta}</span>
+          </button>
+        </div>
+
+        <div ref={planSectionRef} className="rounded-xl border border-border p-4">
           <div className="flex justify-between items-start flex-wrap gap-2">
             <div className="flex items-baseline gap-2">
               <span className="text-xl font-semibold">{planName}</span>
@@ -317,7 +341,7 @@ function BillingPanel({
           </div>
         </div>
 
-        <div>
+        <div ref={historySectionRef}>
           <h4 className="text-sm font-bold text-foreground mb-3">{db.paymentHistory}</h4>
           {payments.length === 0 ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
@@ -325,22 +349,24 @@ function BillingPanel({
               {db.noPayments}
             </div>
           ) : (
-            <div className="rounded-xl border border-border p-4 space-y-3">
-              {payments.map((p, i) => (
-                <div key={p.id}>
-                  <div className="flex items-center justify-between py-1 flex-wrap gap-2">
-                    <div>
-                      <div className="font-medium text-sm">{p.planLabel}</div>
-                      <div className="text-xs text-muted-foreground">{p.paidAtLabel}</div>
+            <div className="rounded-xl border border-border p-4">
+              <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
+                {payments.map((p, i) => (
+                  <div key={p.id}>
+                    <div className="flex items-center justify-between py-1 flex-wrap gap-2">
+                      <div>
+                        <div className="font-medium text-sm">{p.planLabel}</div>
+                        <div className="text-xs text-muted-foreground">{p.paidAtLabel}</div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm">{p.amount}</span>
+                        <Badge variant="secondary">{p.statusLabel}</Badge>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm">{p.amount}</span>
-                      <Badge variant="secondary">{p.statusLabel}</Badge>
-                    </div>
+                    {i < payments.length - 1 && <Separator />}
                   </div>
-                  {i < payments.length - 1 && <Separator />}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
