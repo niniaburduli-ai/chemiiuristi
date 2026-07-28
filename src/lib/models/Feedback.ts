@@ -4,6 +4,8 @@ const FeedbackSchema = new Schema(
   {
     rating: { type: Number, required: false, min: 1, max: 5 },
     message: { type: String, trim: true, maxlength: 2000, default: "" },
+    // Manually reviewed by an admin before it can appear as a public testimonial.
+    isApproved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

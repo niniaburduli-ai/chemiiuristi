@@ -8,13 +8,14 @@ import { CustomPlanBuilder } from "@/components/site/CustomPlanBuilder"
 import { ServiceCards } from "@/components/site/service-cards"
 import { HowItWorks } from "@/components/site/how-it-works"
 import { FaqCarousel } from "@/components/site/FaqCarousel"
+import { TestimonialsSection } from "@/components/site/TestimonialsSection"
 import { getHomePage, getFAQ } from "@/lib/cms"
 import { getVisiblePlans } from "@/lib/plans-db"
 import { getCustomPlanRatesFull } from "@/lib/custom-plan-rates"
 import { STEP_QUANTITIES } from "@/lib/custom-plan-rates-config"
 import { getFeatureFlags } from "@/lib/features"
 import { getPublicStats, resolveMetric } from "@/lib/stats"
-import { getFeedbackSummary } from "@/lib/feedback"
+import { getFeedbackSummary, getApprovedFeedback } from "@/lib/feedback"
 import { getLocale } from "@/lib/i18n/locale"
 import { pick } from "@/lib/i18n/loc"
 import { getHomeSeed } from "@/lib/homepage-defaults"
@@ -53,12 +54,13 @@ export default async function Home() {
   const locale = await getLocale()
   const d = getDict(locale)
   const seed = getHomeSeed()
-  const [cmsData, flags, publicStats, faqData, feedbackSummary] = await Promise.all([
+  const [cmsData, flags, publicStats, faqData, feedbackSummary, approvedFeedback] = await Promise.all([
     getHomePage(),
     getFeatureFlags(),
     getPublicStats(),
     getFAQ(locale),
     getFeedbackSummary(),
+    getApprovedFeedback(),
   ])
   const [dbPlans, customRatesFull] = await Promise.all([getVisiblePlans(), getCustomPlanRatesFull()])
 
@@ -415,6 +417,8 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      <TestimonialsSection items={approvedFeedback} heading={d.home.testimonialsHeading} />
 
     </div>
   )

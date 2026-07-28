@@ -196,6 +196,7 @@ export type FeedbackRow = {
   id: string;
   rating: number | null;
   message: string;
+  isApproved: boolean;
   createdAt: string | null;
 };
 
@@ -908,7 +909,29 @@ function StarRating({ rating }: { rating: number | null }) {
 }
 
 function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
+  const [rows, setRows] = useState(initial);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function toggleApproved(f: FeedbackRow) {
+    const next = !f.isApproved;
+    setBusyId(f.id);
+    setRows((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: next } : r)));
+    try {
+      const res = await fetch(`/api/admin/db/feedback/${f.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isApproved: next }),
+      });
+      if (!res.ok) throw new Error("request failed");
+    } catch {
+      setRows((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: !next } : r)));
+      toast.error("განახლება ვერ მოხერხდა");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
@@ -917,19 +940,33 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
             <th>შეფასება</th>
             <th>შეტყობინება</th>
             <th>თარიღი</th>
+            <th>საჯარო ჩვენება</th>
             <th className="text-right">ქმედება</th>
           </tr>
         </thead>
         <tbody>
-          {initial.length === 0 && (
-            <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
+          {rows.length === 0 && (
+            <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
           )}
-          {initial.map((f) => (
+          {rows.map((f) => (
             <React.Fragment key={f.id}>
               <tr className="border-b [&>td]:px-4 [&>td]:py-3">
                 <td><StarRating rating={f.rating} /></td>
                 <td className="max-w-[320px] truncate text-muted-foreground">{f.message || "—"}</td>
                 <td className="text-muted-foreground">{formatDate(f.createdAt)}</td>
+                <td>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={f.isApproved}
+                      disabled={busyId === f.id}
+                      onChange={() => toggleApproved(f)}
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      {f.isApproved ? "დამტკიცებული" : "დამალული"}
+                    </span>
+                  </label>
+                </td>
                 <td className="text-right">
                   {f.message && (
                     <Button variant="ghost" size="sm" onClick={() => setExpanded(expanded === f.id ? null : f.id)}>
@@ -940,7 +977,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
               </tr>
               {expanded === f.id && (
                 <tr key={`${f.id}-exp`} className="border-b bg-muted/20">
-                  <td colSpan={4} className="px-4 py-3">
+                  <td colSpan={5} className="px-4 py-3">
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{f.message}</p>
                   </td>
                 </tr>

@@ -19,6 +19,7 @@ export async function GET() {
       id: String((f as { _id: unknown })._id),
       rating: f.rating ?? null,
       message: f.message ?? "",
+      isApproved: f.isApproved ?? false,
       createdAt: (f as { createdAt?: Date }).createdAt?.toISOString() ?? null,
     })),
   });

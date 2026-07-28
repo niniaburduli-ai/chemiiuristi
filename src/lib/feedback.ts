@@ -3,6 +3,48 @@ import { Feedback } from "@/lib/models/Feedback";
 
 export type FeedbackSummary = { percentage: number; avgRating: number; count: number };
 
+export type ApprovedFeedback = {
+  id: string;
+  initials: string;
+  rating: number | null;
+  message: string;
+  createdAt: string | null;
+};
+
+const INITIAL_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+/** No name is ever collected on submission — a stable, id-derived pair of
+ * letters gives each testimonial card a visual identity without implying a
+ * real one. Deterministic so it doesn't change across reloads. */
+function initialsFromId(id: string): string {
+  const a = id.charCodeAt(id.length - 4) % INITIAL_LETTERS.length;
+  const b = id.charCodeAt(id.length - 1) % INITIAL_LETTERS.length;
+  return `${INITIAL_LETTERS[a]}.${INITIAL_LETTERS[b]}.`;
+}
+
+/** Admin-approved testimonials for the public homepage section. */
+export async function getApprovedFeedback(limit = 24): Promise<ApprovedFeedback[]> {
+  try {
+    await dbConnect();
+    const items = await Feedback.find({ isApproved: true, message: { $ne: "" } })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+    return items.map((f) => {
+      const id = String((f as { _id: unknown })._id);
+      return {
+        id,
+        initials: initialsFromId(id),
+        rating: f.rating ?? null,
+        message: f.message ?? "",
+        createdAt: (f as { createdAt?: Date }).createdAt?.toISOString() ?? null,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
 const ZERO: FeedbackSummary = { percentage: 0, avgRating: 0, count: 0 };
 
 /** Live satisfaction percentage + avg rating (out of 5) for the homepage review card and stats. */

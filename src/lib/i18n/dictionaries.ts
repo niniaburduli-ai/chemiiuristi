@@ -129,6 +129,7 @@ const ka = {
     featuresHeading: "რატომ ჩემი იურისტი?",
     pricingHeading: "აირჩიეთ თქვენზე მორგებული პაკეტი",
     imageAlt: "ქართლის დედა სასწორით",
+    testimonialsHeading: "რას ამბობენ ჩვენი მომხმარებლები",
   },
   chat: {
     greeting: "მოგესალემბით — თქვენი პერსონალური AI იურიდიული ასისტენტი.",
@@ -590,6 +591,7 @@ const en: Dict = {
     featuresHeading: "Why My Lawyer?",
     pricingHeading: "Choose the plan that fits you",
     imageAlt: "Lady Justice with scales",
+    testimonialsHeading: "What our users say",
   },
   chat: {
     greeting: "Hello! I am \"My Lawyer\" — your personal AI legal assistant.",
