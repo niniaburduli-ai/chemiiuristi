@@ -299,10 +299,10 @@ export default async function DashboardPage({
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.05] tracking-tight break-words animate-fade-up">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gold leading-[1.05] tracking-tight break-words animate-fade-up">
                 {user.name}
               </h1>
-              <p className="text-base sm:text-lg md:text-xl font-semibold text-gold mt-2 break-words animate-fade-up delay-150">
+              <p className="text-base sm:text-lg md:text-xl font-semibold text-white mt-2 break-words animate-fade-up delay-150">
                 {user.email}
               </p>
               <div className="flex items-center gap-2 mt-3 flex-wrap">
