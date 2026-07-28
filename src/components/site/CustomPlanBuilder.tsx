@@ -97,10 +97,10 @@ export function CustomPlanBuilder({
   const gel = total !== null ? fmt(total) : "0"
   const hasDiscount = total !== null && regularTotal !== null && total < regularTotal
   const discountPercent = hasDiscount ? Math.round((1 - total / regularTotal) * 100) : 0
-  const belowMinimum = total !== null && total < MIN_TOTAL_MINOR
+  const belowMinimum = total === null || total < MIN_TOTAL_MINOR
 
   async function buildAndPay() {
-    if (total === null || belowMinimum || loading) return
+    if (belowMinimum || loading) return
     setLoading(true)
     try {
       const res = await fetch("/api/checkout/custom", {
@@ -214,7 +214,7 @@ export function CustomPlanBuilder({
         <button
           type="button"
           onClick={buildAndPay}
-          disabled={total === null || belowMinimum || loading}
+          disabled={belowMinimum || loading}
           className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
         >
           {loading ? (
