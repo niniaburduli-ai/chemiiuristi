@@ -163,7 +163,7 @@ export function DocumentResultPanel({
                 if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
                 saveContent(result.content);
               }}
-              className="min-h-[70vh] font-mono text-sm"
+              className="min-h-[70vh] font-sans text-sm"
             />
           ) : (
             <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
