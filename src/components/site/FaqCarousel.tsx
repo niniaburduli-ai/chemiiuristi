@@ -72,7 +72,7 @@ export function FaqCarousel({
           {items.map((f) => (
             <div key={f._id} className="bg-card border border-border rounded-2xl p-6 md:p-7">
               <p className="font-bold text-foreground mb-2">{f.question}</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{f.answer}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{f.answer}</p>
             </div>
           ))}
         </div>
@@ -133,7 +133,7 @@ export function FaqCarousel({
                 >
                   <p className="font-bold text-base text-foreground">{f.question}</p>
                   <p
-                    className={`text-sm text-muted-foreground leading-relaxed ${
+                    className={`text-sm text-muted-foreground leading-relaxed whitespace-pre-line ${
                       isExpanded ? "" : "line-clamp-3"
                     }`}
                   >
