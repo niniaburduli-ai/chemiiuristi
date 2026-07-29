@@ -8,6 +8,7 @@ import { docTypeLabel } from "@/lib/legal/doc-type-labels";
 import { streamOpenRouterChat } from "@/lib/ai-call";
 import { verifyLegalCitations, STRICT_BREVITY_RULE } from "@/lib/legal/openrouter";
 import { getCachedCitations, setCachedCitations } from "@/lib/legal/doc-citation-cache";
+import { parseDocumentLegalBasis } from "@/lib/legal/citations";
 import { applyPlanExpiryIfDue, applyCustomPlanExpiryIfDue } from "@/lib/plan-expiry";
 import { splitQuota, applyQuotaSplit } from "@/lib/quota";
 import { DelimiterSplitter } from "@/lib/streaming/delimiter-splitter";
@@ -50,7 +51,7 @@ ${STRICT_BREVITY_RULE}
 დაბალი-რისკიანობის წესები (დოკუმენტების ანალიზის ხელსაწყოს მიერ ხშირად გამოვლენილი პრობლემების თავიდან ასაცილებლად):
 - ვადა: ყოველთვის მიუთითე ზუსტი, კონკრეტული ვადა კალენდარულ დღეებში და ცალსახად ჩაწერე, რომ ის აითვლება დოკუმენტის ჩაბარების/მიღების დღიდან. არასოდეს დატოვო ვადა ბუნდოვნად („გონივრულ ვადაში" და ამის მსგავსი).
 - ფინანსური მოთხოვნა: თუ მოთხოვნილია თანხა, პირგასამტეხლო ან ზიანის ანაზღაურება, მიუთითე ან ზუსტი თანხა, ან ზუსტი გამოთვლის წესი (განაკვეთი, ბაზა, პერიოდი). არასოდეს დატოვო ბუნდოვნად ისე, რომ ადრესატმა ვერ გამოთვალოს ზუსტი თანხობრივი რისკი.
-- პირგასამტეხლო, ჯარიმა ან სანქცია (კრიტიკულია): როცა ტექსტში ახსენებ პირგასამტეხლოს, ჯარიმას ან სანქციას კონკრეტულ კანონთან ერთად, არასოდეს დააკმაყოფილო თავი მხოლოდ მუხლის მითითებით ან კანონის ტექსტის ციტირებით/გადმოწერით. დაუყოვნებლივ, იმავე ან მომდევნო წინადადებაში, ჩაწერე დეტალებში მითითებული კონკრეტული თანხა ან პროცენტი და ერთი მოკლე, ყოველდღიური ენით დაწერილი წინადადებით ახსენი, რას ნიშნავს ეს პრაქტიკულად ამ კონკრეტულ შემთხვევაში (მაგ. რამდენი გროვდება განსაზღვრულ დღეებში/თვეებში, ან სულ რამდენი გამოვა). არასოდეს ჩასვა კანონის სრული ტექსტი დოკუმენტში — მხოლოდ მოკლე, კონკრეტული პრაქტიკული განმარტება.
+- ვალდებულება და სანქცია (კრიტიკულია): როცა ტექსტში ახსენებ, რომ მხარეს გარკვეული ვალდებულება აკისრია კონკრეტული მუხლის საფუძველზე, გადაამოწმე შენივე ცოდნით, კანონი ითვალისწინებს თუ არა ამ ვალდებულების შეუსრულებლობისთვის სანქციას, ჯარიმას ან პირგასამტეხლოს — და თუ ითვალისწინებს, იმავე ან მომდევნო წინადადებაში აუცილებლად მიუთითე ეს სანქცია და ის მუხლი, რომლითაც სანქცია დგინდება (თუ სანქცია სხვა მუხლშია, ვიდრე თავად ვალდებულება — ორივე მუხლი ცალ-ცალკე მიუთითე). არასოდეს დააკმაყოფილო თავი მხოლოდ ვალდებულების მუხლის მითითებით ან კანონის ტექსტის ციტირებით/გადმოწერით. დაუყოვნებლივ, ერთი მოკლე, ყოველდღიური ენით დაწერილი წინადადებით ახსენი, რას ნიშნავს ეს პრაქტიკულად ამ კონკრეტულ შემთხვევაში — დეტალებში მითითებული კონკრეტული თანხა ან პროცენტი გამოიყენე (მაგ. რამდენი გროვდება განსაზღვრულ დღეებში/თვეებში, ან სულ რამდენი გამოვა). არასოდეს ჩასვა კანონის სრული ტექსტი დოკუმენტში — მხოლოდ მოკლე, კონკრეტული პრაქტიკული განმარტება.
 - შედეგის/ესკალაციის პუნქტი: ცალსახად ჩაწერე, რა მოხდება, თუ ადრესატი ვადაში არ შეასრულებს მოთხოვნას (მაგ. სასამართლოსთვის ან შესაბამისი ორგანოსთვის მიმართვის უფლება), და დაასაბუთე ეს იმ მუხლით, რომელიც ამ უფლებას ანიჭებს.
 - მოთხოვნის სიცხადე: გამოიყენე ცალსახა, დაჟინებული მოთხოვნის ენა („მოვითხოვ"/„ვითხოვ") და ზუსტად ჩამოაყალიბე, რა კონკრეტულ ქმედებას ან შედეგს ითხოვ — არასოდეს დატოვო მოთხოვნილი შედეგი ბუნდოვნად.
 - იურისდიქცია: დოკუმენტის ბოლოს, ხელმოწერამდე, ერთი წინადადებით მიუთითე, რომ დავის შემთხვევაში საკითხს განიხილავს საქართველოს სასამართლო, საქართველოს კანონმდებლობით დადგენილი წესით (საკუთარი კონკრეტული სასამართლოს დასახელების გამოგონების გარეშე).
@@ -88,7 +89,7 @@ Embedding the legal basis in the text (critical):
 Low-risk drafting rules (to prevent problems the site's own document-analysis tool commonly flags):
 - Deadline: always state an exact, concrete deadline in calendar days, and explicitly note that it runs from the date of receipt/delivery of the document. Never leave the deadline vague ("within a reasonable time" or similar).
 - Financial demand: if a sum, penalty, or damages is claimed, state either the exact amount or the exact calculation method (rate, base, period). Never leave it vague such that the recipient cannot compute the exact financial exposure.
-- Penalty, fine, or sanction (critical): whenever the text mentions a penalty, fine, or sanction alongside a specific law, never settle for just citing the article or quoting/dumping the statutory text. Immediately, in the same or the next sentence, state the specific amount or percentage given in the details and add one short, plain-language sentence explaining what this means in practice for this exact scenario (e.g., how much accrues over a stated number of days/months, or the total outcome). Never insert the full text of the law into the document — only a brief, concrete practical explanation.
+- Obligation and sanction (critical): whenever the text states that a party has an obligation under a specific article, check (from your own knowledge) whether the law provides a sanction, fine, or penalty for failing to meet that obligation — and if it does, immediately, in the same or the next sentence, state that sanction and cite the article that establishes it (if the sanction sits in a different article than the obligation itself, cite both articles separately). Never settle for just citing the obligation's article or quoting/dumping the statutory text. Add one short, plain-language sentence explaining what this means in practice for this exact scenario, using the specific amount or percentage given in the details (e.g., how much accrues over a stated number of days/months, or the total outcome). Never insert the full text of the law into the document — only a brief, concrete practical explanation.
 - Consequence/escalation clause: explicitly state what happens if the recipient fails to comply within the deadline (e.g., the right to pursue court or administrative action), grounded in the article that grants that right.
 - Clarity of the demand: use assertive, unambiguous demand language ("I demand" / "I hereby require") and state precisely what action or outcome is demanded — never leave the requested outcome vague.
 - Jurisdiction: near the end, before the signature, state in one sentence that any dispute will be resolved by the courts of Georgia, in accordance with the legislation of Georgia (without inventing the name of a specific court).
@@ -99,6 +100,78 @@ Then, after that line, list the articles of Georgian legislation the document is
 - Article <N>, paragraph <M> (if applicable)
 - Article <N2>
 Write each law as a separate block, separated by one blank line. Do not invent an article number — cite only the provisions that genuinely correspond to the document's content, to the best of your knowledge. This section must never appear before ${CITATIONS_DELIM}, only after it.`;
+
+const SUPERSCRIPT_DIGITS = "¹²³⁴⁵⁶⁷⁸⁹⁰";
+const ARTICLE_NUM = `\\d+[${SUPERSCRIPT_DIGITS}]*`;
+
+/** Bare article numbers (e.g. "404", "156¹") the drafted body text actually
+ * cites, matching either "მუხლი 404" or "404-ე მუხლი" phrasing. */
+function extractCitedArticleNumbers(text: string): Set<string> {
+  const nums = new Set<string>();
+  const ordinal = new RegExp(`(${ARTICLE_NUM})-ე\\s*მუხლ`, "gu");
+  const plain = new RegExp(`მუხლ(?:ი|ის|ს)?\\s*(${ARTICLE_NUM})`, "gu");
+  for (const re of [ordinal, plain]) {
+    for (const m of text.matchAll(re)) nums.add(m[1]);
+  }
+  return nums;
+}
+
+/** Leading bare article number inside a "მუხლი N, პუნქტი M" style line. */
+function firstArticleNumber(articleLine: string): string | null {
+  const m = articleLine.match(new RegExp(ARTICLE_NUM));
+  return m ? m[0] : null;
+}
+
+function serializeLegalBasis(groups: { lawName: string; articles: string[] }[]): string {
+  return groups
+    .filter((g) => g.articles.length > 0)
+    .map((g) => `${g.lawName}:\n${g.articles.map((a) => `- ${a}`).join("\n")}`)
+    .join("\n\n");
+}
+
+/**
+ * Safety net for verifyLegalCitations: its web-search fact-check can
+ * mistakenly drop a real article it failed to confirm, breaking the "every
+ * article cited in the body also appears in sources" contract the drafting
+ * prompt enforces (rule right above SYSTEM_KA/SYSTEM_EN's citation format).
+ * Re-adds any article the body text actually cites, using the exact line
+ * the drafting model originally wrote for it in `citationsSection` — never
+ * invented, only restored.
+ */
+function reconcileLegalBasis(
+  bodyContent: string,
+  citationsSection: string,
+  legalBasis: string
+): string {
+  const citedNums = extractCitedArticleNumbers(bodyContent);
+  if (citedNums.size === 0) return legalBasis;
+
+  const rawGroups = parseDocumentLegalBasis(citationsSection);
+  const finalGroups = parseDocumentLegalBasis(legalBasis);
+  const finalNums = new Set(
+    finalGroups.flatMap((g) =>
+      g.articles.map(firstArticleNumber).filter((n): n is string => n !== null)
+    )
+  );
+
+  const missing = [...citedNums].filter((n) => !finalNums.has(n));
+  if (missing.length === 0) return legalBasis;
+
+  for (const num of missing) {
+    for (const g of rawGroups) {
+      const line = g.articles.find((a) => firstArticleNumber(a) === num);
+      if (!line) continue;
+      let target = finalGroups.find((fg) => fg.lawName === g.lawName);
+      if (!target) {
+        target = { lawName: g.lawName, articles: [] };
+        finalGroups.push(target);
+      }
+      if (!target.articles.includes(line)) target.articles.push(line);
+      break;
+    }
+  }
+  return serializeLegalBasis(finalGroups);
+}
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -227,21 +300,26 @@ export async function POST(req: Request) {
       const citationsSection =
         delimIndex === -1 ? "" : full.slice(delimIndex + CITATIONS_DELIM.length).trim();
 
-      // Only two doc types exist and their typically-applicable articles
-      // barely change over time — verify live once per type, then reuse
-      // that result instead of paying a live web-search fee on every
-      // generation.
+      // Verify the citations this specific document actually generated
+      // (never another document's cached set — see doc-citation-cache.ts).
+      // Identical citationsSection content still skips the live web-search
+      // fee via the content-keyed cache below.
       let legalBasis = citationsSection;
       let citationsCostUsd = 0;
-      const cachedCitations = await getCachedCitations(parsed.data.type, locale);
-      if (cachedCitations) {
-        legalBasis = cachedCitations;
-      } else if (citationsSection) {
-        const verified = await verifyLegalCitations(typeName, citationsSection);
-        if (verified) {
-          legalBasis = verified.text;
-          citationsCostUsd = verified.costUsd;
-          await setCachedCitations(parsed.data.type, verified.text, locale);
+      if (citationsSection) {
+        const cachedCitations = await getCachedCitations(parsed.data.type, locale, citationsSection);
+        if (cachedCitations) {
+          legalBasis = cachedCitations;
+        } else {
+          const verified = await verifyLegalCitations(typeName, citationsSection);
+          if (verified) {
+            citationsCostUsd = verified.costUsd;
+            // The web-search fact-check can mistakenly drop a real article it
+            // failed to confirm — never let that desync sources from a body
+            // that still cites it.
+            legalBasis = reconcileLegalBasis(content, citationsSection, verified.text);
+            await setCachedCitations(parsed.data.type, legalBasis, locale, citationsSection);
+          }
         }
       }
       legalBasis = unmaskPII(legalBasis, piiMap);

@@ -47,9 +47,7 @@ export default async function PricingPage() {
           perMonth: d.home.perMonth,
         }}
         heading=""
-      />
-
-      <section className="container mx-auto px-4 pb-16 max-w-md">
+      >
         <CustomPlanBuilder
           rates={customRatesFull.rates}
           discountRates={customRatesFull.discountRates}
@@ -69,7 +67,7 @@ export default async function PricingPage() {
             networkError: d.pricing.customNetworkError,
           }}
         />
-      </section>
+      </PricingSection>
     </div>
   );
 }

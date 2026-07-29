@@ -2,11 +2,10 @@ import { Schema, model, models, type InferSchemaType, type Model } from "mongoos
 
 /**
  * Persisted counterpart to the old per-instance in-memory doc-citation cache
- * (see lib/legal/doc-citation-cache.ts). Only 2 possible doc types exist, so
- * this collection never grows past 2 rows — but per-instance memory meant
- * every cold Vercel Function instance paid Perplexity's live web-search fee
- * again for a type it hadn't personally verified yet, instead of the
- * intended "once per type per 30 days" for the whole app.
+ * (see lib/legal/doc-citation-cache.ts). `docType` here is actually a
+ * composite key (doc type + locale + hash of the exact citations content) —
+ * one row per distinct set of articles ever verified, not one row per doc
+ * type — so different documents' facts never share a cached "legal basis".
  */
 const DocCitationCacheSchema = new Schema(
   {

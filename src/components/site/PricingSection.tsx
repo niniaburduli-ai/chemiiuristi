@@ -73,7 +73,8 @@ function buildDisplayPlans(
 function gridCols(n: number) {
   if (n <= 1) return "grid-cols-1 max-w-sm mx-auto"
   if (n === 2) return "md:grid-cols-2 max-w-2xl mx-auto"
-  return "md:grid-cols-3"
+  if (n === 3) return "md:grid-cols-3"
+  return "md:grid-cols-2 lg:grid-cols-4"
 }
 
 export function PricingSection({
@@ -81,11 +82,13 @@ export function PricingSection({
   locale,
   strings,
   heading,
+  children,
 }: {
   initialPlans: PlanData[]
   locale: Locale
   strings: PricingStrings
   heading: string
+  children?: React.ReactNode
 }) {
   // Store raw PlanData so display is always computed from current locale/strings props.
   // Using useState<DisplayPlan[]> caused stale data after router.refresh() on locale switch
@@ -121,20 +124,22 @@ export function PricingSection({
 
   if (plans.length === 0) return null
 
+  const totalCards = plans.length + (children ? 1 : 0)
+
   return (
-    <section className="container mx-auto px-4 py-16 max-w-5xl">
+    <section className="container mx-auto px-4 py-16 max-w-6xl">
       {heading && (
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{heading}</h2>
           <div className="h-1.5 w-16 bg-gradient-to-r from-primary to-gold mx-auto mt-4 rounded-full" />
         </div>
       )}
-      <div className={`grid gap-6 ${gridCols(plans.length)} items-start`}>
+      <div className={`grid gap-6 ${gridCols(totalCards)} items-stretch`}>
         {plans.map((p, idx) => (
           <AnimateIn key={p.id} delay={idx * 100}>
             <div
               className={[
-                "relative rounded-2xl border bg-card flex flex-col p-7 card-hover h-full",
+                "relative rounded-2xl border bg-card flex flex-col p-5 card-hover h-full",
                 p.highlighted ? "border-2 border-gray-400 shadow-xl shadow-gray-400/10 z-10" : "border-border",
               ].join(" ")}
             >
@@ -148,9 +153,9 @@ export function PricingSection({
                 </div>
               )}
 
-              <p className="font-bold text-base mb-4 text-gold">{p.name}</p>
+              <p className="font-bold text-base mb-2 text-gold">{p.name}</p>
 
-              <div className="mb-6">
+              <div className="mb-3">
                 {p.originalPrice && (
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg text-foreground line-through">{p.originalPrice}₾</span>
@@ -168,7 +173,7 @@ export function PricingSection({
                 </div>
               </div>
 
-              <ul className="space-y-3 text-sm flex-1 mb-8">
+              <ul className="space-y-1.5 text-sm flex-1 mb-5">
                 {p.items.map((item, ii) => (
                   <li key={ii} className="flex gap-2.5 items-start">
                     <Check className="h-4 w-4 shrink-0 mt-0.5 text-gold" />
@@ -182,7 +187,7 @@ export function PricingSection({
                   plan={p.planKey}
                   label={p.ctaText}
                   className={[
-                    "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover",
+                    "w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover",
                     p.highlighted
                       ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                       : "border border-border text-gold hover:bg-gold/5",
@@ -192,7 +197,7 @@ export function PricingSection({
                 <Link
                   href={p.ctaHref}
                   className={[
-                    "w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors btn-hover",
+                    "w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors btn-hover",
                     p.highlighted
                       ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                       : "border border-border text-gold hover:bg-gold/5",
@@ -204,6 +209,7 @@ export function PricingSection({
             </div>
           </AnimateIn>
         ))}
+        {children && <AnimateIn delay={plans.length * 100}>{children}</AnimateIn>}
       </div>
     </section>
   )

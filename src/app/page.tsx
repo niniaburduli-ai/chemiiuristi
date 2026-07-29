@@ -376,12 +376,7 @@ export default async function Home() {
             perMonth: d.home.perMonth,
           }}
           heading={pricingHeading}
-        />
-      )}
-
-      {/* ── CUSTOM PLAN BUILDER ── */}
-      {sections.pricing !== false && (
-        <section className="container mx-auto px-4 pb-16 max-w-md">
+        >
           <CustomPlanBuilder
             rates={customRatesFull.rates}
             discountRates={customRatesFull.discountRates}
@@ -401,7 +396,7 @@ export default async function Home() {
               networkError: d.pricing.customNetworkError,
             }}
           />
-        </section>
+        </PricingSection>
       )}
 
       {/* ── FAQ ── */}

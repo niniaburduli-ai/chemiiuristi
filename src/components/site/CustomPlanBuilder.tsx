@@ -126,11 +126,11 @@ export function CustomPlanBuilder({
   }
 
   return (
-    <div className="relative rounded-2xl border border-border bg-card flex flex-col p-7 card-hover h-full">
+    <div className="relative rounded-2xl border border-border bg-card flex flex-col p-5 card-hover h-full">
       <p className="font-bold text-base mb-1 text-gold">{strings.heading}</p>
-      <p className="text-sm text-muted-foreground mb-6">{strings.subtitle}</p>
+      <p className="text-sm text-muted-foreground mb-3">{strings.subtitle}</p>
 
-      <div className="space-y-5 flex-1">
+      <div className="space-y-2 flex-1">
         {services.map((s) => (
           <div key={s.key} className="space-y-2">
             <div className="flex items-center justify-between gap-3">
@@ -197,7 +197,7 @@ export function CustomPlanBuilder({
         ))}
       </div>
 
-      <div className="mt-6 pt-6 border-t border-border">
+      <div className="mt-3 pt-3 border-t border-border">
         {hasDiscount && (
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg text-foreground line-through">{fmt(regularTotal)}₾</span>
@@ -206,7 +206,7 @@ export function CustomPlanBuilder({
             </span>
           </div>
         )}
-        <div className="flex items-end gap-1 mb-4">
+        <div className="flex items-end gap-1 mb-2">
           <span className={`text-5xl font-bold leading-none ${hasDiscount ? "text-red-600" : "text-foreground"}`}>{gel}</span>
           <span className={`text-lg font-semibold mb-0.5 ${hasDiscount ? "text-red-600" : "text-foreground"}`}>₾</span>
         </div>
@@ -214,7 +214,7 @@ export function CustomPlanBuilder({
           type="button"
           onClick={buildAndPay}
           disabled={belowMinimum || loading}
-          className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
+          className="w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mx-auto" />

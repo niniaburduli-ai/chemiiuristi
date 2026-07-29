@@ -12,6 +12,8 @@ export type QuestionField = {
   idCodeKey?: string;
   /** Only for type "select": the list of selectable values. */
   options?: string[];
+  placeholder?: string;
+  placeholderEn?: string;
 };
 
 /** Builds a "partyId" field: a single toggle (personal number vs. identification
@@ -40,6 +42,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "yourAddress", label: "შენი მისამართი", labelEn: "Your address", type: "text", required: true },
     { key: "respondent", label: "ადრესატი (ზემდგომი ორგანო/უწყება)", labelEn: "Addressee (higher authority/agency)", type: "text", required: true },
     { key: "violator", label: "დამრღვევი მხარე", labelEn: "Violating party", type: "text" },
+    partyIdField("violator", "დამრღვევი მხარის პირადი ნომერი ან საიდენტიფიკაციო კოდი (ასეთის არსებობის შემთხვევაში)", "Violating party's personal number or identification code (if any)"),
     { key: "amount", label: "მიყენებული ზიანი / მოთხოვნილი თანხა", labelEn: "Damage incurred / amount claimed", type: "text" },
     { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა) — თანხის მოთხოვნისას", labelEn: "Payment method (cash/bank transfer) — if requesting payment", type: "text" },
@@ -96,13 +99,16 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   ],
   "demand-letter": [
     { key: "yourName", label: "შენი სახელი და გვარი", labelEn: "Your full name", type: "text", required: true },
+    partyIdField("your", "შენი პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Your personal number or identification code"),
     { key: "yourAddress", label: "შენი მისამართი", labelEn: "Your address", type: "text", required: true },
-    { key: "recipient", label: "ადრესატი", labelEn: "Recipient", type: "text", required: true },
+    { key: "recipient", label: "ადრესატი (მოპასუხე / დამრღვევი მხარე)", labelEn: "Recipient (respondent / violating party)", type: "text", required: true },
+    partyIdField("recipient", "ადრესატის პირადი ნომერი ან საიდენტიფიკაციო კოდი (ასეთის არსებობის შემთხვევაში)", "Recipient's personal number or identification code (if any)"),
     { key: "amount", label: "მოთხოვნილი თანხა", labelEn: "Amount claimed", type: "text" },
-    { key: "paymentMethod", label: "გადახდის სასურველი მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Preferred payment method (cash/bank transfer)", type: "text" },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
+    { key: "paymentMethod", label: "გადახდის სასურველი მეთოდი (ნაღდი / საბანკო გადარიცხვა)", labelEn: "Preferred payment method (cash / bank transfer)", type: "text" },
     { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვას ითხოვ)", labelEn: "Bank account No. (if requesting a transfer)", type: "text" },
     { key: "reason", label: "მოთხოვნის საფუძველი", labelEn: "Grounds for the demand", type: "textarea", required: true },
-    { key: "deadline", label: "ვადა", labelEn: "Deadline", type: "text", required: true },
+    { key: "deadline", label: "ვადა", labelEn: "Deadline", type: "text", required: true, placeholder: "მაგ: 5 სამუშაო დღე", placeholderEn: "e.g., 5 business days" },
   ],
   "termination-notice": [
     { key: "employer", label: "დამსაქმებელი", labelEn: "Employer", type: "text", required: true },
@@ -214,4 +220,8 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
 
 export function fieldLabel(f: QuestionField, locale: Locale): string {
   return locale === "en" ? f.labelEn : f.label;
+}
+
+export function fieldPlaceholder(f: QuestionField, locale: Locale): string | undefined {
+  return locale === "en" ? f.placeholderEn : f.placeholder;
 }

@@ -79,12 +79,12 @@ const DEFAULT_REV_EN: Record<string, string> = {
   premium: "99 document/contract reviews",
 }
 const DEFAULT_TPL_KA: Record<string, string> = {
-  standard: "50 მზა შაბლონის შევსება",
-  premium: "200 მზა შაბლონის შევსება",
+  standard: "50 მზა შაბლონი",
+  premium: "200 მზა შაბლონი",
 }
 const DEFAULT_TPL_EN: Record<string, string> = {
-  standard: "50 ready-made template fills",
-  premium: "200 ready-made template fills",
+  standard: "50 ready-made templates",
+  premium: "200 ready-made templates",
 }
 
 function gel(minor: number): string {
@@ -496,7 +496,7 @@ function PlanDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label className={!form.includeDocTemplates ? "text-muted-foreground" : ""}>შაბლ. შევს. KA {!form.includeDocTemplates && "(გამორთ.)"}</Label>
-              <Textarea rows={2} value={featuresTplText} onChange={(e) => setFeaturesTplText(e.target.value)} disabled={!form.includeDocTemplates} className={!form.includeDocTemplates ? "opacity-40" : ""} placeholder={"50 მზა შაბლონის შევსება"} />
+              <Textarea rows={2} value={featuresTplText} onChange={(e) => setFeaturesTplText(e.target.value)} disabled={!form.includeDocTemplates} className={!form.includeDocTemplates ? "opacity-40" : ""} placeholder={"50 მზა შაბლონი"} />
             </div>
             <div className="grid gap-2">
               <Label className={!form.includeDocTemplates ? "text-muted-foreground" : ""}>Templates EN {!form.includeDocTemplates && "(disabled)"}</Label>

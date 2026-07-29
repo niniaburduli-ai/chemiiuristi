@@ -60,7 +60,7 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     featuresEn: ["9 AI lawyer consultations", "Official source citations", "View question history"],
     featuresDocGeneration: ["1 დოკუმენტის გენერირება"], featuresDocGenerationEn: ["1 document generation"],
     featuresDocReview: ["1 დოკუმენტის შემოწმება"], featuresDocReviewEn: ["1 document review"],
-    featuresDocTemplates: ["20 მზა შაბლონის შევსება"], featuresDocTemplatesEn: ["20 ready-made template fills"],
+    featuresDocTemplates: ["20 მზა შაბლონი"], featuresDocTemplatesEn: ["20 ready-made templates"],
     isFree: true, highlighted: false, visible: true, active: true, order: 0,
   },
   {
@@ -78,7 +78,7 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     featuresEn: ["29 AI lawyer consultations", "Official source citations", "View question history"],
     featuresDocGeneration: ["9 დოკუმენტის გენერირება"], featuresDocGenerationEn: ["9 document generations"],
     featuresDocReview: ["9 დოკუმენტის შემოწმება"], featuresDocReviewEn: ["9 document reviews"],
-    featuresDocTemplates: ["50 მზა შაბლონის შევსება"], featuresDocTemplatesEn: ["50 ready-made template fills"],
+    featuresDocTemplates: ["50 მზა შაბლონი"], featuresDocTemplatesEn: ["50 ready-made templates"],
     isFree: false, highlighted: true, visible: true, active: true, order: 1,
   },
   {
@@ -96,7 +96,7 @@ const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
     featuresEn: ["199 AI lawyer consultations", "Official source citations", "View question history"],
     featuresDocGeneration: ["99 დოკუმენტის გენერირება"], featuresDocGenerationEn: ["99 document generations"],
     featuresDocReview: ["99 დოკუმენტის/ხელშეკრულების შემოწმება"], featuresDocReviewEn: ["99 document/contract reviews"],
-    featuresDocTemplates: ["200 მზა შაბლონის შევსება"], featuresDocTemplatesEn: ["200 ready-made template fills"],
+    featuresDocTemplates: ["200 მზა შაბლონი"], featuresDocTemplatesEn: ["200 ready-made templates"],
     isFree: false, highlighted: false, visible: true, active: true, order: 2,
   },
 ]

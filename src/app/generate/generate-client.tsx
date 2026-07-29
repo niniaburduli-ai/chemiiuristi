@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { COMMON_FIELDS, QUESTION_SCHEMAS, fieldLabel } from "@/lib/legal/document-fields";
+import { COMMON_FIELDS, QUESTION_SCHEMAS, fieldLabel, fieldPlaceholder } from "@/lib/legal/document-fields";
 import { docTypeLabel } from "@/lib/legal/doc-type-labels";
 import { DocumentResultPanel, type DocumentResult } from "@/components/site/DocumentResultPanel";
 import { PartyIdField } from "@/components/site/PartyIdField";
@@ -211,6 +211,13 @@ export function GenerateClient({
               </div>
             )}
 
+            {type === "demand-letter" && (
+              <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <p>{gp.demandNotice}</p>
+              </div>
+            )}
+
             {fields.map((f) => {
               if (f.type === "select") {
                 return (
@@ -261,6 +268,7 @@ export function GenerateClient({
                       type={f.type}
                       value={answers[f.key] ?? ""}
                       onChange={(e) => setAnswer(f.key, e.target.value)}
+                      placeholder={fieldPlaceholder(f, locale)}
                     />
                   )}
                 </div>
