@@ -50,7 +50,7 @@ export default async function FaqPage() {
     <div>
       <PageHero
         title={heading}
-        subtitle="მოძებნეთ თქვენთვის საჭირო კითხვაზე პასუხი ან მოგვწერეთ უკუკავშირის ღილაკით"
+        subtitle="მოძებნეთ თქვენთვის საჭირო კითხვაზე პასუხი ან მოგვწერეთ გამოხმაურების ღილაკის და მეილის საშუალებით"
       />
 
       {faqData.items.length > 0 && (

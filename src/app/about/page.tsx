@@ -62,9 +62,9 @@ export default async function AboutPage() {
           {sections.map((s, idx) => (
             <AnimateIn key={s.id} delay={idx * 100}>
               <div className="max-w-3xl mx-auto">
-                <div className="mb-6">
+                <div className="mb-6 text-center">
                   <h2 className="text-xl md:text-2xl font-bold text-foreground">{s.title}</h2>
-                  <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 rounded-full" />
+                  <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 mx-auto rounded-full" />
                 </div>
                 <div className="bg-card border border-border rounded-2xl p-6 md:p-7">
                   {s.multi ? (
@@ -80,9 +80,9 @@ export default async function AboutPage() {
           {team.length > 0 && (
             <AnimateIn delay={300}>
               <div className="max-w-3xl mx-auto">
-                <div className="mb-6">
+                <div className="mb-6 text-center">
                   <h2 className="text-xl md:text-2xl font-bold text-foreground">{d.teamTitle}</h2>
-                  <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 rounded-full" />
+                  <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 mx-auto rounded-full" />
                 </div>
                 <div className="bg-card border border-border rounded-2xl p-6 md:p-7">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
