@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { renderDocumentBody } from "@/lib/markdown-bold";
+import { renderDocumentBody, stripMarkdownBold } from "@/lib/markdown-bold";
 import { parseDocumentLegalBasis } from "@/lib/legal/citations";
 import {
   Dialog,
@@ -153,7 +153,7 @@ export function DocumentResultPanel({
         <CardContent>
           {editing ? (
             <Textarea
-              value={result.content}
+              value={stripMarkdownBold(result.content)}
               onChange={(e) => {
                 const next = e.target.value;
                 setResult((prev) => (prev ? { ...prev, content: next } : prev));

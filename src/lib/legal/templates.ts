@@ -115,7 +115,7 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-ერთის მხრივ, **[EMPLOYER]** (ს/ნ **[EMPLOYER_ID]**, მისამართი: [EMPLOYER_ADDRESS]) (შემდგომში — „დამსაქმებელი“) და მეორეს მხრივ, **[EMPLOYEE]** (პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS]) (შემდგომში — „დასაქმებული“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
+ერთის მხრივ, **[EMPLOYER]** ([EMPLOYER_ID_LINE]მისამართი: [EMPLOYER_ADDRESS]) (შემდგომში — „დამსაქმებელი“) და მეორეს მხრივ, **[EMPLOYEE]** (პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS]) (შემდგომში — „დასაქმებული“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
 
 **1. ხელშეკრულების საგანი**
 დამსაქმებელი დასაქმებულს იღებს **[POSITION]**-ის პოზიციაზე **[START_DATE]**-დან, ხოლო დასაქმებული თანხმობას აცხადებს შეასრულოს დაკისრებული სამუშაო წინამდებარე ხელშეკრულებით დადგენილი პირობების შესაბამისად. დასაქმებულის კონკრეტული ფუნქციები და მოვალეობები განისაზღვრება დამსაქმებლის მიერ დამტკიცებული თანამდებობრივი ინსტრუქციით ან წერილობითი დავალებებით, წინამდებარე ხელშეკრულების ფარგლებში.
@@ -146,14 +146,14 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 ხელშეკრულება შედგენილია 2 ეგზემპლარად, თანაბარი იურიდიული ძალით.
 
 **მხარეთა რეკვიზიტები**
-დამსაქმებელი: **[EMPLOYER]**, ს/ნ [EMPLOYER_ID], მის: [EMPLOYER_ADDRESS]     ხელმოწერა: ____________
+დამსაქმებელი: **[EMPLOYER]**, [EMPLOYER_ID_LINE]მის: [EMPLOYER_ADDRESS]     ხელმოწერა: ____________
 დასაქმებული: **[EMPLOYEE]**, პ/ნ [EMPLOYEE_ID], მის: [EMPLOYEE_ADDRESS]     ხელმოწერა: ____________`;
 
 const EMPLOYMENT_BODY_EN = `EMPLOYMENT AGREEMENT
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-Between, on the one part, **[EMPLOYER]** (ID no. **[EMPLOYER_ID]**, address: [EMPLOYER_ADDRESS]) (hereinafter — the "Employer"), and, on the other part, **[EMPLOYEE]** (personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS]) (hereinafter — the "Employee"; together — the "Parties"), have entered into this Agreement as follows:
+Between, on the one part, **[EMPLOYER]** ([EMPLOYER_ID_LINE]address: [EMPLOYER_ADDRESS]) (hereinafter — the "Employer"), and, on the other part, **[EMPLOYEE]** (personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS]) (hereinafter — the "Employee"; together — the "Parties"), have entered into this Agreement as follows:
 
 **1. Subject Matter of the Agreement**
 The Employer engages the Employee in the position of **[POSITION]** as of **[START_DATE]**, and the Employee agrees to perform the assigned work in accordance with the terms set out in this Agreement. The Employee's specific functions and duties shall be determined by the job description approved by the Employer or by written assignments, within the scope of this Agreement.
@@ -184,7 +184,7 @@ Labour disputes shall be resolved through negotiation between the Parties and, f
 This Agreement is executed in 2 (two) counterparts, having equal legal force.
 
 **Details of the Parties**
-Employer: **[EMPLOYER]**, ID no. [EMPLOYER_ID], address: [EMPLOYER_ADDRESS]     Signature: ____________
+Employer: **[EMPLOYER]**, [EMPLOYER_ID_LINE]address: [EMPLOYER_ADDRESS]     Signature: ____________
 Employee: **[EMPLOYEE]**, personal no. [EMPLOYEE_ID], address: [EMPLOYEE_ADDRESS]     Signature: ____________`;
 
 const POWER_OF_ATTORNEY_BODY = `მინდობილობა
@@ -273,7 +273,7 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-ერთის მხრივ, **[EXECUTOR]** (პ/ნ **[EXECUTOR_ID]**, მისამართი: [EXECUTOR_ADDRESS], ტელ: [EXECUTOR_PHONE]) (შემდგომში — „შემსრულებელი“) და მეორეს მხრივ, **[CLIENT]** (პ/ნ **[CLIENT_ID]**, მისამართი: [CLIENT_ADDRESS], ტელ: [CLIENT_PHONE]) (შემდგომში — „დამკვეთი“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
+ერთის მხრივ, **[EXECUTOR]** ([EXECUTOR_ID_LINE]მისამართი: [EXECUTOR_ADDRESS], ტელ: [EXECUTOR_PHONE]) (შემდგომში — „შემსრულებელი“) და მეორეს მხრივ, **[CLIENT]** ([CLIENT_ID_LINE]მისამართი: [CLIENT_ADDRESS], ტელ: [CLIENT_PHONE]) (შემდგომში — „დამკვეთი“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
 
 **1. ხელშეკრულების საგანი**
 შემსრულებელი იღებს ვალდებულებას, დამკვეთის დავალებით გაუწიოს შემდეგი მომსახურება: **[SERVICE_DESCRIPTION]**, ხოლო დამკვეთი იღებს ვალდებულებას მიღებული მომსახურება გადაუხადოს წინამდებარე ხელშეკრულებით დადგენილი წესით.
@@ -308,14 +308,14 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 ხელშეკრულება შედგენილია 2 ეგზემპლარად, თითოეული მხარისთვის თანაბარი იურიდიული ძალით.
 
 **მხარეთა რეკვიზიტები**
-შემსრულებელი: **[EXECUTOR]**, პ/ნ [EXECUTOR_ID], მის: [EXECUTOR_ADDRESS], ტელ: [EXECUTOR_PHONE]     ხელმოწერა: ____________
-დამკვეთი: **[CLIENT]**, პ/ნ [CLIENT_ID], მის: [CLIENT_ADDRESS], ტელ: [CLIENT_PHONE]     ხელმოწერა: ____________`;
+შემსრულებელი: **[EXECUTOR]**, [EXECUTOR_ID_LINE]მის: [EXECUTOR_ADDRESS], ტელ: [EXECUTOR_PHONE]     ხელმოწერა: ____________
+დამკვეთი: **[CLIENT]**, [CLIENT_ID_LINE]მის: [CLIENT_ADDRESS], ტელ: [CLIENT_PHONE]     ხელმოწერა: ____________`;
 
 const SERVICE_AGREEMENT_BODY_EN = `SERVICE AGREEMENT
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-Between, on the one part, **[EXECUTOR]** (personal no. **[EXECUTOR_ID]**, address: [EXECUTOR_ADDRESS], tel: [EXECUTOR_PHONE]) (hereinafter — the "Contractor"), and, on the other part, **[CLIENT]** (personal no. **[CLIENT_ID]**, address: [CLIENT_ADDRESS], tel: [CLIENT_PHONE]) (hereinafter — the "Client"; together — the "Parties"), have entered into this Agreement as follows:
+Between, on the one part, **[EXECUTOR]** ([EXECUTOR_ID_LINE]address: [EXECUTOR_ADDRESS], tel: [EXECUTOR_PHONE]) (hereinafter — the "Contractor"), and, on the other part, **[CLIENT]** ([CLIENT_ID_LINE]address: [CLIENT_ADDRESS], tel: [CLIENT_PHONE]) (hereinafter — the "Client"; together — the "Parties"), have entered into this Agreement as follows:
 
 **1. Subject Matter of the Agreement**
 The Contractor undertakes to provide the following services at the Client's request: **[SERVICE_DESCRIPTION]**, and the Client undertakes to pay for the services rendered in the manner set out in this Agreement.
@@ -350,8 +350,8 @@ Disputes arising out of this Agreement shall be resolved through negotiation and
 This Agreement is executed in 2 (two) counterparts, each having equal legal force for each Party.
 
 **Details of the Parties**
-Contractor: **[EXECUTOR]**, personal no. [EXECUTOR_ID], address: [EXECUTOR_ADDRESS], tel: [EXECUTOR_PHONE]     Signature: ____________
-Client: **[CLIENT]**, personal no. [CLIENT_ID], address: [CLIENT_ADDRESS], tel: [CLIENT_PHONE]     Signature: ____________`;
+Contractor: **[EXECUTOR]**, [EXECUTOR_ID_LINE]address: [EXECUTOR_ADDRESS], tel: [EXECUTOR_PHONE]     Signature: ____________
+Client: **[CLIENT]**, [CLIENT_ID_LINE]address: [CLIENT_ADDRESS], tel: [CLIENT_PHONE]     Signature: ____________`;
 
 const CLAIM_LETTER_BODY = `წერილი-პრეტენზია
 
@@ -491,19 +491,17 @@ const INVOICE_BODY = `ინვოისი № **[INVOICE_NUMBER]**
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-**გამომწერი:** [SELLER], პ/ნ [SELLER_ID], მისამართი: [SELLER_ADDRESS]
-**მიმღები (გადამხდელი):** [BUYER], მისამართი: [BUYER_ADDRESS]
+**გამომწერი:** [SELLER], [SELLER_ID_LINE]მისამართი: [SELLER_ADDRESS], **საბანკო ანგარიში:** [BANK_ACCOUNT]
+**მიმღები (გადამხდელი):** [BUYER], [BUYER_ID_LINE]მისამართი: [BUYER_ADDRESS]
 
 **საქონლის/მომსახურების ჩამონათვალი:**
 [ITEMS]
 
 **სულ გადასახდელი თანხა:** **[TOTAL_AMOUNT]**
 **გადახდის ვადა:** **[DUE_DATE]**
-**გადახდის მეთოდი:** [PAYMENT_METHOD]. **საბანკო ანგარიში:** [BANK_ACCOUNT]
+**გადახდის მეთოდი:** [PAYMENT_METHOD]
 
 წინამდებარე დოკუმენტი წარმოადგენს გადახდის მოთხოვნას ზემოაღნიშნული საქონლის/მომსახურების მისაწოდებლად ან უკვე მიწოდებულის საფასურის დასაფარად და არ ჩაითვლება საგადასახადო კანონმდებლობით გათვალისწინებულ ანგარიშ-ფაქტურად RS.ge-ს მონაცემთა ერთიან ცხრილში რეგისტრაციის გაგებით.
-
-[LATE_PENALTY_CLAUSE] მხარეთა შორის დავა წყდება მოლაპარაკებით, ხოლო შეთანხმების მიუღწევლობისას — სასამართლოში, საქართველოს კანონმდებლობით დადგენილი წესით.
 
 გამომწერი: **[SELLER]**     ხელმოწერა/ბეჭედი: ____________`;
 
@@ -511,19 +509,17 @@ const INVOICE_BODY_EN = `INVOICE No. **[INVOICE_NUMBER]**
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-**Issuer:** [SELLER], personal no. [SELLER_ID], address: [SELLER_ADDRESS]
-**Recipient (payer):** [BUYER], address: [BUYER_ADDRESS]
+**Issuer:** [SELLER], [SELLER_ID_LINE]address: [SELLER_ADDRESS], **Bank account:** [BANK_ACCOUNT]
+**Recipient (payer):** [BUYER], [BUYER_ID_LINE]address: [BUYER_ADDRESS]
 
 **List of goods/services:**
 [ITEMS]
 
 **Total amount due:** **[TOTAL_AMOUNT]**
 **Payment due date:** **[DUE_DATE]**
-**Payment method:** [PAYMENT_METHOD]. **Bank account:** [BANK_ACCOUNT]
+**Payment method:** [PAYMENT_METHOD]
 
 This document constitutes a request for payment for the above goods/services to be supplied, or already supplied, and shall not be regarded as a tax invoice within the meaning of registration in RS.ge's unified data table under the tax legislation.
-
-[LATE_PENALTY_CLAUSE] Disputes between the Parties shall be resolved through negotiation and, failing agreement, in court, in accordance with the procedure established by the legislation of Georgia.
 
 Issuer: **[SELLER]**     Signature/Seal: ____________`;
 
@@ -531,8 +527,8 @@ const ACCEPTANCE_ACT_BODY = `მიღება-ჩაბარების ა�
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-**მიმცემი მხარე:** [PROVIDER], პ/ნ [PROVIDER_ID], მისამართი: [PROVIDER_ADDRESS]
-**მიმღები მხარე:** [RECEIVER], პ/ნ [RECEIVER_ID], მისამართი: [RECEIVER_ADDRESS]
+**მიმცემი მხარე:** [PROVIDER], [PROVIDER_ID_LINE]მისამართი: [PROVIDER_ADDRESS]
+**მიმღები მხარე:** [RECEIVER], [RECEIVER_ID_LINE]მისამართი: [RECEIVER_ADDRESS]
 
 **საბაზისო ხელშეკრულება:** [CONTRACT_REF]
 
@@ -555,8 +551,8 @@ const ACCEPTANCE_ACT_BODY_EN = `ACCEPTANCE ACT No. **[ACT_NUMBER]**
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-**Transferring party:** [PROVIDER], personal no. [PROVIDER_ID], address: [PROVIDER_ADDRESS]
-**Receiving party:** [RECEIVER], personal no. [RECEIVER_ID], address: [RECEIVER_ADDRESS]
+**Transferring party:** [PROVIDER], [PROVIDER_ID_LINE]address: [PROVIDER_ADDRESS]
+**Receiving party:** [RECEIVER], [RECEIVER_ID_LINE]address: [RECEIVER_ADDRESS]
 
 **Underlying contract:** [CONTRACT_REF]
 
@@ -671,7 +667,7 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "employment-contract": {
-    employer: "EMPLOYER", employerId: "EMPLOYER_ID", employerAddress: "EMPLOYER_ADDRESS",
+    employer: "EMPLOYER", employerAddress: "EMPLOYER_ADDRESS",
     employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS",
     position: "POSITION", salary: "SALARY", salaryPaymentMethod: "SALARY_PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT", startDate: "START_DATE",
     city: "CITY", docDate: "DOC_DATE",
@@ -687,8 +683,8 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "service-agreement": {
-    executor: "EXECUTOR", executorId: "EXECUTOR_ID", executorAddress: "EXECUTOR_ADDRESS", executorPhone: "EXECUTOR_PHONE",
-    client: "CLIENT", clientId: "CLIENT_ID", clientAddress: "CLIENT_ADDRESS", clientPhone: "CLIENT_PHONE",
+    executor: "EXECUTOR", executorAddress: "EXECUTOR_ADDRESS", executorPhone: "EXECUTOR_PHONE",
+    client: "CLIENT", clientAddress: "CLIENT_ADDRESS", clientPhone: "CLIENT_PHONE",
     serviceDescription: "SERVICE_DESCRIPTION", deadline: "DEADLINE", price: "PRICE",
     paymentMethod: "PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT",
     city: "CITY", docDate: "DOC_DATE",
@@ -715,14 +711,14 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   invoice: {
-    invoiceNumber: "INVOICE_NUMBER", seller: "SELLER", sellerId: "SELLER_ID", sellerAddress: "SELLER_ADDRESS",
+    invoiceNumber: "INVOICE_NUMBER", seller: "SELLER", sellerAddress: "SELLER_ADDRESS",
     buyer: "BUYER", buyerAddress: "BUYER_ADDRESS", items: "ITEMS", totalAmount: "TOTAL_AMOUNT",
     dueDate: "DUE_DATE", paymentMethod: "PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT",
     city: "CITY", docDate: "DOC_DATE",
   },
   "acceptance-act": {
-    actNumber: "ACT_NUMBER", provider: "PROVIDER", providerId: "PROVIDER_ID", providerAddress: "PROVIDER_ADDRESS",
-    receiver: "RECEIVER", receiverId: "RECEIVER_ID", receiverAddress: "RECEIVER_ADDRESS",
+    actNumber: "ACT_NUMBER", provider: "PROVIDER", providerAddress: "PROVIDER_ADDRESS",
+    receiver: "RECEIVER", receiverAddress: "RECEIVER_ADDRESS",
     contractRef: "CONTRACT_REF", subjectDescription: "SUBJECT_DESCRIPTION", amount: "AMOUNT", objections: "OBJECTIONS",
     city: "CITY", docDate: "DOC_DATE",
   },
@@ -757,50 +753,33 @@ function buildInvoiceItemsTable(raw: string, locale: Locale): string {
   return [header, ...rows].join("\n");
 }
 
-/** Extract the first numeric value from freeform text (e.g. "950 ლარი" -> 950,
- * "0,1%" -> 0.1). Returns null when no number is found, so callers can fall
- * back to a non-computed rendering instead of a fabricated figure. */
-function parseNumericAmount(text: string): number | null {
-  const m = text.match(/\d+(?:[.,]\d+)?/);
-  if (!m) return null;
-  const n = parseFloat(m[0].replace(",", "."));
-  return Number.isFinite(n) ? n : null;
+/** Formats a party's ID as a display fragment ending in ", " (e.g.
+ * "პ/ნ **12345**, ") ready to be inserted right before an address label, or
+ * "" when neither field is filled in — so the surrounding template text
+ * never shows a dangling label or empty-value placeholder for an optional
+ * ID. Bold markers are embedded directly since this string is injected into
+ * already-rendered document content, not re-parsed as markdown source. */
+function formatPartyIdLine(personalNumberRaw: string, idCodeRaw: string, locale: Locale): string {
+  const personalNumber = personalNumberRaw.trim();
+  const idCode = idCodeRaw.trim();
+  const parts: string[] = [];
+  if (personalNumber) parts.push(locale === "en" ? `personal no. **${personalNumber}**` : `პ/ნ **${personalNumber}**`);
+  if (idCode) parts.push(locale === "en" ? `ID code **${idCode}**` : `ს/კ **${idCode}**`);
+  if (parts.length === 0) return "";
+  return `${parts.join(", ")}, `;
 }
 
-/** Build the invoice's late-payment clause. Never invents a rate — only
- * activates once the user states one — and when the rate is a plain
- * percentage, appends a real, computed worked example (30-day delay against
- * the invoice's own total) instead of a generic legal reference, so the
- * consequence is concrete rather than a bare citation. */
-function buildLatePenaltyClause(
-  percentRaw: string,
-  periodRaw: string,
-  totalAmountRaw: string,
-  locale: Locale
-): string {
-  const percent = percentRaw.trim();
-  if (!percent) {
-    return locale === "en"
-      ? "If payment is delayed past the due date, the Issuer shall be entitled to claim a penalty/interest as agreed between the Parties or as established by the legislation."
-      : "გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს მოსთხოვოს მიმღებს მხარეთა შორის შეთანხმებული ან კანონმდებლობით დადგენილი საურავი/პროცენტი.";
+/** Replaces each `[TOKEN]` in `body` with its computed value (plain string
+ * substitution, not regex) — used for placeholders whose value is built in
+ * code (e.g. an ID line, a conditional clause) rather than echoed from a
+ * raw form answer, so an intentionally blank result doesn't fall through to
+ * fillTemplate's generic "—" missing-value fallback. */
+function injectComputed(body: string, replacements: Record<string, string>): string {
+  let out = body;
+  for (const [token, value] of Object.entries(replacements)) {
+    out = out.split(`[${token}]`).join(value);
   }
-  const period = periodRaw.trim() || (locale === "en" ? "per day" : "დღეში");
-  const base =
-    locale === "en"
-      ? `If payment is delayed past the due date, the Issuer shall be entitled to charge a penalty of ${percent}% ${period} on the outstanding amount.`
-      : `გადახდის ვადის გადაცილების შემთხვევაში, გამომწერს უფლება აქვს დაარიცხოს საურავი გადაუხდელ თანხაზე ${percent}% ${period}.`;
-
-  const rate = parseNumericAmount(percent);
-  const total = parseNumericAmount(totalAmountRaw);
-  if (rate == null || total == null) return base;
-
-  const exampleDays = 30;
-  const exampleTotal = (total * (rate / 100) * exampleDays).toFixed(2);
-  const example =
-    locale === "en"
-      ? ` For example, a ${exampleDays}-day delay would add approximately ${exampleTotal} to the amount due (${percent}% × ${exampleDays} days on ${totalAmountRaw.trim()}).`
-      : ` მაგალითად, ${exampleDays} დღის დაგვიანება დაამატებს დაახლოებით ${exampleTotal}-ს გადასახდელ თანხას (${percent}% × ${exampleDays} დღე, ჯამურ თანხაზე ${totalAmountRaw.trim()}).`;
-  return base + example;
+  return out;
 }
 
 /** Add `days` calendar days to an ISO ("YYYY-MM-DD") date string, returning
@@ -840,16 +819,31 @@ export function renderTemplate(
   if (type === "termination-notice") {
     values.SETTLEMENT_DEADLINE = addCalendarDays(answers.lastDay ?? "", 7);
   }
+
+  const computed: Record<string, string> = {};
   if (type === "invoice") {
-    values.LATE_PENALTY_CLAUSE = buildLatePenaltyClause(
-      answers.latePenaltyPercent ?? "",
-      answers.latePenaltyPeriod ?? "",
-      answers.totalAmount ?? "",
-      locale
-    );
+    computed.SELLER_ID_LINE = formatPartyIdLine(answers.sellerPersonalNumber ?? "", answers.sellerIdCode ?? "", locale);
+    computed.BUYER_ID_LINE = formatPartyIdLine(answers.buyerPersonalNumber ?? "", answers.buyerIdCode ?? "", locale);
   }
+  if (type === "employment-contract") {
+    computed.EMPLOYER_ID_LINE = formatPartyIdLine(answers.employerPersonalNumber ?? "", answers.employerIdCode ?? "", locale);
+  }
+  if (type === "service-agreement") {
+    computed.EXECUTOR_ID_LINE = formatPartyIdLine(answers.executorPersonalNumber ?? "", answers.executorIdCode ?? "", locale);
+    computed.CLIENT_ID_LINE = formatPartyIdLine(answers.clientPersonalNumber ?? "", answers.clientIdCode ?? "", locale);
+  }
+  if (type === "acceptance-act") {
+    computed.PROVIDER_ID_LINE = formatPartyIdLine(answers.providerPersonalNumber ?? "", answers.providerIdCode ?? "", locale);
+    computed.RECEIVER_ID_LINE = formatPartyIdLine(answers.receiverPersonalNumber ?? "", answers.receiverIdCode ?? "", locale);
+  }
+
   const def = TEMPLATES[type];
-  const chosenBody = locale === "en" ? def.bodyEn : def.body;
+  const rawBody = locale === "en" ? def.bodyEn : def.body;
+  const chosenBody = injectComputed(rawBody, computed);
   const chosenLegalBasis = locale === "en" ? def.legalBasisEn : def.legalBasis;
-  return { content: fillTemplate(chosenBody, values), legalBasis: chosenLegalBasis };
+  // A computed placeholder that resolves to "" (e.g. an omitted late-penalty
+  // clause) can leave behind a blank paragraph; collapse it so removing an
+  // optional clause never shows as an empty gap in the document.
+  const content = fillTemplate(chosenBody, values).replace(/\n{3,}/g, "\n\n");
+  return { content, legalBasis: chosenLegalBasis };
 }

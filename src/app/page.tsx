@@ -258,7 +258,7 @@ export default async function Home() {
       {/* ── FEATURES + STATS ── */}
       {((sections.features !== false && features.length > 0) ||
         (sections.stats !== false && visibleCardCount > 0)) && (
-        <section className="bg-background">
+        <section className="bg-muted/30">
           <div className="container mx-auto px-4 py-20">
             <div
               className={`grid gap-10 items-stretch ${

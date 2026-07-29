@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import { findTitleIndex, findHeaderIndex, splitHeaderLine } from "@/lib/document-layout";
 
+/** Strips `**bold**` markers for plain-text editing (a <textarea> can't render
+ * <strong> inline), so the edit view never shows literal asterisks. */
+export function stripMarkdownBold(text: string): string {
+  return text.replace(/\*\*([^*]+)\*\*/g, "$1");
+}
+
 /** Renders the model's `**bold**` markdown as <strong> instead of literal asterisks. */
 export function renderMarkdownBold(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>

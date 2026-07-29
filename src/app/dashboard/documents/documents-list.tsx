@@ -8,6 +8,7 @@ import { DocumentDownloadButton } from "@/components/site/document-download-butt
 import { DOC_TYPES } from "@/lib/validators";
 import { estimatePageCount } from "@/lib/page-count";
 import { formatDate } from "@/lib/utils";
+import { renderDocumentBody } from "@/lib/markdown-bold";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
 export type GeneratedDocItem = {
@@ -49,9 +50,9 @@ function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
         <p>ხელშეკრულება შეინახება ისტორიაში 1 თვის ვადით, რის შემდეგაც ავტომატურად წაიშლება.</p>
       </div>
 
-      <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-muted/40 rounded p-3 leading-relaxed">
-        {doc.content}
-      </pre>
+      <div className="text-xs text-muted-foreground bg-muted/40 rounded p-3 leading-relaxed">
+        {renderDocumentBody(doc.content)}
+      </div>
     </div>
   );
 }

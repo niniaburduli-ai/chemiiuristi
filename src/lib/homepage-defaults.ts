@@ -59,6 +59,7 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
         { text: "აირჩიე დოკუმენტის ან ფოტოს რეჟიმი", textEn: "Choose document or photo mode" },
         { text: "ატვირთე ფაილი (PDF, DOCX, TXT ან სურათები)", textEn: "Upload your file (PDF, DOCX, TXT, or images)" },
         { text: "ნახე გამოვლენილი რისკები კატეგორიების მიხედვით და რეკომენდაციები", textEn: "Review the categorized risks and recommendations" },
+        { text: "სურვილიის შემთხვევაში, დააგენერირეთ გაუმჯობესებული დოკუმენტი გამოვლენილი რისკების და რეკომენდაციების მიხედვით. ჩამოტვირთეთ.", textEn: "If you'd like, generate an improved document based on the identified risks and recommendations. Download it." },
       ],
       ctaText: "დოკუმენტის შემოწმება", ctaTextEn: "Check a document",
     },
@@ -96,7 +97,7 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
   features: [
     { _id: "fe-1", title: "მარტივი გამოყენება", titleEn: "Easy to use", body: "დასვით კითხვა, გამოიყენეთ შაბლონები ან ატვირთეთ დოკუმენტი მარტივად. პლატფორმა შექმნილია ყველასთვის.", bodyEn: "Ask a question, use templates, or upload a document effortlessly. The platform is designed for everyone.", icon: "MousePointerClick", order: 0, visible: true },
     { _id: "fe-2", title: "სწრაფი პასუხები", titleEn: "Fast answers", body: "მიიღეთ თქვენთვის საჭირი ინფორმაცია წამებში.", bodyEn: "Get the information you need in seconds.", icon: "Zap", order: 1, visible: true },
-    { _id: "fe-3", title: "ყველაფერი ერთ სივრცეში", titleEn: "All in one place", body: "იურიდიული კონსულტაცია, დოკუმენტების შემოწმება და შაბლონები — ყველაფერი ერთ პლატფორმაზე.", bodyEn: "Legal consultation, document review, and templates — everything on one platform.", icon: "Layers", order: 2, visible: true },
+    { _id: "fe-3", title: "ყველაფერი ერთ სივრცეში", titleEn: "All in one place", body: "იურიდიული კონსულტაცია, დოკუმენტების შემოწმება, დოკუმენტების გენერირება და შაბლონები — ყველაფერი ერთ პლატფორმაზე.", bodyEn: "Legal consultation, document review, and templates — everything on one platform.", icon: "Layers", order: 2, visible: true },
     { _id: "fe-4", title: "უსაფრთხო გარემო", titleEn: "Secure environment", body: "თქვენი კითხვები და დოკუმენტები მუშავდება კონფიდენციალურად და უსაფრთხოდ.", bodyEn: "Your questions and documents are processed confidentially and securely.", icon: "ShieldCheck", order: 3, visible: true },
     { _id: "fe-5", title: "24/7 ხელმისაწვდომობა", titleEn: "Available 24/7", body: "მიიღეთ იურიდიული ინფორმაცია ნებისმიერ დროს, თქვენთვის მოსახერხებელ მომენტში.", bodyEn: "Get legal information at any time, at your convenience.", icon: "Clock", order: 4, visible: true },
   ],

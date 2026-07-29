@@ -1,7 +1,30 @@
 import type { Locale } from "@/lib/i18n/config";
 
-export type FieldType = "text" | "textarea" | "date";
-export type QuestionField = { key: string; label: string; labelEn: string; type: FieldType; required?: boolean };
+export type FieldType = "text" | "textarea" | "date" | "partyId";
+export type QuestionField = {
+  key: string;
+  label: string;
+  labelEn: string;
+  type: FieldType;
+  required?: boolean;
+  /** Only for type "partyId": the two answer keys the toggle switches between. */
+  personalKey?: string;
+  idCodeKey?: string;
+};
+
+/** Builds a "partyId" field: a single toggle (personal number vs. identification
+ * code) that shows one input at a time, so a party that can be either an
+ * individual or a legal entity doesn't need two always-visible fields. */
+function partyIdField(role: string, label: string, labelEn: string): QuestionField {
+  return {
+    key: `${role}Id`,
+    label,
+    labelEn,
+    type: "partyId",
+    personalKey: `${role}PersonalNumber`,
+    idCodeKey: `${role}IdCode`,
+  };
+}
 
 export const COMMON_FIELDS: QuestionField[] = [
   { key: "city", label: "ქალაქი", labelEn: "City", type: "text", required: true },
@@ -36,7 +59,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   ],
   "employment-contract": [
     { key: "employer", label: "დამსაქმებელი", labelEn: "Employer", type: "text", required: true },
-    { key: "employerId", label: "დამსაქმებლის საიდენტიფიკაციო/პირადი ნომერი", labelEn: "Employer's identification/personal number", type: "text", required: true },
+    partyIdField("employer", "დამსაქმებლის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Employer's personal number or identification code"),
     { key: "employerAddress", label: "დამსაქმებლის მისამართი", labelEn: "Employer's address", type: "text", required: true },
     { key: "employee", label: "თანამშრომელი", labelEn: "Employee", type: "text", required: true },
     { key: "employeeId", label: "თანამშრომლის პირადი ნომერი", labelEn: "Employee's personal number", type: "text", required: true },
@@ -77,11 +100,11 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   ],
   "service-agreement": [
     { key: "executor", label: "შემსრულებელი (სახელი, გვარი / დასახელება)", labelEn: "Contractor (full name / entity name)", type: "text", required: true },
-    { key: "executorId", label: "შემსრულებლის პირადი/საიდენტიფიკაციო № ", labelEn: "Contractor's personal/identification No.", type: "text", required: true },
+    partyIdField("executor", "შემსრულებლის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Contractor's personal number or identification code"),
     { key: "executorAddress", label: "შემსრულებლის მისამართი", labelEn: "Contractor's address", type: "text", required: true },
     { key: "executorPhone", label: "შემსრულებლის ტელეფონი", labelEn: "Contractor's phone number", type: "text" },
     { key: "client", label: "დამკვეთი (სახელი, გვარი / დასახელება)", labelEn: "Client (full name / entity name)", type: "text", required: true },
-    { key: "clientId", label: "დამკვეთის პირადი/საიდენტიფიკაციო №", labelEn: "Client's personal/identification No.", type: "text", required: true },
+    partyIdField("client", "დამკვეთის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Client's personal number or identification code"),
     { key: "clientAddress", label: "დამკვეთის მისამართი", labelEn: "Client's address", type: "text", required: true },
     { key: "clientPhone", label: "დამკვეთის ტელეფონი", labelEn: "Client's phone number", type: "text" },
     { key: "serviceDescription", label: "მომსახურების აღწერა", labelEn: "Description of services", type: "textarea", required: true },
@@ -136,25 +159,24 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   invoice: [
     { key: "invoiceNumber", label: "ინვოისის №", labelEn: "Invoice No.", type: "text", required: true },
     { key: "seller", label: "გამომწერი (გამყიდველი/მომსახურების მიმწოდებელი)", labelEn: "Issuer (seller/service provider)", type: "text", required: true },
-    { key: "sellerId", label: "გამომწერის საიდენტიფიკაციო/პირადი №", labelEn: "Issuer's identification/personal No.", type: "text" },
+    partyIdField("seller", "გამომწერის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Issuer's personal number or identification code"),
     { key: "sellerAddress", label: "გამომწერის მისამართი", labelEn: "Issuer's address", type: "text" },
+    { key: "bankAccount", label: "საბანკო ანგარიშის №", labelEn: "Bank account No.", type: "text" },
     { key: "buyer", label: "მიმღები (გადამხდელი)", labelEn: "Recipient (payer)", type: "text", required: true },
+    partyIdField("buyer", "მიმღების პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Recipient's personal number or identification code"),
     { key: "buyerAddress", label: "მიმღების მისამართი", labelEn: "Recipient's address", type: "text" },
     { key: "items", label: "საქონელი/მომსახურება", labelEn: "Goods/services", type: "textarea", required: true },
     { key: "totalAmount", label: "სულ გადასახდელი თანხა", labelEn: "Total amount due", type: "text", required: true },
     { key: "dueDate", label: "გადახდის ვადა", labelEn: "Payment due date", type: "date", required: true },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Payment method (cash/bank transfer)", type: "text", required: true },
-    { key: "bankAccount", label: "საბანკო ანგარიშის №", labelEn: "Bank account No.", type: "text" },
-    { key: "latePenaltyPercent", label: "საურავის განაკვეთი %, ვადის გადაცილებისას (არასავალდებულო)", labelEn: "Late-payment penalty rate %, if any (optional)", type: "text" },
-    { key: "latePenaltyPeriod", label: "პერიოდი (მაგ. „დღეში\", „თვეში\") — თუ ზემოთ განაკვეთი მიუთითეთ", labelEn: "Period (e.g. \"per day\", \"per month\") — if a rate was entered above", type: "text" },
   ],
   "acceptance-act": [
     { key: "actNumber", label: "აქტის №", labelEn: "Act No.", type: "text" },
     { key: "provider", label: "მიმცემი მხარე (შემსრულებელი/მიმწოდებელი)", labelEn: "Transferring party (contractor/supplier)", type: "text", required: true },
-    { key: "providerId", label: "მიმცემის საიდენტიფიკაციო/პირადი №", labelEn: "Transferring party's identification/personal No.", type: "text" },
+    partyIdField("provider", "მიმცემის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Transferring party's personal number or identification code"),
     { key: "providerAddress", label: "მიმცემის მისამართი", labelEn: "Transferring party's address", type: "text" },
     { key: "receiver", label: "მიმღები მხარე (დამკვეთი)", labelEn: "Receiving party (client)", type: "text", required: true },
-    { key: "receiverId", label: "მიმღების საიდენტიფიკაციო/პირადი №", labelEn: "Receiving party's identification/personal No.", type: "text" },
+    partyIdField("receiver", "მიმღები მხარის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Receiving party's personal number or identification code"),
     { key: "receiverAddress", label: "მიმღების მისამართი", labelEn: "Receiving party's address", type: "text" },
     { key: "contractRef", label: "საბაზისო ხელშეკრულების რეკვიზიტები (№, თარიღი)", labelEn: "Underlying contract details (No., date)", type: "text" },
     { key: "subjectDescription", label: "ჩაბარებული საქონლის/სამუშაოს/მომსახურების აღწერა", labelEn: "Description of goods/work/services delivered", type: "textarea", required: true },

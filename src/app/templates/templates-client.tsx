@@ -7,6 +7,7 @@ import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -195,6 +196,43 @@ export function TemplatesClient({
                       <Button type="button" variant="outline" size="sm" onClick={addRow}>
                         <Plus className="h-3.5 w-3.5 mr-1" /> {tp.addRowCta}
                       </Button>
+                    </div>
+                  </div>
+                );
+              }
+              if (f.type === "partyId") {
+                const personalKey = f.personalKey!;
+                const idCodeKey = f.idCodeKey!;
+                const mode = answers[f.key] === "idCode" ? "idCode" : "personal";
+                const activeKey = mode === "idCode" ? idCodeKey : personalKey;
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                    <Label className="pt-2">{fieldLabel(f, locale)}</Label>
+                    <div className="space-y-2">
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                          <Checkbox
+                            checked={mode === "personal"}
+                            onCheckedChange={(checked) => {
+                              if (checked) setAnswers((prev) => ({ ...prev, [f.key]: "personal", [idCodeKey]: "" }));
+                            }}
+                          />
+                          {tp.personalNumberOption}
+                        </label>
+                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                          <Checkbox
+                            checked={mode === "idCode"}
+                            onCheckedChange={(checked) => {
+                              if (checked) setAnswers((prev) => ({ ...prev, [f.key]: "idCode", [personalKey]: "" }));
+                            }}
+                          />
+                          {tp.idCodeOption}
+                        </label>
+                      </div>
+                      <Input
+                        value={answers[activeKey] ?? ""}
+                        onChange={(e) => setAnswer(activeKey, e.target.value)}
+                      />
                     </div>
                   </div>
                 );
