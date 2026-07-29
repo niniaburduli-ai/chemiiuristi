@@ -243,7 +243,7 @@ const ka = {
   },
   about: {
     title: "ჩვენ შესახებ",
-    heroSubtitle: "პლატფორმა, რომელიც იურიდიულ დახმარებას\nხელმისაწვდომს და მარტივს ხდის ყველასთვის.",
+    heroSubtitle: "AI-ზე დაფუძნებული პლატფორმა, რომელიც იურიდიულ დახმარებას\nხელმისაწვდომს და მარტივს ხდის ყველასთვის.",
     intro:
       "\"ჩემი იურისტი\" არის თანამედროვე იურიდიული პლატფორმა, რომელიც შეიქმნა ერთი მთავარი მიზნით — გახადოს სამართალი ხელმისაწვდომი, მარტივი და გასაგები ყველასთვის.\n\nჩვენ გვჯერა, რომ იურიდიული დახმარება არ უნდა ასოცირდებოდეს რთულ, გაუგებარ ტერმინებთან და უსასრულო ბიუროკრატიასთან. ჩვენ ვსაუბრობთ კანონის მარტივ ენაზე და გეხმარებით უფლებების დაცვაში, ბიზნესის უსაფრთხოდ მართვასა თუ ყოველდღიური სამართლებრივი საკითხების მოგვარებაში — სწრაფად, ონლაინ და ზედმეტი სტრესის გარეშე.",
     historyTitle: "ჩვენი ისტორია",
@@ -411,6 +411,7 @@ const ka = {
     pageTitle: "დოკუმენტის მომზადება",
     pageSubtitle: "AI ადგენს საჩივარს ან მოთხოვნას შენი კონკრეტული სიტუაციის მიხედვით",
     retentionNotice: "ხელშეკრულება შეინახება ისტორიაში 1 თვის ვადით, რის შემდეგაც ავტომატურად წაიშლება.",
+    complaintNotice: "გაითვალისწინეთ: საჩივარი, როგორც წესი, იგზავნება ზემდგომ ორგანოში ან მარეგულირებელში უფლებების დარღვევის გამოსასწორებლად.",
     cardTitle: "დოკუმენტის ტიპი და დეტალები",
     cardSubtitle: "აირჩიე ტიპი და შეავსე ცნობილი დეტალები",
     docTypeLabel: "დოკუმენტის ტიპი",
@@ -879,6 +880,7 @@ const en: Dict = {
     pageTitle: "Document drafting",
     pageSubtitle: "AI drafts a complaint or demand letter based on your specific situation",
     retentionNotice: "The document will be kept in your history for 1 month, after which it is automatically deleted.",
+    complaintNotice: "Please note: a complaint is typically sent to a higher authority or regulator to remedy a rights violation.",
     cardTitle: "Document type and details",
     cardSubtitle: "Choose a type and fill in what you know",
     docTypeLabel: "Document type",
