@@ -428,7 +428,7 @@ const DEBT_CLAIM_BODY = `მოთხოვნა (პრეტენზია) 
 [DEBT_BASIS]
 
 **2. დავალიანების ოდენობა**
-ძირითადი თანხა: **[PRINCIPAL_AMOUNT]**
+ძირითადი თანხა: **[PRINCIPAL_AMOUNT]**[CURRENCY_CLAUSE]
 დარიცხული პროცენტი/საურავი: **[INTEREST_AMOUNT]** (დარიცხვის საფუძველი და განაკვეთი: იხ. ზემოთ, დავალიანების საფუძველში მითითებული პირობები, ან კანონმდებლობით დადგენილი წესი)
 სულ გადასახდელი: **[TOTAL_AMOUNT]**
 დაბრუნების თავდაპირველი ვადა: **[ORIGINAL_DUE_DATE]**
@@ -453,7 +453,7 @@ Debtor: **[DEBTOR_NAME]**, address: [DEBTOR_ADDRESS]
 [DEBT_BASIS]
 
 **2. Amount of the Debt**
-Principal amount: **[PRINCIPAL_AMOUNT]**
+Principal amount: **[PRINCIPAL_AMOUNT]**[CURRENCY_CLAUSE]
 Accrued interest/penalty: **[INTEREST_AMOUNT]** (basis and rate: see the terms stated above, under the basis of the debt, or as established by the legislation)
 Total amount due: **[TOTAL_AMOUNT]**
 Original due date for repayment: **[ORIGINAL_DUE_DATE]**
@@ -471,10 +471,11 @@ const CHILD_TRAVEL_CONSENT_BODY = `თანხმობა არასრუ�
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-მე, **[PARENT_NAME]** ([PARENT_ID_LINE]მისამართი: [PARENT_ADDRESS], ტელ: [PARENT_PHONE]), არასრულწლოვნის მშობელი/კანონიერი წარმომადგენელი, ვაცხადებ ჩემს თანხმობას, რომ ჩემმა არასრულწლოვანმა შვილმა — **[CHILD_NAME]** (დაბადების თარიღი: **[CHILD_DOB]**, პირადობის/პასპორტის № **[CHILD_DOCUMENT]**) — გავიდეს საქართველოს ფარგლებს გარეთ.
+მე, **[PARENT_NAME]** (პ/ნ [PARENT_ID], მისამართი: [PARENT_ADDRESS], ტელ: [PARENT_PHONE]), არასრულწლოვნის მშობელი/კანონიერი წარმომადგენელი, ვაცხადებ ჩემს თანხმობას, რომ ჩემმა არასრულწლოვანმა შვილმა — **[CHILD_NAME]** (დაბადების თარიღი: **[CHILD_DOB]**, პასპორტის № **[CHILD_DOCUMENT]**) — გავიდეს საქართველოს ფარგლებს გარეთ.
 
 **დანიშნულების ქვეყანა/ქვეყნები:** [DESTINATION]
-**მოგზაურობის პერიოდი:** [TRAVEL_PERIOD]
+**გამგზავრების თარიღი:** [TRAVEL_START_DATE]
+**დაბრუნების თარიღი:** [TRAVEL_END_DATE]
 **თანმხლები პირი:** [ESCORT]
 **მეორე მშობლის თანხმობის სტატუსი:** [OTHER_PARENT_STATUS]
 
@@ -491,10 +492,11 @@ const CHILD_TRAVEL_CONSENT_BODY_EN = `CONSENT TO A MINOR'S TRAVEL ABROAD
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-I, **[PARENT_NAME]** ([PARENT_ID_LINE]address: [PARENT_ADDRESS], tel: [PARENT_PHONE]), parent/legal guardian of the minor, hereby declare my consent that my minor child — **[CHILD_NAME]** (date of birth: **[CHILD_DOB]**, ID/passport No. **[CHILD_DOCUMENT]**) — may travel outside the territory of Georgia.
+I, **[PARENT_NAME]** (personal no. [PARENT_ID], address: [PARENT_ADDRESS], tel: [PARENT_PHONE]), parent/legal guardian of the minor, hereby declare my consent that my minor child — **[CHILD_NAME]** (date of birth: **[CHILD_DOB]**, passport No. **[CHILD_DOCUMENT]**) — may travel outside the territory of Georgia.
 
 **Destination country/countries:** [DESTINATION]
-**Travel period:** [TRAVEL_PERIOD]
+**Departure date:** [TRAVEL_START_DATE]
+**Return date:** [TRAVEL_END_DATE]
 **Accompanying person:** [ESCORT]
 **Status of the other parent's consent:** [OTHER_PARENT_STATUS]
 
@@ -552,13 +554,14 @@ const ACCEPTANCE_ACT_BODY = `მიღება-ჩაბარების ა�
 **მიმცემი მხარე:** [PROVIDER], [PROVIDER_ID_LINE]მისამართი: [PROVIDER_ADDRESS]
 **მიმღები მხარე:** [RECEIVER], [RECEIVER_ID_LINE]მისამართი: [RECEIVER_ADDRESS]
 
-**საბაზისო ხელშეკრულება:** [CONTRACT_REF]
+**ძირითადი ხელშეკრულება:** [CONTRACT_REF]
 
 წინამდებარე აქტი ადასტურებს, რომ მიმცემმა მხარემ ჩააბარა, ხოლო მიმღებმა მხარემ მიიღო შემდეგი საქონელი/სამუშაო/მომსახურება:
 
 [SUBJECT_DESCRIPTION]
 
-**ღირებულება:** [AMOUNT]
+**ღირებულება:** [AMOUNT][CURRENCY_CLAUSE]
+**საბანკო ანგარიში (IBAN):** [BANK_ACCOUNT]
 
 **მხარეთა შენიშვნები/პრეტენზიები:** [OBJECTIONS]
 
@@ -582,7 +585,8 @@ This act confirms that the transferring party has delivered, and the receiving p
 
 [SUBJECT_DESCRIPTION]
 
-**Value:** [AMOUNT]
+**Value:** [AMOUNT][CURRENCY_CLAUSE]
+**Bank account (IBAN):** [BANK_ACCOUNT]
 
 **Parties' remarks/objections:** [OBJECTIONS]
 
@@ -731,9 +735,10 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "child-travel-consent": {
-    parentName: "PARENT_NAME", parentAddress: "PARENT_ADDRESS", parentPhone: "PARENT_PHONE",
+    parentName: "PARENT_NAME", parentId: "PARENT_ID", parentAddress: "PARENT_ADDRESS", parentPhone: "PARENT_PHONE",
     childName: "CHILD_NAME", childDob: "CHILD_DOB", childDocument: "CHILD_DOCUMENT",
-    escort: "ESCORT", destination: "DESTINATION", travelPeriod: "TRAVEL_PERIOD", otherParentStatus: "OTHER_PARENT_STATUS",
+    escort: "ESCORT", destination: "DESTINATION", travelStartDate: "TRAVEL_START_DATE", travelEndDate: "TRAVEL_END_DATE",
+    otherParentStatus: "OTHER_PARENT_STATUS",
     city: "CITY", docDate: "DOC_DATE",
   },
   invoice: {
@@ -745,7 +750,8 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
   "acceptance-act": {
     actNumber: "ACT_NUMBER", provider: "PROVIDER", providerAddress: "PROVIDER_ADDRESS",
     receiver: "RECEIVER", receiverAddress: "RECEIVER_ADDRESS",
-    contractRef: "CONTRACT_REF", subjectDescription: "SUBJECT_DESCRIPTION", amount: "AMOUNT", objections: "OBJECTIONS",
+    contractRef: "CONTRACT_REF", subjectDescription: "SUBJECT_DESCRIPTION", amount: "AMOUNT",
+    bankAccount: "BANK_ACCOUNT", objections: "OBJECTIONS",
     city: "CITY", docDate: "DOC_DATE",
   },
 };
@@ -975,6 +981,17 @@ export function renderTemplate(
     const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
     values.AMOUNT = formatAmountWithCurrency(answers.amount ?? "", currencySymbol);
   }
+  if (type === "debt-claim") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.PRINCIPAL_AMOUNT = formatAmountWithCurrency(answers.principalAmount ?? "", currencySymbol);
+  }
+  if (type === "child-travel-consent") {
+    values.ESCORT = (answers.escort ?? "").trim() || (locale === "en" ? "Traveling alone (unaccompanied)" : "დამოუკიდებლად (მოგზაურობს მარტო)");
+  }
+  if (type === "acceptance-act") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.AMOUNT = formatAmountWithCurrency(answers.amount ?? "", currencySymbol);
+  }
 
   const computed: Record<string, string> = {};
   if (type === "invoice") {
@@ -996,6 +1013,7 @@ export function renderTemplate(
   if (type === "acceptance-act") {
     computed.PROVIDER_ID_LINE = formatPartyIdLine(answers.providerPersonalNumber ?? "", answers.providerIdCode ?? "", locale);
     computed.RECEIVER_ID_LINE = formatPartyIdLine(answers.receiverPersonalNumber ?? "", answers.receiverIdCode ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "rental-agreement") {
     computed.LANDLORD_ID_LINE = formatPartyIdLine(answers.landlordPersonalNumber ?? "", answers.landlordIdCode ?? "", locale);
@@ -1015,9 +1033,7 @@ export function renderTemplate(
   }
   if (type === "debt-claim") {
     computed.CREDITOR_ID_LINE = formatPartyIdLine(answers.creditorPersonalNumber ?? "", answers.creditorIdCode ?? "", locale);
-  }
-  if (type === "child-travel-consent") {
-    computed.PARENT_ID_LINE = formatPartyIdLine(answers.parentPersonalNumber ?? "", answers.parentIdCode ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
 
   const def = TEMPLATES[type];

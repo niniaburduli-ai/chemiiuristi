@@ -58,18 +58,18 @@ export default async function FaqPage() {
           <JsonLd data={faqJsonLd(faqData.items.map((i) => ({ q: i.question, a: i.answer })))} />
           <div className="container mx-auto px-4 py-14 space-y-12">
             {groups.map((group) => (
-              <div key={group.category || "uncategorized"}>
+              <div key={group.category || "uncategorized"} className="max-w-3xl mx-auto">
                 {group.category && (
-                  <div className="mb-6">
+                  <div className="mb-6 text-center">
                     <h2 className="text-xl md:text-2xl font-bold text-foreground">{group.category}</h2>
-                    <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 rounded-full" />
+                    <div className="h-1 w-12 bg-gradient-to-r from-primary to-gold mt-3 mx-auto rounded-full" />
                   </div>
                 )}
                 <div className="space-y-4">
                   {group.items.map((f) => (
-                    <div key={f._id} className="bg-card border border-border rounded-2xl p-6 md:p-7">
+                    <div key={f._id} className="bg-card border border-border rounded-2xl p-6 md:p-7 text-center">
                       <p className="font-bold text-foreground mb-2">{f.question}</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{f.answer}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line text-justify">{f.answer}</p>
                     </div>
                   ))}
                 </div>

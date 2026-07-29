@@ -44,6 +44,11 @@ export function GenerateClient({
   const [type, setType] = useState(
     initialType && QUESTION_SCHEMAS[initialType] ? initialType : "complaint"
   );
+  const [syncedInitialType, setSyncedInitialType] = useState(initialType);
+  if (initialType !== syncedInitialType) {
+    setSyncedInitialType(initialType);
+    if (initialType && QUESTION_SCHEMAS[initialType]) setType(initialType);
+  }
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [extra, setExtra] = useState("");
   const [loading, setLoading] = useState(false);
@@ -199,7 +204,33 @@ export function GenerateClient({
               </select>
             </div>
 
+            {type === "complaint" && (
+              <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <p>{gp.complaintNotice}</p>
+              </div>
+            )}
+
             {fields.map((f) => {
+              if (f.type === "select") {
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-center">
+                    <Label htmlFor={`field-${f.key}`}>{fieldLabel(f, locale)}</Label>
+                    <select
+                      id={`field-${f.key}`}
+                      value={answers[f.key] ?? f.options?.[0] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                      className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      {f.options?.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
               if (f.type === "partyId") {
                 return (
                   <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
