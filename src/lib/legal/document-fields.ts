@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/config";
 
-export type FieldType = "text" | "textarea" | "date" | "partyId";
+export type FieldType = "text" | "textarea" | "date" | "partyId" | "checkbox" | "select" | "number";
 export type QuestionField = {
   key: string;
   label: string;
@@ -10,6 +10,8 @@ export type QuestionField = {
   /** Only for type "partyId": the two answer keys the toggle switches between. */
   personalKey?: string;
   idCodeKey?: string;
+  /** Only for type "select": the list of selectable values. */
+  options?: string[];
 };
 
 /** Builds a "partyId" field: a single toggle (personal number vs. identification
@@ -54,6 +56,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "tenantPhone", label: "დამქირავებლის ტელეფონი", labelEn: "Tenant's phone number", type: "text" },
     { key: "address", label: "ბინის მისამართი", labelEn: "Property address", type: "text", required: true },
     { key: "rent", label: "ქირის ოდენობა", labelEn: "Rent amount", type: "text", required: true },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "rentDueDate", label: "ქირის გადახდის რიცხვი (მაგ. ყოველი თვის 5 რიცხვამდე)", labelEn: "Rent payment due date (e.g. by the 5th of each month)", type: "text", required: true },
     { key: "paymentMethod", label: "ქირის გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Rent payment method (cash/bank transfer)", type: "text", required: true },
     { key: "depositAmount", label: "დეპოზიტის ოდენობა (არასავალდებულო)", labelEn: "Security deposit amount (optional)", type: "text" },
@@ -73,6 +76,7 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     { key: "workingHours", label: "სამუშაო დრო / გრაფიკი (მაგ. კვირაში 40 საათი, 09:00-18:00)", labelEn: "Working hours / schedule (e.g. 40 hours per week, 09:00-18:00)", type: "text", required: true },
     { key: "probationPeriod", label: "გამოსაცდელი ვადა (არასავალდებულო)", labelEn: "Probation period (optional)", type: "text" },
     { key: "salary", label: "ხელფასი", labelEn: "Salary", type: "text", required: true },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "salaryPaymentMethod", label: "ხელფასის გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Salary payment method (cash/bank transfer)", type: "text", required: true },
     { key: "startDate", label: "დაწყების თარიღი", labelEn: "Start date", type: "date", required: true },
     { key: "endDate", label: "დასრულების თარიღი (ცარიელი, თუ ვადა განუსაზღვრელია)", labelEn: "End date (leave blank if indefinite)", type: "date" },
@@ -85,6 +89,8 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     partyIdField("agent", "მინდობილი პირის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Agent's personal number or identification code"),
     { key: "agentAddress", label: "მინდობილი პირის მისამართი", labelEn: "Agent's address", type: "text", required: true },
     { key: "scope", label: "მინდობის ფარგლები", labelEn: "Scope of authority", type: "textarea", required: true },
+    { key: "validityPeriod", label: "მინდობილობის მოქმედების ვადა", labelEn: "Validity period", type: "text" },
+    { key: "substitutionRight", label: "გადანდობის უფლება", labelEn: "Right of substitution", type: "checkbox" },
   ],
   "demand-letter": [
     { key: "yourName", label: "შენი სახელი და გვარი", labelEn: "Your full name", type: "text", required: true },
@@ -99,10 +105,12 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   "termination-notice": [
     { key: "employer", label: "დამსაქმებელი", labelEn: "Employer", type: "text", required: true },
     { key: "employee", label: "თანამშრომელი", labelEn: "Employee", type: "text", required: true },
-    partyIdField("employee", "თანამშრომლის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Employee's personal number or identification code"),
+    { key: "employeeId", label: "თანამშრომლის პირადი ნომერი", labelEn: "Employee Personal Number", type: "text", required: true },
     { key: "employeeAddress", label: "თანამშრომლის მისამართი", labelEn: "Employee's address", type: "text", required: true },
-    { key: "reason", label: "საფუძველი", labelEn: "Grounds", type: "text", required: true },
+    { key: "reason", label: "საფუძველი", labelEn: "Grounds", type: "textarea", required: true },
+    { key: "noticeDate", label: "შეტყობინების ჩაბარების თარიღი", labelEn: "Notice delivery date", type: "date" },
     { key: "lastDay", label: "ბოლო სამუშაო დღე", labelEn: "Last working day", type: "date", required: true },
+    { key: "unusedLeaveDays", label: "გამოუყენებელი შვებულების დღეების რაოდენობა", labelEn: "Unused Vacation Days to Compensate", type: "number" },
     { key: "compensationAmount", label: "კომპენსაციის ოდენობა (კანონით გათვალისწინების შემთხვევაში)", labelEn: "Compensation amount (if provided by law)", type: "text" },
   ],
   "service-agreement": [
@@ -110,29 +118,34 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
     partyIdField("executor", "შემსრულებლის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Contractor's personal number or identification code"),
     { key: "executorAddress", label: "შემსრულებლის მისამართი", labelEn: "Contractor's address", type: "text", required: true },
     { key: "executorPhone", label: "შემსრულებლის ტელეფონი", labelEn: "Contractor's phone number", type: "text" },
+    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვაა)", labelEn: "Bank account No. (if by transfer)", type: "text" },
     { key: "client", label: "დამკვეთი (სახელი, გვარი / დასახელება)", labelEn: "Client (full name / entity name)", type: "text", required: true },
     partyIdField("client", "დამკვეთის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Client's personal number or identification code"),
     { key: "clientAddress", label: "დამკვეთის მისამართი", labelEn: "Client's address", type: "text", required: true },
     { key: "clientPhone", label: "დამკვეთის ტელეფონი", labelEn: "Client's phone number", type: "text" },
     { key: "serviceDescription", label: "მომსახურების აღწერა", labelEn: "Description of services", type: "textarea", required: true },
-    { key: "deadline", label: "მომსახურების ვადა/ვადები", labelEn: "Service deadline(s)", type: "text", required: true },
+    { key: "serviceStartDate", label: "მომსახურების დაწყების თარიღი", labelEn: "Service start date", type: "date", required: true },
+    { key: "serviceEndDate", label: "მომსახურების დასრულების თარიღი", labelEn: "Service end date", type: "date", required: true },
+    { key: "deadline", label: "მომსახურების ვადები/ეტაპები", labelEn: "Service deadlines/milestones", type: "textarea" },
     { key: "price", label: "საფასური", labelEn: "Fee", type: "text", required: true },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Payment method (cash/bank transfer)", type: "text", required: true },
-    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვაა)", labelEn: "Bank account No. (if by transfer)", type: "text" },
+    { key: "terminationNoticePeriod", label: "ცალმხრივად შეწყვეტის შეტყობინების ვადა დღეებში (მაგ., 30 დღე)", labelEn: "Termination Notice Period in Days (e.g., 30 days)", type: "number" },
   ],
   "claim-letter": [
     { key: "senderName", label: "გამომგზავნის სახელი და გვარი", labelEn: "Sender's full name", type: "text", required: true },
     partyIdField("sender", "გამომგზავნის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Sender's personal number or identification code"),
     { key: "senderAddress", label: "გამომგზავნის მისამართი", labelEn: "Sender's address", type: "text", required: true },
     { key: "senderPhone", label: "გამომგზავნის ტელეფონი", labelEn: "Sender's phone number", type: "text" },
+    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვას ითხოვ)", labelEn: "Bank account No. (if requesting a transfer)", type: "text" },
     { key: "recipientName", label: "ადრესატი (ვის ეგზავნება პრეტენზია)", labelEn: "Recipient (who the claim is addressed to)", type: "text", required: true },
     { key: "recipientAddress", label: "ადრესატის მისამართი", labelEn: "Recipient's address", type: "text" },
     { key: "grounds", label: "პრეტენზიის ფაქტობრივი საფუძველი", labelEn: "Factual grounds for the claim", type: "textarea", required: true },
     { key: "demand", label: "კონკრეტული მოთხოვნა", labelEn: "Specific demand", type: "textarea", required: true },
     { key: "amount", label: "მოთხოვნილი თანხა (ასეთის არსებობისას)", labelEn: "Amount claimed (if any)", type: "text" },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Payment method (cash/bank transfer)", type: "text" },
-    { key: "bankAccount", label: "საბანკო ანგარიშის № (თუ გადარიცხვას ითხოვ)", labelEn: "Bank account No. (if requesting a transfer)", type: "text" },
-    { key: "deadline", label: "პასუხის/შესრულების ვადა", labelEn: "Deadline for response/compliance", type: "text", required: true },
+    { key: "deadline", label: "პასუხის/შესრულების ვადა", labelEn: "Deadline for response/compliance", type: "date", required: true },
   ],
   "debt-claim": [
     { key: "creditorName", label: "კრედიტორის სახელი და გვარი", labelEn: "Creditor's full name", type: "text", required: true },
@@ -165,14 +178,15 @@ export const QUESTION_SCHEMAS: Record<string, QuestionField[]> = {
   ],
   invoice: [
     { key: "invoiceNumber", label: "ინვოისის №", labelEn: "Invoice No.", type: "text", required: true },
-    { key: "seller", label: "გამომწერი (გამყიდველი/მომსახურების მიმწოდებელი)", labelEn: "Issuer (seller/service provider)", type: "text", required: true },
-    partyIdField("seller", "გამომწერის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Issuer's personal number or identification code"),
-    { key: "sellerAddress", label: "გამომწერის მისამართი", labelEn: "Issuer's address", type: "text" },
+    { key: "seller", label: "გამყიდველი / მომსახურების გამწევი", labelEn: "Seller / Service Provider", type: "text", required: true },
+    partyIdField("seller", "გამყიდველის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Seller's personal number or identification code"),
+    { key: "sellerAddress", label: "გამყიდველის მისამართი", labelEn: "Seller's address", type: "text" },
     { key: "bankAccount", label: "საბანკო ანგარიშის №", labelEn: "Bank account No.", type: "text" },
-    { key: "buyer", label: "მიმღები (გადამხდელი)", labelEn: "Recipient (payer)", type: "text", required: true },
-    partyIdField("buyer", "მიმღების პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Recipient's personal number or identification code"),
-    { key: "buyerAddress", label: "მიმღების მისამართი", labelEn: "Recipient's address", type: "text" },
+    { key: "buyer", label: "მყიდველი / მომსახურების მიმღები", labelEn: "Buyer / Service Recipient", type: "text", required: true },
+    partyIdField("buyer", "მყიდველის პირადი ნომერი ან საიდენტიფიკაციო კოდი", "Buyer's personal number or identification code"),
+    { key: "buyerAddress", label: "მყიდველის მისამართი", labelEn: "Buyer's address", type: "text" },
     { key: "items", label: "საქონელი/მომსახურება", labelEn: "Goods/services", type: "textarea", required: true },
+    { key: "currency", label: "ვალუტა", labelEn: "Currency", type: "select", options: ["₾", "$", "€"] },
     { key: "totalAmount", label: "სულ გადასახდელი თანხა", labelEn: "Total amount due", type: "text", required: true },
     { key: "dueDate", label: "გადახდის ვადა", labelEn: "Payment due date", type: "date", required: true },
     { key: "paymentMethod", label: "გადახდის მეთოდი (ნაღდი/საბანკო გადარიცხვა)", labelEn: "Payment method (cash/bank transfer)", type: "text", required: true },

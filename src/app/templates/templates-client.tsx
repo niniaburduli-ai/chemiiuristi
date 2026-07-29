@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PartyIdField } from "@/components/site/PartyIdField";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -197,6 +198,37 @@ export function TemplatesClient({
                         <Plus className="h-3.5 w-3.5 mr-1" /> {tp.addRowCta}
                       </Button>
                     </div>
+                  </div>
+                );
+              }
+              if (f.type === "select") {
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-center">
+                    <Label htmlFor={`field-${f.key}`}>{fieldLabel(f, locale)}</Label>
+                    <select
+                      id={`field-${f.key}`}
+                      value={answers[f.key] ?? f.options?.[0] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                      className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      {f.options?.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
+              if (f.type === "checkbox") {
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-center">
+                    <Label htmlFor={`field-${f.key}`} className="cursor-pointer">{fieldLabel(f, locale)}</Label>
+                    <Checkbox
+                      id={`field-${f.key}`}
+                      checked={answers[f.key] === "true"}
+                      onCheckedChange={(checked) => setAnswer(f.key, checked ? "true" : "")}
+                    />
                   </div>
                 );
               }

@@ -40,7 +40,7 @@ const RENTAL_BODY = `ბინის ქირავნობის ხელშ
 ხელშეკრულება ძალაშია **[LEASE_START_DATE]**-დან **[LEASE_END_DATE]**-მდე.
 
 **3. ქირა და გადახდის წესი**
-3.1. ყოველთვიური ქირა შეადგენს **[RENT]**-ს.
+3.1. ყოველთვიური ქირა შეადგენს **[RENT]**-ს.[CURRENCY_CLAUSE]
 3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**.
 3.3. ქირა გადაიხდება **[RENT_DUE_DATE]**, თუ მხარეები სხვაგვარად არ შეთანხმდებიან.
 3.4. [DEPOSIT_CLAUSE]
@@ -83,7 +83,7 @@ The Landlord shall grant the Tenant use of the residential premises located at: 
 This Agreement shall remain in force from **[LEASE_START_DATE]** until **[LEASE_END_DATE]**.
 
 **3. Rent and Payment Terms**
-3.1. The monthly rent shall be **[RENT]**.
+3.1. The monthly rent shall be **[RENT]**.[CURRENCY_CLAUSE]
 3.2. Payment method: **[PAYMENT_METHOD]**.
 3.3. Rent shall be paid by **[RENT_DUE_DATE]**, unless the Parties agree otherwise.
 3.4. [DEPOSIT_CLAUSE]
@@ -129,7 +129,7 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 სამუშაო დრო: **[WORKING_HOURS]**. დასვენების პერიოდები განისაზღვრება საქართველოს შრომის კოდექსისა და დამსაქმებლის შინაგანაწესის შესაბამისად (არსებობის შემთხვევაში).
 
 **4. ანაზღაურება**
-4.1. თანამდებობრივი სარგო შეადგენს **[SALARY]**-ს თვეში.
+4.1. თანამდებობრივი სარგო შეადგენს **[SALARY]**-ს თვეში.[CURRENCY_CLAUSE]
 4.2. გადახდის მეთოდი: **[SALARY_PAYMENT_METHOD]**.
 4.3. ზეგანაკვეთური სამუშაო ანაზღაურდება კანონმდებლობის შესაბამისად.
 
@@ -167,7 +167,7 @@ The Employer engages the Employee in the position of **[POSITION]** as of **[STA
 Working hours: **[WORKING_HOURS]**. Rest periods shall be determined in accordance with the Labour Code of Georgia and the Employer's internal regulations (where such exist).
 
 **4. Remuneration**
-4.1. The base salary shall be **[SALARY]** per month.
+4.1. The base salary shall be **[SALARY]** per month.[CURRENCY_CLAUSE]
 4.2. Payment method: **[SALARY_PAYMENT_METHOD]**.
 4.3. Overtime work shall be compensated in accordance with the legislation.
 
@@ -198,6 +198,10 @@ const POWER_OF_ATTORNEY_BODY = `მინდობილობა
 **მინდობის ფარგლები:**
 [SCOPE]
 
+**მინდობილობის მოქმედების ვადა:** [VALIDITY_CLAUSE]
+
+**გადანდობის უფლება:** [SUBSTITUTION_CLAUSE]
+
 **მნიშვნელოვანი გაფრთხილება:** კანონმდებლობით განსაზღვრულ შემთხვევებში (მათ შორის, უძრავი ქონების განკარგვა ან რეგისტრაცია, სასამართლო წარმომადგენლობა) მინდობილობის იურიდიული ძალისთვის აუცილებელია სანოტარო დამოწმება — წინააღმდეგ შემთხვევაში მასზე დაფუძნებული გარიგება შესაძლოა ბათილად იქნას ცნობილი. მინდობელი ვალდებულია წინასწარ დარწმუნდეს, სჭირდება თუ არა კონკრეტულ შემთხვევას ასეთი დამოწმება.
 
 მინდობილი პირი ვალდებულია იმოქმედოს მინდობელის ინტერესების შესაბამისად, ამ მინდობილობის ფარგლების გადაცილების გარეშე.
@@ -218,6 +222,10 @@ I, **[PRINCIPAL]** ([PRINCIPAL_ID_LINE]registered at: [PRINCIPAL_ADDRESS]) (here
 **Scope of Authority:**
 [SCOPE]
 
+**Validity Period:** [VALIDITY_CLAUSE]
+
+**Right of Substitution:** [SUBSTITUTION_CLAUSE]
+
 **Important warning:** In cases specified by law (including disposal or registration of immovable property, representation before a court), notarial certification is required for this power of attorney to have legal effect — otherwise, a transaction based on it may be declared invalid. The Principal must confirm in advance whether such certification is required for the specific case at hand.
 
 The Agent shall act in accordance with the Principal's interests and shall not exceed the scope of this power of attorney.
@@ -234,15 +242,19 @@ const TERMINATION_NOTICE_BODY = `შეტყობინება შრომ�
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
 დამსაქმებელი: **[EMPLOYER]**
-დასაქმებული: **[EMPLOYEE]**, [EMPLOYEE_ID_LINE]მისამართი: [EMPLOYEE_ADDRESS]
+დასაქმებული: **[EMPLOYEE]**, პ/ნ [EMPLOYEE_ID], მისამართი: [EMPLOYEE_ADDRESS]
 
 წინამდებარე შეტყობინებით გაცნობებთ, რომ თქვენთან დადებული შრომითი ხელშეკრულება წყდება საქართველოს შრომის კოდექსის 47-ე მუხლის შესაბამისად, შემდეგი საფუძვლით:
 
 **შეწყვეტის საფუძველი:** [REASON]
 
+**შეტყობინების ჩაბარების თარიღი:** [NOTICE_DATE]
+
 **შრომითი ურთიერთობის ბოლო დღე:** **[LAST_DAY]**
 
 შეტყობინება გამოგზავნილია საქართველოს შრომის კოდექსის 48-ე მუხლით დადგენილი წინასწარი გაფრთხილების ვადის დაცვით. კანონით გათვალისწინებულ შემთხვევებში დასაქმებულს ეკუთვნის შესაბამისი კომპენსაცია (ოდენობა: **[COMPENSATION_AMOUNT]**, ასეთის მითითების შემთხვევაში).
+
+**გამოუყენებელი შვებულების დღეების რაოდენობა (ასანაზღაურებელი):** [UNUSED_LEAVE_DAYS]
 
 საბოლოო ანგარიშსწორება განხორციელდება არაუგვიანეს **[SETTLEMENT_DEADLINE]**-ისა (შრომითი ურთიერთობის შეწყვეტიდან არაუგვიანეს 7 კალენდარული დღისა, შრომის კოდექსის 44-ე მუხლის შესაბამისად).
 
@@ -255,15 +267,19 @@ const TERMINATION_NOTICE_BODY_EN = `NOTICE OF TERMINATION OF EMPLOYMENT AGREEMEN
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
 Employer: **[EMPLOYER]**
-Employee: **[EMPLOYEE]**, [EMPLOYEE_ID_LINE]address: [EMPLOYEE_ADDRESS]
+Employee: **[EMPLOYEE]**, personal no. [EMPLOYEE_ID], address: [EMPLOYEE_ADDRESS]
 
 We hereby notify you that the employment agreement concluded with you is terminated pursuant to Article 47 of the Labour Code of Georgia, on the following grounds:
 
 **Grounds for termination:** [REASON]
 
+**Notice delivery date:** [NOTICE_DATE]
+
 **Last day of the employment relationship:** **[LAST_DAY]**
 
 This notice has been given in compliance with the advance notice period established by Article 48 of the Labour Code of Georgia. Where provided by law, the Employee shall be entitled to corresponding compensation (amount: **[COMPENSATION_AMOUNT]**, where specified).
+
+**Unused vacation days to be compensated:** [UNUSED_LEAVE_DAYS]
 
 Final settlement shall be made no later than **[SETTLEMENT_DEADLINE]** (no later than 7 calendar days after termination of the employment relationship, in accordance with Article 44 of the Labour Code).
 
@@ -281,10 +297,11 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 შემსრულებელი იღებს ვალდებულებას, დამკვეთის დავალებით გაუწიოს შემდეგი მომსახურება: **[SERVICE_DESCRIPTION]**, ხოლო დამკვეთი იღებს ვალდებულებას მიღებული მომსახურება გადაუხადოს წინამდებარე ხელშეკრულებით დადგენილი წესით.
 
 **2. მომსახურების ვადა**
-მომსახურება უნდა გაეწიოს შემდეგ ვადაში: **[DEADLINE]**.
+მომსახურება გაეწევა **[SERVICE_START_DATE]**-დან **[SERVICE_END_DATE]**-მდე.
+დამატებითი ვადები/ეტაპები: [DEADLINE]
 
 **3. საფასური და ანგარიშსწორება**
-3.1. მომსახურების საფასური შეადგენს **[PRICE]**-ს.
+3.1. მომსახურების საფასური შეადგენს **[PRICE]**-ს.[CURRENCY_CLAUSE]
 3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
 3.3. მხარეთა შეთანხმებით შესაძლებელია ავანსის ან ეტაპობრივი ანგარიშსწორების გამოყენება.
 3.4. თუ მხარეები ეტაპობრივ ან სხვაგვარ გადახდის გრაფიკზე არ შეთანხმდებიან, დამკვეთი ვალდებულია საფასური სრულად გადაიხადოს მომსახურების დასრულებისა და შესაბამისი მოთხოვნის მიღებიდან არაუგვიანეს 5 სამუშაო დღისა.
@@ -298,7 +315,7 @@ const SERVICE_AGREEMENT_BODY = `მომსახურების გაწ�
 მხარე, რომელიც არღვევს ხელშეკრულებით ნაკისრ ვალდებულებას, ვალდებულია აანაზღაუროს მეორე მხარისთვის ამით მიყენებული ზიანი საქართველოს კანონმდებლობით დადგენილი წესით.
 
 **6. ხელშეკრულების შეწყვეტა**
-ნებისმიერ მხარეს შეუძლია ხელშეკრულების შეწყვეტა მოითხოვოს მეორე მხარისთვის არანაკლებ 5 სამუშაო დღით ადრე გაგზავნილი წერილობითი შეტყობინებით, უკვე გაწეული მომსახურების ანაზღაურების პირობით.
+ნებისმიერ მხარეს შეუძლია ხელშეკრულების შეწყვეტა მოითხოვოს მეორე მხარისთვის არანაკლებ **[NOTICE_PERIOD_DAYS]** სამუშაო დღით ადრე გაგზავნილი წერილობითი შეტყობინებით, უკვე გაწეული მომსახურების ანაზღაურების პირობით.
 
 **7. ფორს-მაჟორი**
 მხარეები თავისუფლდებიან პასუხისმგებლობისგან, თუ ვალდებულების შეუსრულებლობა გამოწვეულია დაუძლეველი ძალის გარემოებით, რომლის თავიდან აცილება მხარეთა გონივრულ კონტროლს აღემატება.
@@ -323,10 +340,11 @@ Between, on the one part, **[EXECUTOR]** ([EXECUTOR_ID_LINE]address: [EXECUTOR_A
 The Contractor undertakes to provide the following services at the Client's request: **[SERVICE_DESCRIPTION]**, and the Client undertakes to pay for the services rendered in the manner set out in this Agreement.
 
 **2. Term for Provision of Services**
-The services shall be rendered within the following period: **[DEADLINE]**.
+The services shall be rendered from **[SERVICE_START_DATE]** until **[SERVICE_END_DATE]**.
+Additional deadlines/milestones: [DEADLINE]
 
 **3. Fee and Settlement**
-3.1. The fee for the services shall be **[PRICE]**.
+3.1. The fee for the services shall be **[PRICE]**.[CURRENCY_CLAUSE]
 3.2. Payment method: **[PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
 3.3. By agreement of the Parties, an advance payment or staged settlement may be used.
 3.4. If the Parties do not agree on a staged or other payment schedule, the Client shall pay the fee in full no later than 5 business days after the services are completed and the corresponding request is received.
@@ -340,7 +358,7 @@ The services shall be rendered within the following period: **[DEADLINE]**.
 A Party that breaches an obligation under this Agreement shall compensate the other Party for damage thereby caused, in the manner established by the legislation of Georgia.
 
 **6. Termination of the Agreement**
-Either Party may request termination of the Agreement by sending the other Party written notice at least 5 business days in advance, subject to payment for services already rendered.
+Either Party may request termination of the Agreement by sending the other Party written notice at least **[NOTICE_PERIOD_DAYS]** business days in advance, subject to payment for services already rendered.
 
 **7. Force Majeure**
 The Parties shall be released from liability where failure to perform an obligation results from circumstances of insurmountable force that are beyond the Parties' reasonable control and could not have been avoided.
@@ -367,7 +385,7 @@ const CLAIM_LETTER_BODY = `წერილი-პრეტენზია
 
 **2. მოთხოვნა**
 ზემოაღნიშნულიდან გამომდინარე, გთხოვთ: **[DEMAND]**.
-მოთხოვნილი თანხა (ასეთის არსებობისას): **[AMOUNT]**. გადახდის მეთოდი: [PAYMENT_METHOD]. საბანკო ანგარიში: [BANK_ACCOUNT].
+მოთხოვნილი თანხა (ასეთის არსებობისას): **[AMOUNT]**.[CURRENCY_CLAUSE] გადახდის მეთოდი: [PAYMENT_METHOD]. საბანკო ანგარიში: [BANK_ACCOUNT].
 
 **3. შესრულების ვადა**
 გთხოვთ, აღნიშნული მოთხოვნა დააკმაყოფილოთ არაუგვიანეს: **[DEADLINE]**.
@@ -389,7 +407,7 @@ From: **[SENDER_NAME]**, [SENDER_ID_LINE]address: [SENDER_ADDRESS], tel: [SENDER
 
 **2. Demand**
 In light of the foregoing, I request that you: **[DEMAND]**.
-Amount claimed (if any): **[AMOUNT]**. Payment method: [PAYMENT_METHOD]. Bank account: [BANK_ACCOUNT].
+Amount claimed (if any): **[AMOUNT]**.[CURRENCY_CLAUSE] Payment method: [PAYMENT_METHOD]. Bank account: [BANK_ACCOUNT].
 
 **3. Deadline for Compliance**
 Please satisfy the above demand no later than: **[DEADLINE]**.
@@ -493,37 +511,39 @@ const INVOICE_BODY = `ინვოისი № **[INVOICE_NUMBER]**
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-**გამომწერი:** [SELLER], [SELLER_ID_LINE]მისამართი: [SELLER_ADDRESS], **საბანკო ანგარიში:** [BANK_ACCOUNT]
-**მიმღები (გადამხდელი):** [BUYER], [BUYER_ID_LINE]მისამართი: [BUYER_ADDRESS]
+**გამყიდველი / მომსახურების გამწევი:** [SELLER], [SELLER_ID_LINE]მისამართი: [SELLER_ADDRESS]
+**საბანკო ანგარიში:** [BANK_ACCOUNT]
+**მყიდველი / მომსახურების მიმღები:** [BUYER], [BUYER_ID_LINE]მისამართი: [BUYER_ADDRESS]
 
 **საქონლის/მომსახურების ჩამონათვალი:**
 [ITEMS]
 
-**სულ გადასახდელი თანხა:** **[TOTAL_AMOUNT]**
+**სულ გადასახდელი თანხა:** **[TOTAL_AMOUNT]**[CURRENCY_CLAUSE]
 **გადახდის ვადა:** **[DUE_DATE]**
 **გადახდის მეთოდი:** [PAYMENT_METHOD]
 
 წინამდებარე დოკუმენტი წარმოადგენს გადახდის მოთხოვნას ზემოაღნიშნული საქონლის/მომსახურების მისაწოდებლად ან უკვე მიწოდებულის საფასურის დასაფარად და არ ჩაითვლება საგადასახადო კანონმდებლობით გათვალისწინებულ ანგარიშ-ფაქტურად RS.ge-ს მონაცემთა ერთიან ცხრილში რეგისტრაციის გაგებით.
 
-გამომწერი: **[SELLER]**     ხელმოწერა/ბეჭედი: ____________`;
+გამყიდველი: **[SELLER]**     ხელმოწერა/ბეჭედი: ____________`;
 
 const INVOICE_BODY_EN = `INVOICE No. **[INVOICE_NUMBER]**
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-**Issuer:** [SELLER], [SELLER_ID_LINE]address: [SELLER_ADDRESS], **Bank account:** [BANK_ACCOUNT]
-**Recipient (payer):** [BUYER], [BUYER_ID_LINE]address: [BUYER_ADDRESS]
+**Seller / Service Provider:** [SELLER], [SELLER_ID_LINE]address: [SELLER_ADDRESS]
+**Bank account:** [BANK_ACCOUNT]
+**Buyer / Service Recipient:** [BUYER], [BUYER_ID_LINE]address: [BUYER_ADDRESS]
 
 **List of goods/services:**
 [ITEMS]
 
-**Total amount due:** **[TOTAL_AMOUNT]**
+**Total amount due:** **[TOTAL_AMOUNT]**[CURRENCY_CLAUSE]
 **Payment due date:** **[DUE_DATE]**
 **Payment method:** [PAYMENT_METHOD]
 
 This document constitutes a request for payment for the above goods/services to be supplied, or already supplied, and shall not be regarded as a tax invoice within the meaning of registration in RS.ge's unified data table under the tax legislation.
 
-Issuer: **[SELLER]**     Signature/Seal: ____________`;
+Seller: **[SELLER]**     Signature/Seal: ____________`;
 
 const ACCEPTANCE_ACT_BODY = `მიღება-ჩაბარების აქტი № **[ACT_NUMBER]**
 
@@ -682,14 +702,16 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "termination-notice": {
-    employer: "EMPLOYER", employee: "EMPLOYEE", employeeAddress: "EMPLOYEE_ADDRESS",
-    reason: "REASON", lastDay: "LAST_DAY", compensationAmount: "COMPENSATION_AMOUNT",
+    employer: "EMPLOYER", employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS",
+    noticeDate: "NOTICE_DATE", reason: "REASON", lastDay: "LAST_DAY", unusedLeaveDays: "UNUSED_LEAVE_DAYS",
+    compensationAmount: "COMPENSATION_AMOUNT",
     city: "CITY", docDate: "DOC_DATE",
   },
   "service-agreement": {
     executor: "EXECUTOR", executorAddress: "EXECUTOR_ADDRESS", executorPhone: "EXECUTOR_PHONE",
     client: "CLIENT", clientAddress: "CLIENT_ADDRESS", clientPhone: "CLIENT_PHONE",
-    serviceDescription: "SERVICE_DESCRIPTION", deadline: "DEADLINE", price: "PRICE",
+    serviceDescription: "SERVICE_DESCRIPTION", serviceStartDate: "SERVICE_START_DATE", serviceEndDate: "SERVICE_END_DATE",
+    deadline: "DEADLINE", price: "PRICE",
     paymentMethod: "PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT",
     city: "CITY", docDate: "DOC_DATE",
   },
@@ -728,14 +750,46 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
   },
 };
 
+/** Invoice currency options offered by the "currency" select field. Falls
+ * back to ₾ (GEL) — the Georgian-first default — for any unset/unrecognized
+ * value, e.g. a document generated before this field existed. */
+const CURRENCY_OPTIONS = ["₾", "$", "€"];
+
+function resolveCurrencySymbol(raw: string): string {
+  return CURRENCY_OPTIONS.includes(raw) ? raw : "₾";
+}
+
+/** Appends the invoice's selected currency symbol to a plain amount string,
+ * e.g. "500" + "$" -> "500 $". Returns "" for a blank amount so it still
+ * renders through fillTemplate's generic "—" missing-value fallback. */
+function formatAmountWithCurrency(amountRaw: string, currencySymbol: string): string {
+  const amount = amountRaw.trim();
+  return amount ? `${amount} ${currencySymbol}` : "";
+}
+
+/** Georgian law requires domestic settlements to be made in GEL. When the
+ * user selects a foreign display currency (USD/EUR), the payment/fee clause
+ * must state that actual settlement still happens in GEL at the National
+ * Bank of Georgia's rate on the payment date. Returns "" for GEL (or an
+ * unset/unrecognized value), and otherwise a sentence with a LEADING SPACE
+ * so it can be appended directly onto the end of the preceding amount
+ * sentence (same convention as buildProbationClause). */
+function buildCurrencyEquivalenceClause(currencySymbol: string, locale: Locale): string {
+  if (currencySymbol !== "$" && currencySymbol !== "€") return "";
+  return locale === "en"
+    ? " Settlement shall be made in the national currency of Georgia (GEL), at the official exchange rate of the National Bank of Georgia in effect on the date of payment."
+    : " ანგარიშწორება განხორციელდება საქართველოს ეროვნული ვალუტით (ლარით), გადახდის დღეს არსებული საქართველოს ეროვნული ბანკის ოფიციალური გაცვლითი კურსის შესაბამისად.";
+}
+
 /**
  * Turns the invoice's freeform "one item per line" textarea input into a
  * tab-separated table block (header + rows), which `DocumentResultPanel` and
  * `export-document.ts` render as real table columns instead of running text.
  * Expected line format: "description; quantity; unit price" — quantity ×
  * unit price is auto-computed into a line total when both parse as numbers.
+ * Unit price and line total are shown with the invoice's selected currency.
  */
-function buildInvoiceItemsTable(raw: string, locale: Locale): string {
+function buildInvoiceItemsTable(raw: string, locale: Locale, currencySymbol: string): string {
   const lines = raw
     .split("\n")
     .map((l) => l.trim())
@@ -751,8 +805,9 @@ function buildInvoiceItemsTable(raw: string, locale: Locale): string {
     const [desc = "", qtyRaw = "", priceRaw = ""] = line.split(";").map((p) => p.trim());
     const qty = parseFloat(qtyRaw.replace(",", "."));
     const price = parseFloat(priceRaw.replace(",", "."));
-    const total = Number.isFinite(qty) && Number.isFinite(price) ? (qty * price).toFixed(2) : "";
-    return [desc, qtyRaw, priceRaw, total].join("\t");
+    const priceDisplay = priceRaw ? `${priceRaw} ${currencySymbol}` : "";
+    const total = Number.isFinite(qty) && Number.isFinite(price) ? `${(qty * price).toFixed(2)} ${currencySymbol}` : "";
+    return [desc, qtyRaw, priceDisplay, total].join("\t");
   });
   return [header, ...rows].join("\n");
 }
@@ -817,6 +872,38 @@ function buildProbationClause(periodRaw: string, locale: Locale): string {
     : ` დასაქმებულს განესაზღვრება გამოსაცდელი ვადა: ${period}.`;
 }
 
+/** Builds the power of attorney's validity-period clause. If the principal
+ * states a period (a duration or an end date, free text), it's quoted
+ * directly; otherwise states explicitly that no period was set, matching the
+ * template's separate termination clause ("valid until revoked"). */
+function buildValidityClause(periodRaw: string, locale: Locale): string {
+  const period = periodRaw.trim();
+  if (period) {
+    return locale === "en"
+      ? `This power of attorney is valid: **${period}**.`
+      : `მინდობილობის მოქმედების ვადაა: **${period}**.`;
+  }
+  return locale === "en"
+    ? "No validity period has been specified; accordingly, this power of attorney remains valid until revoked."
+    : "მინდობილობის მოქმედების ვადა არ არის განსაზღვრული — შესაბამისად, იგი მოქმედებს გაუქმებამდე.";
+}
+
+/** Builds the power of attorney's substitution clause. Defaults to "no
+ * right of substitution" (the conservative default — under Georgian civil
+ * law a representative generally may not delegate authority to a third
+ * party absent express authorization), and only grants the right when the
+ * principal explicitly checks the toggle. */
+function buildSubstitutionClause(hasRight: boolean, locale: Locale): string {
+  if (hasRight) {
+    return locale === "en"
+      ? "The Agent has the right to substitute (delegate) the authority granted under this power of attorney to a third person, except where directly restricted by law."
+      : "მინდობილ პირს უფლება აქვს გადასცეს (გადაანდოს) ამ მინდობილობით მინიჭებული უფლებამოსილება მესამე პირს, გარდა კანონმდებლობით პირდაპირ გათვალისწინებული შემთხვევებისა.";
+  }
+  return locale === "en"
+    ? "The Agent does not have the right to substitute (delegate) the authority granted under this power of attorney to a third person."
+    : "მინდობილ პირს არ აქვს უფლება გადასცეს (გადაანდოს) ამ მინდობილობით მინიჭებული უფლებამოსილება მესამე პირს.";
+}
+
 /** Replaces each `[TOKEN]` in `body` with its computed value (plain string
  * substitution, not regex) — used for placeholders whose value is built in
  * code (e.g. an ID line, a conditional clause) rather than echoed from a
@@ -861,26 +948,50 @@ export function renderTemplate(
   const map = FIELD_MAP[type];
   const values: Record<string, string> = {};
   for (const [formKey, placeholder] of Object.entries(map)) {
-    const raw = answers[formKey] ?? "";
-    values[placeholder] = type === "invoice" && formKey === "items" ? buildInvoiceItemsTable(raw, locale) : raw;
+    values[placeholder] = answers[formKey] ?? "";
   }
   if (type === "termination-notice") {
     values.SETTLEMENT_DEADLINE = addCalendarDays(answers.lastDay ?? "", 7);
+  }
+  if (type === "invoice") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.ITEMS = buildInvoiceItemsTable(answers.items ?? "", locale, currencySymbol);
+    values.TOTAL_AMOUNT = formatAmountWithCurrency(answers.totalAmount ?? "", currencySymbol);
+  }
+  if (type === "rental-agreement") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.RENT = formatAmountWithCurrency(answers.rent ?? "", currencySymbol);
+  }
+  if (type === "employment-contract") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.SALARY = formatAmountWithCurrency(answers.salary ?? "", currencySymbol);
+  }
+  if (type === "service-agreement") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.PRICE = formatAmountWithCurrency(answers.price ?? "", currencySymbol);
+    values.NOTICE_PERIOD_DAYS = (answers.terminationNoticePeriod ?? "").trim() || "5";
+  }
+  if (type === "claim-letter") {
+    const currencySymbol = resolveCurrencySymbol((answers.currency ?? "").trim());
+    values.AMOUNT = formatAmountWithCurrency(answers.amount ?? "", currencySymbol);
   }
 
   const computed: Record<string, string> = {};
   if (type === "invoice") {
     computed.SELLER_ID_LINE = formatPartyIdLine(answers.sellerPersonalNumber ?? "", answers.sellerIdCode ?? "", locale);
     computed.BUYER_ID_LINE = formatPartyIdLine(answers.buyerPersonalNumber ?? "", answers.buyerIdCode ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "employment-contract") {
     computed.EMPLOYER_ID_LINE = formatPartyIdLine(answers.employerPersonalNumber ?? "", answers.employerIdCode ?? "", locale);
     computed.EMPLOYMENT_TERM_CLAUSE = buildEmploymentTermClause(!!(answers.endDate ?? "").trim(), locale);
     computed.PROBATION_CLAUSE = buildProbationClause(answers.probationPeriod ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "service-agreement") {
     computed.EXECUTOR_ID_LINE = formatPartyIdLine(answers.executorPersonalNumber ?? "", answers.executorIdCode ?? "", locale);
     computed.CLIENT_ID_LINE = formatPartyIdLine(answers.clientPersonalNumber ?? "", answers.clientIdCode ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "acceptance-act") {
     computed.PROVIDER_ID_LINE = formatPartyIdLine(answers.providerPersonalNumber ?? "", answers.providerIdCode ?? "", locale);
@@ -890,16 +1001,17 @@ export function renderTemplate(
     computed.LANDLORD_ID_LINE = formatPartyIdLine(answers.landlordPersonalNumber ?? "", answers.landlordIdCode ?? "", locale);
     computed.TENANT_ID_LINE = formatPartyIdLine(answers.tenantPersonalNumber ?? "", answers.tenantIdCode ?? "", locale);
     computed.DEPOSIT_CLAUSE = buildDepositClause(answers.depositAmount ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "power-of-attorney") {
     computed.PRINCIPAL_ID_LINE = formatPartyIdLine(answers.principalPersonalNumber ?? "", answers.principalIdCode ?? "", locale);
     computed.AGENT_ID_LINE = formatPartyIdLine(answers.agentPersonalNumber ?? "", answers.agentIdCode ?? "", locale);
-  }
-  if (type === "termination-notice") {
-    computed.EMPLOYEE_ID_LINE = formatPartyIdLine(answers.employeePersonalNumber ?? "", answers.employeeIdCode ?? "", locale);
+    computed.VALIDITY_CLAUSE = buildValidityClause(answers.validityPeriod ?? "", locale);
+    computed.SUBSTITUTION_CLAUSE = buildSubstitutionClause(answers.substitutionRight === "true", locale);
   }
   if (type === "claim-letter") {
     computed.SENDER_ID_LINE = formatPartyIdLine(answers.senderPersonalNumber ?? "", answers.senderIdCode ?? "", locale);
+    computed.CURRENCY_CLAUSE = buildCurrencyEquivalenceClause(resolveCurrencySymbol((answers.currency ?? "").trim()), locale);
   }
   if (type === "debt-claim") {
     computed.CREDITOR_ID_LINE = formatPartyIdLine(answers.creditorPersonalNumber ?? "", answers.creditorIdCode ?? "", locale);
