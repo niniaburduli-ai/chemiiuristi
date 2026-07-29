@@ -245,13 +245,13 @@ const ka = {
     title: "ჩვენ შესახებ",
     heroSubtitle: "AI-ზე დაფუძნებული პლატფორმა, რომელიც იურიდიულ დახმარებას\nხელმისაწვდომს და მარტივს ხდის ყველასთვის.",
     intro:
-      "\"ჩემი იურისტი\" არის თანამედროვე იურიდიული პლატფორმა, რომელიც შეიქმნა ერთი მთავარი მიზნით — გახადოს სამართალი ხელმისაწვდომი, მარტივი და გასაგები ყველასთვის.\n\nჩვენ გვჯერა, რომ იურიდიული დახმარება არ უნდა ასოცირდებოდეს რთულ, გაუგებარ ტერმინებთან და უსასრულო ბიუროკრატიასთან. ჩვენ ვსაუბრობთ კანონის მარტივ ენაზე და გეხმარებით უფლებების დაცვაში, ბიზნესის უსაფრთხოდ მართვასა თუ ყოველდღიური სამართლებრივი საკითხების მოგვარებაში — სწრაფად, ონლაინ და ზედმეტი სტრესის გარეშე.",
+      "\"ჩემი იურისტი\" არის თანამედროვე იურიდიული პლატფორმა, რომელიც შეიქმნა ერთი მთავარი მიზნით — გახადოს სამართალი ხელმისაწვდომი, მარტივი და გასაგები ყველასთვის. ჩვენი პლატფორმა სრულად ორენოვანია, რაც მომხმარებელს საშუალებას აძლევს ინგლისურ ენაზეც მიიღოს ზუსტი, საქართველოს კანონმდებლობასთან შესაბამისი პასუხები და შეუფერხებლად გამოიყენოს საიტზე არსებული ყველა სერვისი.\n\nჩვენ გვჯერა, რომ იურიდიული დახმარება არ უნდა ასოცირდებოდეს რთულ, გაუგებარ ტერმინებთან და უსასრულო ბიუროკრატიასთან. ჩვენ ვსაუბრობთ კანონის მარტივ ენაზე და გეხმარებით უფლებების დაცვაში, ბიზნესის უსაფრთხო მართვასა თუ ყოველდღიური სამართლებრივი საკითხების მოგვარებაში — სწრაფად, ონლაინ და ზედმეტი სტრესის გარეშე.",
     historyTitle: "ჩვენი ისტორია",
     historyBody:
-      "\"ჩემი იურისტის\" იდეა გაჩნდა ტრადიციული, ხშირად მოუხერხებელი და ბიუროკრატიული სამართლებრივი მომსახურების საპასუხოდ. ჩვენ დავინახეთ, რომ თანამედროვე სამყაროში ადამიანებსა და ბიზნესებს სჭირდებათ სწრაფი, მოქნილი და ციფრული იურიდიული საყრდენი.\n\nსწორედ ამიტომ, 2026 წელს, შევქმენით ეს ინოვაციური ონლაინ სივრცე. ჩვენი გზა ახლა იწყება, თუმცა ჩვენს ზურგს უკან დგას დიდი ენთუზიაზმი, შევცვალოთ იურიდიული მომსახურების სტანდარტი საქართველოში.",
+      "\"ჩემი იურისტის\" იდეა ტრადიციული, ხშირად მოუხერხებელი და ბიუროკრატიული იურიდიული სისტემის ალტერნატივად გაჩნდა. ჩვენ დავინახეთ, რომ თანამედროვე სამყაროში ადამიანებსა და განვითარებაზე ორიენტირებულ ბიზნესებს სჭირდებათ სწრაფი, მოქნილი და სრულად ციფრული იურიდიული საყრდენი.\n\nსწორედ ამიტომ, 2026 წელს, შევქმენით ეს ინოვაციური ონლაინ სივრცე. ჩვენი გზა ახლა იწყება, თუმცა ჩვენი მამოძრავებელი ძალა უდიდესი ენთუზიაზმია — შევცვალოთ და სრულიად ახალ სიმაღლეზე ავიყვანოთ იურიდიული მომსახურების სტანდარტი საქართველოში.",
     missionTitle: "ჩვენი მისია",
     mission:
-      "ჩვენი მისიაა, ვიყოთ თქვენი საიმედო მრჩეველი ყოველდღიურ ცხოვრებაში თუ ბიზნესში. ჩვენ ვამარტივებთ ყოველ კანონს, ხელშეკრულებასა თუ სამართლებრივ პროცედურას, რათა თქვენ ყოველთვის გრძნობდეთ თავს დაცულად და თავდაჯერებულად.",
+      "ჩვენი მისიაა, ვიყოთ თქვენი საიმედო ციფრული მრჩეველი ყოველდღიურ ცხოვრებაში თუ ბიზნესში. ჩვენ მაქსიმალურად ვამარტივებთ რთულ კანონებს, ხელშეკრულებებსა თუ იურიდიულ პროცედურებს, რათა თქვენ ყოველთვის დაცულად, თავდაჯერებულად და მშვიდად იგრძნოთ თავი.",
     teamTitle: "ჩვენი გუნდი",
   },
   profile: {
@@ -714,13 +714,13 @@ const en: Dict = {
     title: "About us",
     heroSubtitle: "A platform that makes legal help accessible and simple for everyone.",
     intro:
-      "\"My Lawyer\" is a modern legal platform built with one core purpose — to make the law accessible, simple, and understandable for everyone.\n\nWe believe that legal help should not be associated with complex jargon and endless bureaucracy. We speak the law in plain language and help you protect your rights, run your business safely, and resolve everyday legal matters — quickly, online, and without unnecessary stress.",
+      "\"My Lawyer\" is a modern legal platform built with one core purpose — to make the law accessible, simple, and understandable for everyone. Our platform is fully bilingual, letting users get accurate, Georgian-law-compliant answers in English too, and use every service on the site without any friction.\n\nWe believe that legal help should not be associated with complex jargon and endless bureaucracy. We speak the law in plain language and help you protect your rights, run your business safely, and resolve everyday legal matters — quickly, online, and without unnecessary stress.",
     historyTitle: "Our history",
     historyBody:
-      "The idea for \"My Lawyer\" emerged in response to traditional, often inconvenient and bureaucratic legal services. We saw that in the modern world, individuals and businesses need fast, flexible, and digital legal support.\n\nThat is why, in 2026, we created this innovative online platform. Our journey is just beginning, but behind us stands great enthusiasm to change the standard of legal services in Georgia.",
+      "The idea for \"My Lawyer\" emerged as an alternative to the traditional, often inconvenient and bureaucratic legal system. We saw that in the modern world, individuals and growth-focused businesses need fast, flexible, and fully digital legal support.\n\nThat is why, in 2026, we created this innovative online platform. Our journey is just beginning, but our driving force is tremendous enthusiasm — to transform and raise the standard of legal services in Georgia to an entirely new level.",
     missionTitle: "Our mission",
     mission:
-      "Our mission is to be your trusted advisor in everyday life and business. We simplify every law, contract, and legal procedure so that you always feel protected and confident.",
+      "Our mission is to be your trusted digital advisor in everyday life and business. We simplify complex laws, contracts, and legal procedures as much as possible, so that you always feel protected, confident, and at ease.",
     teamTitle: "Our team",
   },
   profile: {
