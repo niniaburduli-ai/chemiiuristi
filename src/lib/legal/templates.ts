@@ -31,19 +31,20 @@ const RENTAL_BODY = `ბინის ქირავნობის ხელშ
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-ერთის მხრივ, **[LANDLORD]** (პ/ნ **[LANDLORD_ID]**, მისამართი: [LANDLORD_ADDRESS], ტელ: [LANDLORD_PHONE]) (შემდგომში — „გამქირავებელი“) და მეორეს მხრივ, **[TENANT]** (პ/ნ **[TENANT_ID]**, მისამართი: [TENANT_ADDRESS], ტელ: [TENANT_PHONE]) (შემდგომში — „დამქირავებელი“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
+ერთის მხრივ, **[LANDLORD]** ([LANDLORD_ID_LINE]მისამართი: [LANDLORD_ADDRESS], ტელ: [LANDLORD_PHONE], **საბანკო ანგარიში:** [BANK_ACCOUNT]) (შემდგომში — „გამქირავებელი“) და მეორეს მხრივ, **[TENANT]** ([TENANT_ID_LINE]მისამართი: [TENANT_ADDRESS], ტელ: [TENANT_PHONE]) (შემდგომში — „დამქირავებელი“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
 
 **1. ხელშეკრულების საგანი**
 გამქირავებელი გადასცემს დამქირავებელს სარგებლობაში საცხოვრებელ ფართს მისამართზე: **[PROPERTY_ADDRESS]** (შემდგომში — „ფართი“), ხოლო დამქირავებელი იღებს ვალდებულებას გადაუხადოს ქირა წინამდებარე ხელშეკრულებით დადგენილი წესით.
 
 **2. ხელშეკრულების ვადა**
-ხელშეკრულება ძალაშია **[DURATION]**-ის განმავლობაში, **[DOC_DATE]**-დან.
+ხელშეკრულება ძალაშია **[LEASE_START_DATE]**-დან **[LEASE_END_DATE]**-მდე.
 
 **3. ქირა და გადახდის წესი**
 3.1. ყოველთვიური ქირა შეადგენს **[RENT]**-ს.
-3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
-3.3. ქირა გადაიხდება ყოველი კალენდარული თვის ბოლო დღემდე, თუ მხარეები სხვაგვარად არ შეთანხმდებიან.
-3.4. დამქირავებელს შეიძლება დაეკისროს ვალდებულების უზრუნველყოფის თანხის (დეპოზიტის) წარდგენა, რომელიც არ აღემატება ერთი თვის ქირის სამმაგ ოდენობას; წინასწარ გადახდილ თანხას ერიცხება კანონით დადგენილი პროცენტი და ბრუნდება დამქირავებელს ხელშეკრულების დასრულებიდან არაუგვიანეს 10 კალენდარული დღისა, ფართისთვის მიყენებული ზიანის ან წარმოშობილი დავალიანების არსებობის შემთხვევაში — შესაბამისი თანხის გამოკლებით.
+3.2. გადახდის მეთოდი: **[PAYMENT_METHOD]**.
+3.3. ქირა გადაიხდება **[RENT_DUE_DATE]**, თუ მხარეები სხვაგვარად არ შეთანხმდებიან.
+3.4. [DEPOSIT_CLAUSE]
+3.5. კომუნალური გადასახადების ანაზღაურებას ახორციელებს: **[UTILITIES_RESPONSIBILITY]**.
 
 **4. მხარეთა უფლება-მოვალეობები**
 4.1. გამქირავებელი გადასცემს ფართს გამართულ, საცხოვრებლად გამოსაყენებელ მდგომარეობაში.
@@ -66,26 +67,27 @@ const RENTAL_BODY = `ბინის ქირავნობის ხელშ
 ხელშეკრულება შედგენილია 2 ეგზემპლარად, თითოეული მხარისთვის თანაბარი იურიდიული ძალით.
 
 **მხარეთა რეკვიზიტები**
-გამქირავებელი: **[LANDLORD]**, პ/ნ [LANDLORD_ID], მის: [LANDLORD_ADDRESS], ტელ: [LANDLORD_PHONE]     ხელმოწერა: ____________
-დამქირავებელი: **[TENANT]**, პ/ნ [TENANT_ID], მის: [TENANT_ADDRESS], ტელ: [TENANT_PHONE]     ხელმოწერა: ____________`;
+გამქირავებელი: **[LANDLORD]**, [LANDLORD_ID_LINE]მის: [LANDLORD_ADDRESS], ტელ: [LANDLORD_PHONE], საბანკო ანგარიში: [BANK_ACCOUNT]     ხელმოწერა: ____________
+დამქირავებელი: **[TENANT]**, [TENANT_ID_LINE]მის: [TENANT_ADDRESS], ტელ: [TENANT_PHONE]     ხელმოწერა: ____________`;
 
 const RENTAL_BODY_EN = `RESIDENTIAL LEASE AGREEMENT
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-Between, on the one part, **[LANDLORD]** (personal no. **[LANDLORD_ID]**, address: [LANDLORD_ADDRESS], tel: [LANDLORD_PHONE]) (hereinafter — the "Landlord"), and, on the other part, **[TENANT]** (personal no. **[TENANT_ID]**, address: [TENANT_ADDRESS], tel: [TENANT_PHONE]) (hereinafter — the "Tenant"; together — the "Parties"), have entered into this Agreement as follows:
+Between, on the one part, **[LANDLORD]** ([LANDLORD_ID_LINE]address: [LANDLORD_ADDRESS], tel: [LANDLORD_PHONE], **Bank account:** [BANK_ACCOUNT]) (hereinafter — the "Landlord"), and, on the other part, **[TENANT]** ([TENANT_ID_LINE]address: [TENANT_ADDRESS], tel: [TENANT_PHONE]) (hereinafter — the "Tenant"; together — the "Parties"), have entered into this Agreement as follows:
 
 **1. Subject Matter of the Agreement**
 The Landlord shall grant the Tenant use of the residential premises located at: **[PROPERTY_ADDRESS]** (hereinafter — the "Premises"), and the Tenant undertakes to pay rent in the manner set out in this Agreement.
 
 **2. Term of the Agreement**
-This Agreement shall remain in force for a period of **[DURATION]**, commencing **[DOC_DATE]**.
+This Agreement shall remain in force from **[LEASE_START_DATE]** until **[LEASE_END_DATE]**.
 
 **3. Rent and Payment Terms**
 3.1. The monthly rent shall be **[RENT]**.
-3.2. Payment method: **[PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
-3.3. Rent shall be paid no later than the last day of each calendar month, unless the Parties agree otherwise.
-3.4. The Tenant may be required to provide a security deposit not exceeding three times the monthly rent; the statutory rate of interest shall accrue on the sum advanced, and it shall be returned to the Tenant no later than 10 calendar days after termination of the Agreement, less any amount for damage caused to the Premises or outstanding debt owed by the Tenant.
+3.2. Payment method: **[PAYMENT_METHOD]**.
+3.3. Rent shall be paid by **[RENT_DUE_DATE]**, unless the Parties agree otherwise.
+3.4. [DEPOSIT_CLAUSE]
+3.5. Utility bills shall be paid by: **[UTILITIES_RESPONSIBILITY]**.
 
 **4. Rights and Obligations of the Parties**
 4.1. The Landlord shall deliver the Premises in proper condition, fit for residential use.
@@ -108,27 +110,27 @@ Disputes arising out of this Agreement shall be resolved through negotiation and
 This Agreement is executed in 2 (two) counterparts, each having equal legal force for each Party.
 
 **Details of the Parties**
-Landlord: **[LANDLORD]**, personal no. [LANDLORD_ID], address: [LANDLORD_ADDRESS], tel: [LANDLORD_PHONE]     Signature: ____________
-Tenant: **[TENANT]**, personal no. [TENANT_ID], address: [TENANT_ADDRESS], tel: [TENANT_PHONE]     Signature: ____________`;
+Landlord: **[LANDLORD]**, [LANDLORD_ID_LINE]address: [LANDLORD_ADDRESS], tel: [LANDLORD_PHONE], bank account: [BANK_ACCOUNT]     Signature: ____________
+Tenant: **[TENANT]**, [TENANT_ID_LINE]address: [TENANT_ADDRESS], tel: [TENANT_PHONE]     Signature: ____________`;
 
 const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-ერთის მხრივ, **[EMPLOYER]** ([EMPLOYER_ID_LINE]მისამართი: [EMPLOYER_ADDRESS]) (შემდგომში — „დამსაქმებელი“) და მეორეს მხრივ, **[EMPLOYEE]** (პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS]) (შემდგომში — „დასაქმებული“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
+ერთის მხრივ, **[EMPLOYER]** ([EMPLOYER_ID_LINE]მისამართი: [EMPLOYER_ADDRESS]) (შემდგომში — „დამსაქმებელი“) და მეორეს მხრივ, **[EMPLOYEE]** (პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS], საბანკო ანგარიში: [BANK_ACCOUNT]) (შემდგომში — „დასაქმებული“, ერთობლივად — „მხარეები“), ვდებთ წინამდებარე ხელშეკრულებას შემდეგზე:
 
 **1. ხელშეკრულების საგანი**
-დამსაქმებელი დასაქმებულს იღებს **[POSITION]**-ის პოზიციაზე **[START_DATE]**-დან, ხოლო დასაქმებული თანხმობას აცხადებს შეასრულოს დაკისრებული სამუშაო წინამდებარე ხელშეკრულებით დადგენილი პირობების შესაბამისად. დასაქმებულის კონკრეტული ფუნქციები და მოვალეობები განისაზღვრება დამსაქმებლის მიერ დამტკიცებული თანამდებობრივი ინსტრუქციით ან წერილობითი დავალებებით, წინამდებარე ხელშეკრულების ფარგლებში.
+დამსაქმებელი დასაქმებულს იღებს **[POSITION]**-ის პოზიციაზე **[START_DATE]**-დან, ხოლო დასაქმებული თანხმობას აცხადებს შეასრულოს დაკისრებული სამუშაო წინამდებარე ხელშეკრულებით დადგენილი პირობების შესაბამისად. დასაქმებულის კონკრეტული ფუნქციები და მოვალეობები განისაზღვრება დამსაქმებლის მიერ დამტკიცებული თანამდებობრივი ინსტრუქციით ან წერილობითი დავალებებით, წინამდებარე ხელშეკრულების ფარგლებში.[PROBATION_CLAUSE]
 
 **2. ხელშეკრულების ვადა**
-ხელშეკრულება დადებულია განუსაზღვრელი ვადით, თუ მხარეები წერილობით სხვაგვარად არ შეთანხმდებიან.
+[EMPLOYMENT_TERM_CLAUSE]
 
 **3. სამუშაო დრო და დასვენება**
-სამუშაო დრო და დასვენების პერიოდები განისაზღვრება საქართველოს შრომის კოდექსისა და დამსაქმებლის შინაგანაწესის შესაბამისად (არსებობის შემთხვევაში).
+სამუშაო დრო: **[WORKING_HOURS]**. დასვენების პერიოდები განისაზღვრება საქართველოს შრომის კოდექსისა და დამსაქმებლის შინაგანაწესის შესაბამისად (არსებობის შემთხვევაში).
 
 **4. ანაზღაურება**
 4.1. თანამდებობრივი სარგო შეადგენს **[SALARY]**-ს თვეში.
-4.2. გადახდის მეთოდი: **[SALARY_PAYMENT_METHOD]**. საბანკო ანგარიში: **[BANK_ACCOUNT]**.
+4.2. გადახდის მეთოდი: **[SALARY_PAYMENT_METHOD]**.
 4.3. ზეგანაკვეთური სამუშაო ანაზღაურდება კანონმდებლობის შესაბამისად.
 
 **5. მხარეთა უფლება-მოვალეობები**
@@ -147,26 +149,26 @@ const EMPLOYMENT_BODY = `შრომის ხელშეკრულება
 
 **მხარეთა რეკვიზიტები**
 დამსაქმებელი: **[EMPLOYER]**, [EMPLOYER_ID_LINE]მის: [EMPLOYER_ADDRESS]     ხელმოწერა: ____________
-დასაქმებული: **[EMPLOYEE]**, პ/ნ [EMPLOYEE_ID], მის: [EMPLOYEE_ADDRESS]     ხელმოწერა: ____________`;
+დასაქმებული: **[EMPLOYEE]**, პ/ნ [EMPLOYEE_ID], მის: [EMPLOYEE_ADDRESS], საბანკო ანგარიში: [BANK_ACCOUNT]     ხელმოწერა: ____________`;
 
 const EMPLOYMENT_BODY_EN = `EMPLOYMENT AGREEMENT
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-Between, on the one part, **[EMPLOYER]** ([EMPLOYER_ID_LINE]address: [EMPLOYER_ADDRESS]) (hereinafter — the "Employer"), and, on the other part, **[EMPLOYEE]** (personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS]) (hereinafter — the "Employee"; together — the "Parties"), have entered into this Agreement as follows:
+Between, on the one part, **[EMPLOYER]** ([EMPLOYER_ID_LINE]address: [EMPLOYER_ADDRESS]) (hereinafter — the "Employer"), and, on the other part, **[EMPLOYEE]** (personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS], bank account: [BANK_ACCOUNT]) (hereinafter — the "Employee"; together — the "Parties"), have entered into this Agreement as follows:
 
 **1. Subject Matter of the Agreement**
-The Employer engages the Employee in the position of **[POSITION]** as of **[START_DATE]**, and the Employee agrees to perform the assigned work in accordance with the terms set out in this Agreement. The Employee's specific functions and duties shall be determined by the job description approved by the Employer or by written assignments, within the scope of this Agreement.
+The Employer engages the Employee in the position of **[POSITION]** as of **[START_DATE]**, and the Employee agrees to perform the assigned work in accordance with the terms set out in this Agreement. The Employee's specific functions and duties shall be determined by the job description approved by the Employer or by written assignments, within the scope of this Agreement.[PROBATION_CLAUSE]
 
 **2. Term of the Agreement**
-This Agreement is concluded for an indefinite term, unless the Parties agree otherwise in writing.
+[EMPLOYMENT_TERM_CLAUSE]
 
 **3. Working Time and Rest**
-Working time and rest periods shall be determined in accordance with the Labour Code of Georgia and the Employer's internal regulations (where such exist).
+Working hours: **[WORKING_HOURS]**. Rest periods shall be determined in accordance with the Labour Code of Georgia and the Employer's internal regulations (where such exist).
 
 **4. Remuneration**
 4.1. The base salary shall be **[SALARY]** per month.
-4.2. Payment method: **[SALARY_PAYMENT_METHOD]**. Bank account: **[BANK_ACCOUNT]**.
+4.2. Payment method: **[SALARY_PAYMENT_METHOD]**.
 4.3. Overtime work shall be compensated in accordance with the legislation.
 
 **5. Rights and Obligations of the Parties**
@@ -185,13 +187,13 @@ This Agreement is executed in 2 (two) counterparts, having equal legal force.
 
 **Details of the Parties**
 Employer: **[EMPLOYER]**, [EMPLOYER_ID_LINE]address: [EMPLOYER_ADDRESS]     Signature: ____________
-Employee: **[EMPLOYEE]**, personal no. [EMPLOYEE_ID], address: [EMPLOYEE_ADDRESS]     Signature: ____________`;
+Employee: **[EMPLOYEE]**, personal no. [EMPLOYEE_ID], address: [EMPLOYEE_ADDRESS], bank account: [BANK_ACCOUNT]     Signature: ____________`;
 
 const POWER_OF_ATTORNEY_BODY = `მინდობილობა
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-მე, **[PRINCIPAL]** (პ/ნ **[PRINCIPAL_ID]**, რეგისტრირებული მისამართზე: [PRINCIPAL_ADDRESS]) (შემდგომში — „მინდობელი“), ვანიჭებ **[AGENT]**-ს (პ/ნ **[AGENT_ID]**, რეგისტრირებული მისამართზე: [AGENT_ADDRESS]) (შემდგომში — „მინდობილი პირი“) წარმომადგენლობით უფლებამოსილებას შემდეგი მოქმედებების განსახორციელებლად:
+მე, **[PRINCIPAL]** ([PRINCIPAL_ID_LINE]რეგისტრირებული მისამართზე: [PRINCIPAL_ADDRESS]) (შემდგომში — „მინდობელი“), ვანიჭებ **[AGENT]**-ს ([AGENT_ID_LINE]რეგისტრირებული მისამართზე: [AGENT_ADDRESS]) (შემდგომში — „მინდობილი პირი“) წარმომადგენლობით უფლებამოსილებას შემდეგი მოქმედებების განსახორციელებლად:
 
 **მინდობის ფარგლები:**
 [SCOPE]
@@ -211,7 +213,7 @@ const POWER_OF_ATTORNEY_BODY_EN = `POWER OF ATTORNEY
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-I, **[PRINCIPAL]** (personal no. **[PRINCIPAL_ID]**, registered at: [PRINCIPAL_ADDRESS]) (hereinafter — the "Principal"), hereby grant **[AGENT]** (personal no. **[AGENT_ID]**, registered at: [AGENT_ADDRESS]) (hereinafter — the "Agent") authority to represent me in performing the following actions:
+I, **[PRINCIPAL]** ([PRINCIPAL_ID_LINE]registered at: [PRINCIPAL_ADDRESS]) (hereinafter — the "Principal"), hereby grant **[AGENT]** ([AGENT_ID_LINE]registered at: [AGENT_ADDRESS]) (hereinafter — the "Agent") authority to represent me in performing the following actions:
 
 **Scope of Authority:**
 [SCOPE]
@@ -232,7 +234,7 @@ const TERMINATION_NOTICE_BODY = `შეტყობინება შრომ�
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
 დამსაქმებელი: **[EMPLOYER]**
-დასაქმებული: **[EMPLOYEE]**, პ/ნ **[EMPLOYEE_ID]**, მისამართი: [EMPLOYEE_ADDRESS]
+დასაქმებული: **[EMPLOYEE]**, [EMPLOYEE_ID_LINE]მისამართი: [EMPLOYEE_ADDRESS]
 
 წინამდებარე შეტყობინებით გაცნობებთ, რომ თქვენთან დადებული შრომითი ხელშეკრულება წყდება საქართველოს შრომის კოდექსის 47-ე მუხლის შესაბამისად, შემდეგი საფუძვლით:
 
@@ -253,7 +255,7 @@ const TERMINATION_NOTICE_BODY_EN = `NOTICE OF TERMINATION OF EMPLOYMENT AGREEMEN
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
 Employer: **[EMPLOYER]**
-Employee: **[EMPLOYEE]**, personal no. **[EMPLOYEE_ID]**, address: [EMPLOYEE_ADDRESS]
+Employee: **[EMPLOYEE]**, [EMPLOYEE_ID_LINE]address: [EMPLOYEE_ADDRESS]
 
 We hereby notify you that the employment agreement concluded with you is terminated pursuant to Article 47 of the Labour Code of Georgia, on the following grounds:
 
@@ -358,7 +360,7 @@ const CLAIM_LETTER_BODY = `წერილი-პრეტენზია
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
 ადრესატი: **[RECIPIENT_NAME]**, მისამართი: [RECIPIENT_ADDRESS]
-გამომგზავნი: **[SENDER_NAME]**, პ/ნ [SENDER_ID], მისამართი: [SENDER_ADDRESS], ტელ: [SENDER_PHONE]
+გამომგზავნი: **[SENDER_NAME]**, [SENDER_ID_LINE]მისამართი: [SENDER_ADDRESS], ტელ: [SENDER_PHONE]
 
 **1. ფაქტობრივი გარემოებები**
 [GROUNDS]
@@ -380,7 +382,7 @@ const CLAIM_LETTER_BODY_EN = `LETTER OF CLAIM
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
 To: **[RECIPIENT_NAME]**, address: [RECIPIENT_ADDRESS]
-From: **[SENDER_NAME]**, personal no. [SENDER_ID], address: [SENDER_ADDRESS], tel: [SENDER_PHONE]
+From: **[SENDER_NAME]**, [SENDER_ID_LINE]address: [SENDER_ADDRESS], tel: [SENDER_PHONE]
 
 **1. Factual Background**
 [GROUNDS]
@@ -401,7 +403,7 @@ const DEBT_CLAIM_BODY = `მოთხოვნა (პრეტენზია) 
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-კრედიტორი: **[CREDITOR_NAME]**, პ/ნ [CREDITOR_ID], მისამართი: [CREDITOR_ADDRESS], ტელ: [CREDITOR_PHONE]
+კრედიტორი: **[CREDITOR_NAME]**, [CREDITOR_ID_LINE]მისამართი: [CREDITOR_ADDRESS], ტელ: [CREDITOR_PHONE]
 მოვალე: **[DEBTOR_NAME]**, მისამართი: [DEBTOR_ADDRESS]
 
 **1. დავალიანების საფუძველი**
@@ -426,7 +428,7 @@ const DEBT_CLAIM_BODY_EN = `DEMAND (CLAIM) FOR REPAYMENT OF DEBT
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-Creditor: **[CREDITOR_NAME]**, personal no. [CREDITOR_ID], address: [CREDITOR_ADDRESS], tel: [CREDITOR_PHONE]
+Creditor: **[CREDITOR_NAME]**, [CREDITOR_ID_LINE]address: [CREDITOR_ADDRESS], tel: [CREDITOR_PHONE]
 Debtor: **[DEBTOR_NAME]**, address: [DEBTOR_ADDRESS]
 
 **1. Basis of the Debt**
@@ -451,7 +453,7 @@ const CHILD_TRAVEL_CONSENT_BODY = `თანხმობა არასრუ�
 
 ქ. **[CITY]**                                                                    **[DOC_DATE]**
 
-მე, **[PARENT_NAME]** (პ/ნ **[PARENT_ID]**, მისამართი: [PARENT_ADDRESS], ტელ: [PARENT_PHONE]), არასრულწლოვნის მშობელი/კანონიერი წარმომადგენელი, ვაცხადებ ჩემს თანხმობას, რომ ჩემმა არასრულწლოვანმა შვილმა — **[CHILD_NAME]** (დაბადების თარიღი: **[CHILD_DOB]**, პირადობის/პასპორტის № **[CHILD_DOCUMENT]**) — გავიდეს საქართველოს ფარგლებს გარეთ.
+მე, **[PARENT_NAME]** ([PARENT_ID_LINE]მისამართი: [PARENT_ADDRESS], ტელ: [PARENT_PHONE]), არასრულწლოვნის მშობელი/კანონიერი წარმომადგენელი, ვაცხადებ ჩემს თანხმობას, რომ ჩემმა არასრულწლოვანმა შვილმა — **[CHILD_NAME]** (დაბადების თარიღი: **[CHILD_DOB]**, პირადობის/პასპორტის № **[CHILD_DOCUMENT]**) — გავიდეს საქართველოს ფარგლებს გარეთ.
 
 **დანიშნულების ქვეყანა/ქვეყნები:** [DESTINATION]
 **მოგზაურობის პერიოდი:** [TRAVEL_PERIOD]
@@ -471,7 +473,7 @@ const CHILD_TRAVEL_CONSENT_BODY_EN = `CONSENT TO A MINOR'S TRAVEL ABROAD
 
 City of **[CITY]**                                                                    **[DOC_DATE]**
 
-I, **[PARENT_NAME]** (personal no. **[PARENT_ID]**, address: [PARENT_ADDRESS], tel: [PARENT_PHONE]), parent/legal guardian of the minor, hereby declare my consent that my minor child — **[CHILD_NAME]** (date of birth: **[CHILD_DOB]**, ID/passport No. **[CHILD_DOCUMENT]**) — may travel outside the territory of Georgia.
+I, **[PARENT_NAME]** ([PARENT_ID_LINE]address: [PARENT_ADDRESS], tel: [PARENT_PHONE]), parent/legal guardian of the minor, hereby declare my consent that my minor child — **[CHILD_NAME]** (date of birth: **[CHILD_DOB]**, ID/passport No. **[CHILD_DOCUMENT]**) — may travel outside the territory of Georgia.
 
 **Destination country/countries:** [DESTINATION]
 **Travel period:** [TRAVEL_PERIOD]
@@ -661,24 +663,26 @@ const TEMPLATES: Record<TemplateType, TemplateDef> = {
  */
 const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
   "rental-agreement": {
-    landlord: "LANDLORD", landlordId: "LANDLORD_ID", landlordAddress: "LANDLORD_ADDRESS", landlordPhone: "LANDLORD_PHONE",
-    tenant: "TENANT", tenantId: "TENANT_ID", tenantAddress: "TENANT_ADDRESS", tenantPhone: "TENANT_PHONE",
-    address: "PROPERTY_ADDRESS", rent: "RENT", paymentMethod: "PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT", duration: "DURATION",
+    landlord: "LANDLORD", landlordAddress: "LANDLORD_ADDRESS", landlordPhone: "LANDLORD_PHONE", bankAccount: "BANK_ACCOUNT",
+    tenant: "TENANT", tenantAddress: "TENANT_ADDRESS", tenantPhone: "TENANT_PHONE",
+    address: "PROPERTY_ADDRESS", rent: "RENT", rentDueDate: "RENT_DUE_DATE", paymentMethod: "PAYMENT_METHOD",
+    utilitiesResponsibility: "UTILITIES_RESPONSIBILITY", leaseStartDate: "LEASE_START_DATE", leaseEndDate: "LEASE_END_DATE",
     city: "CITY", docDate: "DOC_DATE",
   },
   "employment-contract": {
     employer: "EMPLOYER", employerAddress: "EMPLOYER_ADDRESS",
-    employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS",
-    position: "POSITION", salary: "SALARY", salaryPaymentMethod: "SALARY_PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT", startDate: "START_DATE",
+    employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS", bankAccount: "BANK_ACCOUNT",
+    position: "POSITION", workingHours: "WORKING_HOURS", salary: "SALARY", salaryPaymentMethod: "SALARY_PAYMENT_METHOD",
+    startDate: "START_DATE", endDate: "END_DATE",
     city: "CITY", docDate: "DOC_DATE",
   },
   "power-of-attorney": {
-    principal: "PRINCIPAL", idNumber: "PRINCIPAL_ID", principalAddress: "PRINCIPAL_ADDRESS",
-    agent: "AGENT", agentId: "AGENT_ID", agentAddress: "AGENT_ADDRESS", scope: "SCOPE",
+    principal: "PRINCIPAL", principalAddress: "PRINCIPAL_ADDRESS",
+    agent: "AGENT", agentAddress: "AGENT_ADDRESS", scope: "SCOPE",
     city: "CITY", docDate: "DOC_DATE",
   },
   "termination-notice": {
-    employer: "EMPLOYER", employee: "EMPLOYEE", employeeId: "EMPLOYEE_ID", employeeAddress: "EMPLOYEE_ADDRESS",
+    employer: "EMPLOYER", employee: "EMPLOYEE", employeeAddress: "EMPLOYEE_ADDRESS",
     reason: "REASON", lastDay: "LAST_DAY", compensationAmount: "COMPENSATION_AMOUNT",
     city: "CITY", docDate: "DOC_DATE",
   },
@@ -690,14 +694,14 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "claim-letter": {
-    senderName: "SENDER_NAME", senderId: "SENDER_ID", senderAddress: "SENDER_ADDRESS", senderPhone: "SENDER_PHONE",
+    senderName: "SENDER_NAME", senderAddress: "SENDER_ADDRESS", senderPhone: "SENDER_PHONE",
     recipientName: "RECIPIENT_NAME", recipientAddress: "RECIPIENT_ADDRESS",
     grounds: "GROUNDS", demand: "DEMAND", amount: "AMOUNT",
     paymentMethod: "PAYMENT_METHOD", bankAccount: "BANK_ACCOUNT", deadline: "DEADLINE",
     city: "CITY", docDate: "DOC_DATE",
   },
   "debt-claim": {
-    creditorName: "CREDITOR_NAME", creditorId: "CREDITOR_ID", creditorAddress: "CREDITOR_ADDRESS", creditorPhone: "CREDITOR_PHONE",
+    creditorName: "CREDITOR_NAME", creditorAddress: "CREDITOR_ADDRESS", creditorPhone: "CREDITOR_PHONE",
     debtorName: "DEBTOR_NAME", debtorAddress: "DEBTOR_ADDRESS",
     debtBasis: "DEBT_BASIS", principalAmount: "PRINCIPAL_AMOUNT", interestAmount: "INTEREST_AMOUNT",
     totalAmount: "TOTAL_AMOUNT", originalDueDate: "ORIGINAL_DUE_DATE", newDeadline: "NEW_DEADLINE",
@@ -705,7 +709,7 @@ const FIELD_MAP: Record<TemplateType, Record<string, string>> = {
     city: "CITY", docDate: "DOC_DATE",
   },
   "child-travel-consent": {
-    parentName: "PARENT_NAME", parentId: "PARENT_ID", parentAddress: "PARENT_ADDRESS", parentPhone: "PARENT_PHONE",
+    parentName: "PARENT_NAME", parentAddress: "PARENT_ADDRESS", parentPhone: "PARENT_PHONE",
     childName: "CHILD_NAME", childDob: "CHILD_DOB", childDocument: "CHILD_DOCUMENT",
     escort: "ESCORT", destination: "DESTINATION", travelPeriod: "TRAVEL_PERIOD", otherParentStatus: "OTHER_PARENT_STATUS",
     city: "CITY", docDate: "DOC_DATE",
@@ -769,6 +773,50 @@ function formatPartyIdLine(personalNumberRaw: string, idCodeRaw: string, locale:
   return `${parts.join(", ")}, `;
 }
 
+/** Builds the rental deposit clause. The statutory cap/interest/return-timing
+ * rule always applies, so it's never omitted; if the user states a specific
+ * deposit amount, that's stated first as a lead-in sentence. */
+function buildDepositClause(amountRaw: string, locale: Locale): string {
+  const amount = amountRaw.trim();
+  const prefix = amount
+    ? locale === "en"
+      ? `The Tenant shall pay a security deposit in the amount of ${amount}. `
+      : `დამქირავებელი იხდის უზრუნველყოფის თანხას (დეპოზიტს) ${amount}-ის ოდენობით. `
+    : "";
+  const base =
+    locale === "en"
+      ? "The Tenant may be required to provide a security deposit not exceeding three times the monthly rent; the statutory rate of interest shall accrue on the sum advanced, and it shall be returned to the Tenant no later than 10 calendar days after termination of the Agreement, less any amount for damage caused to the Premises or outstanding debt owed by the Tenant."
+      : "დამქირავებელს შეიძლება დაეკისროს ვალდებულების უზრუნველყოფის თანხის (დეპოზიტის) წარდგენა, რომელიც არ აღემატება ერთი თვის ქირის სამმაგ ოდენობას; წინასწარ გადახდილ თანხას ერიცხება კანონით დადგენილი პროცენტი და ბრუნდება დამქირავებელს ხელშეკრულების დასრულებიდან არაუგვიანეს 10 კალენდარული დღისა, ფართისთვის მიყენებული ზიანის ან წარმოშობილი დავალიანების არსებობის შემთხვევაში — შესაბამისი თანხის გამოკლებით.";
+  return prefix + base;
+}
+
+/** Builds the employment contract's term clause. Defaults to an indefinite
+ * term (the statutory default) unless the user gave an end date, in which
+ * case the fixed-term sentence is used instead — referencing [START_DATE]/
+ * [END_DATE] as literal tokens, which the later fillTemplate pass resolves
+ * from the already-collected raw answers. */
+function buildEmploymentTermClause(hasEndDate: boolean, locale: Locale): string {
+  if (!hasEndDate) {
+    return locale === "en"
+      ? "This Agreement is concluded for an indefinite term, unless the Parties agree otherwise in writing."
+      : "ხელშეკრულება დადებულია განუსაზღვრელი ვადით, თუ მხარეები წერილობით სხვაგვარად არ შეთანხმდებიან.";
+  }
+  return locale === "en"
+    ? "This Agreement is concluded for a fixed term, from **[START_DATE]** until **[END_DATE]**."
+    : "ხელშეკრულება დადებულია განსაზღვრული ვადით, **[START_DATE]**-დან **[END_DATE]**-მდე.";
+}
+
+/** Builds the employment contract's probation-period sentence. Omitted
+ * entirely unless the user states a period, ending in a leading space so it
+ * can be appended directly onto the preceding sentence in clause 1. */
+function buildProbationClause(periodRaw: string, locale: Locale): string {
+  const period = periodRaw.trim();
+  if (!period) return "";
+  return locale === "en"
+    ? ` The Employee shall be subject to a probation period of ${period}.`
+    : ` დასაქმებულს განესაზღვრება გამოსაცდელი ვადა: ${period}.`;
+}
+
 /** Replaces each `[TOKEN]` in `body` with its computed value (plain string
  * substitution, not regex) — used for placeholders whose value is built in
  * code (e.g. an ID line, a conditional clause) rather than echoed from a
@@ -827,6 +875,8 @@ export function renderTemplate(
   }
   if (type === "employment-contract") {
     computed.EMPLOYER_ID_LINE = formatPartyIdLine(answers.employerPersonalNumber ?? "", answers.employerIdCode ?? "", locale);
+    computed.EMPLOYMENT_TERM_CLAUSE = buildEmploymentTermClause(!!(answers.endDate ?? "").trim(), locale);
+    computed.PROBATION_CLAUSE = buildProbationClause(answers.probationPeriod ?? "", locale);
   }
   if (type === "service-agreement") {
     computed.EXECUTOR_ID_LINE = formatPartyIdLine(answers.executorPersonalNumber ?? "", answers.executorIdCode ?? "", locale);
@@ -835,6 +885,27 @@ export function renderTemplate(
   if (type === "acceptance-act") {
     computed.PROVIDER_ID_LINE = formatPartyIdLine(answers.providerPersonalNumber ?? "", answers.providerIdCode ?? "", locale);
     computed.RECEIVER_ID_LINE = formatPartyIdLine(answers.receiverPersonalNumber ?? "", answers.receiverIdCode ?? "", locale);
+  }
+  if (type === "rental-agreement") {
+    computed.LANDLORD_ID_LINE = formatPartyIdLine(answers.landlordPersonalNumber ?? "", answers.landlordIdCode ?? "", locale);
+    computed.TENANT_ID_LINE = formatPartyIdLine(answers.tenantPersonalNumber ?? "", answers.tenantIdCode ?? "", locale);
+    computed.DEPOSIT_CLAUSE = buildDepositClause(answers.depositAmount ?? "", locale);
+  }
+  if (type === "power-of-attorney") {
+    computed.PRINCIPAL_ID_LINE = formatPartyIdLine(answers.principalPersonalNumber ?? "", answers.principalIdCode ?? "", locale);
+    computed.AGENT_ID_LINE = formatPartyIdLine(answers.agentPersonalNumber ?? "", answers.agentIdCode ?? "", locale);
+  }
+  if (type === "termination-notice") {
+    computed.EMPLOYEE_ID_LINE = formatPartyIdLine(answers.employeePersonalNumber ?? "", answers.employeeIdCode ?? "", locale);
+  }
+  if (type === "claim-letter") {
+    computed.SENDER_ID_LINE = formatPartyIdLine(answers.senderPersonalNumber ?? "", answers.senderIdCode ?? "", locale);
+  }
+  if (type === "debt-claim") {
+    computed.CREDITOR_ID_LINE = formatPartyIdLine(answers.creditorPersonalNumber ?? "", answers.creditorIdCode ?? "", locale);
+  }
+  if (type === "child-travel-consent") {
+    computed.PARENT_ID_LINE = formatPartyIdLine(answers.parentPersonalNumber ?? "", answers.parentIdCode ?? "", locale);
   }
 
   const def = TEMPLATES[type];

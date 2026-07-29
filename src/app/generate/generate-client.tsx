@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { COMMON_FIELDS, QUESTION_SCHEMAS, fieldLabel } from "@/lib/legal/document-fields";
 import { docTypeLabel } from "@/lib/legal/doc-type-labels";
 import { DocumentResultPanel, type DocumentResult } from "@/components/site/DocumentResultPanel";
+import { PartyIdField } from "@/components/site/PartyIdField";
 import { UpgradeRequiredDialog } from "@/components/site/upgrade-required-dialog";
 import { ChatStreamReader } from "@/lib/streaming/chat-protocol";
 import { getDict } from "@/lib/i18n/dictionaries";
@@ -55,9 +56,17 @@ export function GenerateClient({
 
   function buildDetails(): string {
     const lines = fields
-      .map((f) =>
-        answers[f.key]?.trim() ? `${fieldLabel(f, locale)}: ${answers[f.key].trim()}` : null
-      )
+      .map((f) => {
+        if (f.type === "partyId") {
+          const mode = answers[f.key] === "idCode" ? "idCode" : "personal";
+          const activeKey = mode === "idCode" ? f.idCodeKey! : f.personalKey!;
+          const value = answers[activeKey]?.trim();
+          if (!value) return null;
+          const subLabel = mode === "idCode" ? gp.idCodeLabel : gp.personalNumberLabel;
+          return `${fieldLabel(f, locale)} (${subLabel}): ${value}`;
+        }
+        return answers[f.key]?.trim() ? `${fieldLabel(f, locale)}: ${answers[f.key].trim()}` : null;
+      })
       .filter((line): line is string => line !== null);
     if (extra.trim()) lines.push(extra.trim());
     return lines.join("\n");
@@ -190,26 +199,42 @@ export function GenerateClient({
               </select>
             </div>
 
-            {fields.map((f) => (
-              <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
-                <Label htmlFor={`field-${f.key}`} className="pt-2">{fieldLabel(f, locale)}</Label>
-                {f.type === "textarea" ? (
-                  <Textarea
-                    id={`field-${f.key}`}
-                    value={answers[f.key] ?? ""}
-                    onChange={(e) => setAnswer(f.key, e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                ) : (
-                  <Input
-                    id={`field-${f.key}`}
-                    type={f.type}
-                    value={answers[f.key] ?? ""}
-                    onChange={(e) => setAnswer(f.key, e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
+            {fields.map((f) => {
+              if (f.type === "partyId") {
+                return (
+                  <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                    <Label className="pt-2">{fieldLabel(f, locale)}</Label>
+                    <PartyIdField
+                      field={f}
+                      answers={answers}
+                      setAnswers={setAnswers}
+                      personalOptionLabel={gp.personalNumberOption}
+                      idCodeOptionLabel={gp.idCodeOption}
+                    />
+                  </div>
+                );
+              }
+              return (
+                <div key={f.key} className="grid grid-cols-[8rem_1fr] gap-3 items-start">
+                  <Label htmlFor={`field-${f.key}`} className="pt-2">{fieldLabel(f, locale)}</Label>
+                  {f.type === "textarea" ? (
+                    <Textarea
+                      id={`field-${f.key}`}
+                      value={answers[f.key] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                      className="min-h-[80px]"
+                    />
+                  ) : (
+                    <Input
+                      id={`field-${f.key}`}
+                      type={f.type}
+                      value={answers[f.key] ?? ""}
+                      onChange={(e) => setAnswer(f.key, e.target.value)}
+                    />
+                  )}
+                </div>
+              );
+            })}
 
             <div className="grid grid-cols-[8rem_1fr] gap-3 items-start">
               <Label htmlFor="extra" className="pt-2">{gp.extraLabel}</Label>
