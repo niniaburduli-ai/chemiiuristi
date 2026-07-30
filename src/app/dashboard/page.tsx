@@ -43,21 +43,17 @@ export default async function DashboardPage({
   const dateLocale = locale === "en" ? "en-GB" : "ka-GE";
 
   await dbConnect();
-  const [userRaw, sub, flags, consultations, documents, reviews, consultationsCount, documentsCount, reviewsCount, templatesCount, plans, payments] =
-    await Promise.all([
-      User.findById(session.user.id).select("-passwordHash").lean(),
-      Subscription.findOne({ userId: session.user.id }).lean(),
-      getFeatureFlags(),
-      Consultation.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
-      GeneratedDocument.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
-      DocumentReview.find({ userId: session.user.id }).sort({ createdAt: -1 }).limit(100).lean(),
-      Consultation.countDocuments({ userId: session.user.id }),
-      GeneratedDocument.countDocuments({ userId: session.user.id, source: { $ne: "template" } }),
-      DocumentReview.countDocuments({ userId: session.user.id }),
-      GeneratedDocument.countDocuments({ userId: session.user.id, source: "template" }),
-      getPlans(),
-      Payment.find({ userId: session.user.id, sandbox: { $ne: true } }).sort({ paidAt: -1 }).limit(50).lean(),
-    ]);
+  // Only the data the shell needs to paint immediately (header, sidebar nav,
+  // profile identity, plan/billing status) is awaited here. The per-tab
+  // history lists and counts are kicked off below as un-awaited promises and
+  // streamed into their panels via Suspense, so the shell never blocks on
+  // the slowest query.
+  const [userRaw, sub, flags, plans] = await Promise.all([
+    User.findById(session.user.id).select("-passwordHash").lean(),
+    Subscription.findOne({ userId: session.user.id }).lean(),
+    getFeatureFlags(),
+    getPlans(),
+  ]);
   if (!userRaw) redirect("/login");
   const user = await applyCustomPlanExpiryIfDue(await applyPlanExpiryIfDue(userRaw));
 
@@ -137,16 +133,32 @@ export default async function DashboardPage({
   };
   const isPaid = plan !== "free";
   const billingStatus = user.subscriptionStatus || (isPaid ? "active" : "");
-  const billingItems: BillingPaymentItem[] = payments.map((p) => {
-    const id = String((p as unknown as { _id: unknown })._id);
-    return {
-      id,
-      planLabel: billingPlanLabel(p.plan),
-      amount: fmtAmount(p.amount, p.currency),
-      statusLabel: BILLING_STATUS_LABEL[p.status ?? "approved"] ?? d.billing.statusPaid,
-      paidAtLabel: p.paidAt ? new Date(p.paidAt).toLocaleDateString(dateLocale) : "—",
-    };
-  });
+
+  // Everything below fires its query immediately (Mongoose `.exec()` starts
+  // the request right away) but is NOT awaited — the promises are handed to
+  // <DashboardClient>, which unwraps each inside its own <Suspense> boundary.
+  // That lets the shell (header, sidebar, profile) paint the moment the fast
+  // data above resolves instead of blocking on the slowest history query.
+  const billingItemsPromise: Promise<BillingPaymentItem[]> = Payment.find({
+    userId: session.user.id,
+    sandbox: { $ne: true },
+  })
+    .sort({ paidAt: -1 })
+    .limit(50)
+    .lean()
+    .exec()
+    .then((payments) =>
+      payments.map((p) => {
+        const id = String((p as unknown as { _id: unknown })._id);
+        return {
+          id,
+          planLabel: billingPlanLabel(p.plan),
+          amount: fmtAmount(p.amount, p.currency),
+          statusLabel: BILLING_STATUS_LABEL[p.status ?? "approved"] ?? d.billing.statusPaid,
+          paidAtLabel: p.paidAt ? new Date(p.paidAt).toLocaleDateString(dateLocale) : "—",
+        };
+      }),
+    );
 
   const initials = (user.name ?? "?")
     .split(" ")
@@ -155,7 +167,16 @@ export default async function DashboardPage({
     .slice(0, 2)
     .toUpperCase();
 
-  const limitMetrics = [
+  const limitMetricsPromise = Promise.all([
+    Consultation.countDocuments({ userId: session.user.id }).exec(),
+    showGenerate
+      ? GeneratedDocument.countDocuments({ userId: session.user.id, source: { $ne: "template" } }).exec()
+      : Promise.resolve(0),
+    showReview ? DocumentReview.countDocuments({ userId: session.user.id }).exec() : Promise.resolve(0),
+    showTemplates
+      ? GeneratedDocument.countDocuments({ userId: session.user.id, source: "template" }).exec()
+      : Promise.resolve(0),
+  ]).then(([consultationsCount, documentsCount, reviewsCount, templatesCount]) => [
     {
       key: "consultations",
       label: dp.questionsAsked,
@@ -204,87 +225,108 @@ export default async function DashboardPage({
           },
         ]
       : []),
-  ];
+  ]);
 
-  const consultationItems: ConsultationItem[] = consultations.map((c) => {
-    const item = c as unknown as {
-      _id: unknown;
-      question: string;
-      answer: string;
-      createdAt?: Date;
-      sources?: RawSource[];
-    };
-    return {
-      id: String(item._id),
-      question: item.question,
-      answer: item.answer,
-      createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
-      sources: item.sources ?? [],
-    };
-  });
-
-  const allDocumentItems: GeneratedDocItem[] = documents.map((doc) => {
-    const item = doc as unknown as {
-      _id: unknown;
-      title: string;
-      type: string;
-      content: string;
-      createdAt?: Date;
-      source?: string;
-    };
-    return {
-      id: String(item._id),
-      title: item.title,
-      type: item.type,
-      content: item.content,
-      createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
-      source: item.source ?? "ai",
-    };
-  });
-  const documentItems = allDocumentItems.filter((doc) => doc.source !== "template");
-  const templateItems = allDocumentItems.filter((doc) => doc.source === "template");
-
-  const reviewItems: ReviewItem[] = reviews.map((review) => {
-    const r = review as unknown as {
-      _id: unknown;
-      fileName?: string;
-      createdAt?: Date;
-      summary: string;
-      findings: unknown[];
-      recommendations: unknown[];
-      sourceText?: string;
-      revisions?: Array<{
-        text: string;
-        summary: string;
-        findings: unknown[];
-        recommendations: unknown[];
-        instruction: string;
-        createdAt?: Date;
-      }>;
-    };
-    const revisions = r.revisions ?? [];
-    return {
-      id: String(r._id),
-      fileName: r.fileName ?? "document",
-      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
-      summary: r.summary,
-      findings: r.findings ?? [],
-      recommendations: r.recommendations ?? [],
-      sourceText: r.sourceText ?? "",
-      revisions: revisions.map((rev, i) => {
-        const baseText = i === 0 ? r.sourceText ?? "" : revisions[i - 1].text;
+  const consultationItemsPromise: Promise<ConsultationItem[]> = Consultation.find({ userId: session.user.id })
+    .sort({ createdAt: -1 })
+    .limit(100)
+    .lean()
+    .exec()
+    .then((consultations) =>
+      consultations.map((c) => {
+        const item = c as unknown as {
+          _id: unknown;
+          question: string;
+          answer: string;
+          createdAt?: Date;
+          sources?: RawSource[];
+        };
         return {
-          text: rev.text,
-          summary: rev.summary,
-          findings: rev.findings as unknown as RiskFinding[],
-          recommendations: rev.recommendations as string[],
-          instruction: rev.instruction,
-          createdAt: rev.createdAt ? new Date(rev.createdAt).toISOString() : null,
-          baseText,
+          id: String(item._id),
+          question: item.question,
+          answer: item.answer,
+          createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
+          sources: item.sources ?? [],
         };
       }),
-    };
-  });
+    );
+
+  const allDocumentItemsPromise: Promise<GeneratedDocItem[]> = GeneratedDocument.find({ userId: session.user.id })
+    .sort({ createdAt: -1 })
+    .limit(100)
+    .lean()
+    .exec()
+    .then((documents) =>
+      documents.map((doc) => {
+        const item = doc as unknown as {
+          _id: unknown;
+          title: string;
+          type: string;
+          content: string;
+          createdAt?: Date;
+          source?: string;
+        };
+        return {
+          id: String(item._id),
+          title: item.title,
+          type: item.type,
+          content: item.content,
+          createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
+          source: item.source ?? "ai",
+        };
+      }),
+    );
+  const documentItemsPromise = allDocumentItemsPromise.then((items) => items.filter((doc) => doc.source !== "template"));
+  const templateItemsPromise = allDocumentItemsPromise.then((items) => items.filter((doc) => doc.source === "template"));
+
+  const reviewItemsPromise: Promise<ReviewItem[]> = DocumentReview.find({ userId: session.user.id })
+    .sort({ createdAt: -1 })
+    .limit(100)
+    .lean()
+    .exec()
+    .then((reviews) =>
+      reviews.map((review) => {
+        const r = review as unknown as {
+          _id: unknown;
+          fileName?: string;
+          createdAt?: Date;
+          summary: string;
+          findings: unknown[];
+          recommendations: unknown[];
+          sourceText?: string;
+          revisions?: Array<{
+            text: string;
+            summary: string;
+            findings: unknown[];
+            recommendations: unknown[];
+            instruction: string;
+            createdAt?: Date;
+          }>;
+        };
+        const revisions = r.revisions ?? [];
+        return {
+          id: String(r._id),
+          fileName: r.fileName ?? "document",
+          createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
+          summary: r.summary,
+          findings: r.findings ?? [],
+          recommendations: r.recommendations ?? [],
+          sourceText: r.sourceText ?? "",
+          revisions: revisions.map((rev, i) => {
+            const baseText = i === 0 ? r.sourceText ?? "" : revisions[i - 1].text;
+            return {
+              text: rev.text,
+              summary: rev.summary,
+              findings: rev.findings as unknown as RiskFinding[],
+              recommendations: rev.recommendations as string[],
+              instruction: rev.instruction,
+              createdAt: rev.createdAt ? new Date(rev.createdAt).toISOString() : null,
+              baseText,
+            };
+          }),
+        };
+      }),
+    );
 
   return (
     <div>
@@ -335,7 +377,7 @@ export default async function DashboardPage({
         <DashboardClient
           d={d}
           initialTab={tab}
-          limitMetrics={limitMetrics}
+          limitMetrics={limitMetricsPromise}
           planLabel={PLAN_LABELS[plan] ?? plan}
           planExpiresLabel={periodEnd}
           hasCustomPlan={hasCustomPlan}
@@ -350,10 +392,10 @@ export default async function DashboardPage({
           profileLastName={user.lastName ?? ""}
           profilePersonalNumber={user.personalNumber ?? ""}
           profilePhone={user.phone ?? ""}
-          consultations={consultationItems}
-          documents={documentItems}
-          templates={templateItems}
-          reviews={reviewItems}
+          consultations={consultationItemsPromise}
+          documents={documentItemsPromise}
+          templates={templateItemsPromise}
+          reviews={reviewItemsPromise}
           showGenerate={showGenerate}
           showReview={showReview}
           showTemplates={showTemplates}
@@ -364,7 +406,7 @@ export default async function DashboardPage({
           billingStatusLabel={billingStatus ? BILLING_STATUS_LABEL[billingStatus] ?? billingStatus : null}
           billingNextPaymentLabel={isPaid && user.resetAt ? new Date(user.resetAt).toLocaleDateString(dateLocale) : null}
           billingCanCancel={isPaid && billingStatus !== "canceled"}
-          billingPayments={billingItems}
+          billingPayments={billingItemsPromise}
         />
       </div>
     </div>

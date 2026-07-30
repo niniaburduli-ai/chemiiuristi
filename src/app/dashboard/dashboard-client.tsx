@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useActionState, useRef } from "react";
+import { useState, useActionState, useRef, use, Suspense } from "react";
 import Link from "next/link";
-import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, type LucideIcon } from "lucide-react";
+import { BarChart3, MessagesSquare, FileText, FileSearch, Clock, ArrowRight, User, LayoutList, CreditCard, KeyRound, Calendar, Receipt, Loader2, type LucideIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -375,6 +375,73 @@ function BillingPanel({
   );
 }
 
+function PanelSkeleton() {
+  return (
+    <div className="flex-1 flex items-center justify-center">
+      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+    </div>
+  );
+}
+
+function LimitsPanelAsync({
+  promise,
+  ...rest
+}: {
+  promise: Promise<LimitMetric[]>;
+  d: Dict;
+  planLabel: string;
+  planExpiresLabel: string | null;
+  hasCustomPlan: boolean;
+  customExpiresLabel: string | null;
+  customMetrics: CustomMetric[];
+}) {
+  const metrics = use(promise);
+  return <LimitsPanel metrics={metrics} {...rest} />;
+}
+
+function BillingPanelAsync({
+  paymentsPromise,
+  ...rest
+}: {
+  paymentsPromise: Promise<BillingPaymentItem[]>;
+  d: Dict;
+  locale: Locale;
+  planName: string;
+  planPrice: string;
+  isPaid: boolean;
+  statusLabel: string | null;
+  nextPaymentLabel: string | null;
+  canCancel: boolean;
+}) {
+  const payments = use(paymentsPromise);
+  return <BillingPanel payments={payments} {...rest} />;
+}
+
+function ConsultationsGridAsync({ promise, d }: { promise: Promise<ConsultationItem[]>; d: Dict }) {
+  const items = use(promise);
+  return <ConsultationsGrid items={items} d={d} />;
+}
+
+function DocumentsListAsync({
+  promise,
+  ...rest
+}: {
+  promise: Promise<GeneratedDocItem[]>;
+  d: Dict;
+  heading?: string;
+  emptyText?: string;
+  emptyCta?: string;
+  emptyHref?: string;
+}) {
+  const docs = use(promise);
+  return <DocumentsList docs={docs} {...rest} />;
+}
+
+function ReviewsGridAsync({ promise, d }: { promise: Promise<ReviewItem[]>; d: Dict }) {
+  const items = use(promise);
+  return <ReviewsGrid items={items} d={d} />;
+}
+
 export function DashboardClient({
   d,
   initialTab,
@@ -411,7 +478,7 @@ export function DashboardClient({
 }: {
   d: Dict;
   initialTab?: string;
-  limitMetrics: LimitMetric[];
+  limitMetrics: Promise<LimitMetric[]>;
   planLabel: string;
   planExpiresLabel: string | null;
   hasCustomPlan: boolean;
@@ -426,10 +493,10 @@ export function DashboardClient({
   profileLastName: string;
   profilePersonalNumber: string;
   profilePhone: string;
-  consultations: ConsultationItem[];
-  documents: GeneratedDocItem[];
-  templates: GeneratedDocItem[];
-  reviews: ReviewItem[];
+  consultations: Promise<ConsultationItem[]>;
+  documents: Promise<GeneratedDocItem[]>;
+  templates: Promise<GeneratedDocItem[]>;
+  reviews: Promise<ReviewItem[]>;
   showGenerate: boolean;
   showReview: boolean;
   showTemplates: boolean;
@@ -440,7 +507,7 @@ export function DashboardClient({
   billingStatusLabel: string | null;
   billingNextPaymentLabel: string | null;
   billingCanCancel: boolean;
-  billingPayments: BillingPaymentItem[];
+  billingPayments: Promise<BillingPaymentItem[]>;
 }) {
   const dp = d.profile;
 
@@ -518,9 +585,12 @@ export function DashboardClient({
             <h2 className="text-lg font-bold text-foreground">{dp.servicesCardTitle}</h2>
           </div>
           <div className="px-2">
-            <Link href="/services" className={buttonVariants({ size: "sm" }) + " w-full"}>
+            <Link
+              href="/services"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
               {dp.returnToServices}
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -543,15 +613,17 @@ export function DashboardClient({
         className="md:flex-1 min-w-0 h-[70vh] min-h-[520px] md:h-full md:min-h-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col"
       >
         <div className={activeTab === "limits" ? "flex flex-col h-full min-h-0" : "hidden"}>
-          <LimitsPanel
-            d={d}
-            metrics={limitMetrics}
-            planLabel={planLabel}
-            planExpiresLabel={planExpiresLabel}
-            hasCustomPlan={hasCustomPlan}
-            customExpiresLabel={customExpiresLabel}
-            customMetrics={customMetrics}
-          />
+          <Suspense fallback={<PanelSkeleton />}>
+            <LimitsPanelAsync
+              promise={limitMetrics}
+              d={d}
+              planLabel={planLabel}
+              planExpiresLabel={planExpiresLabel}
+              hasCustomPlan={hasCustomPlan}
+              customExpiresLabel={customExpiresLabel}
+              customMetrics={customMetrics}
+            />
+          </Suspense>
         </div>
         <div className={activeTab === "profile" ? "flex flex-col h-full min-h-0" : "hidden"}>
           <ProfilePanel
@@ -569,41 +641,51 @@ export function DashboardClient({
           />
         </div>
         <div className={activeTab === "billing" ? "flex flex-col h-full min-h-0" : "hidden"}>
-          <BillingPanel
-            d={d}
-            locale={locale}
-            planName={billingPlanName}
-            planPrice={billingPlanPrice}
-            isPaid={billingIsPaid}
-            statusLabel={billingStatusLabel}
-            nextPaymentLabel={billingNextPaymentLabel}
-            canCancel={billingCanCancel}
-            payments={billingPayments}
-          />
+          <Suspense fallback={<PanelSkeleton />}>
+            <BillingPanelAsync
+              paymentsPromise={billingPayments}
+              d={d}
+              locale={locale}
+              planName={billingPlanName}
+              planPrice={billingPlanPrice}
+              isPaid={billingIsPaid}
+              statusLabel={billingStatusLabel}
+              nextPaymentLabel={billingNextPaymentLabel}
+              canCancel={billingCanCancel}
+            />
+          </Suspense>
         </div>
         <div className={activeTab === "consultations" ? "flex flex-col h-full min-h-0" : "hidden"}>
-          <ConsultationsGrid items={consultations} d={d} />
+          <Suspense fallback={<PanelSkeleton />}>
+            <ConsultationsGridAsync promise={consultations} d={d} />
+          </Suspense>
         </div>
         {showGenerate && (
           <div className={activeTab === "documents" ? "flex flex-col h-full min-h-0" : "hidden"}>
-            <DocumentsList docs={documents} d={d} />
+            <Suspense fallback={<PanelSkeleton />}>
+              <DocumentsListAsync promise={documents} d={d} />
+            </Suspense>
           </div>
         )}
         {showTemplates && (
           <div className={activeTab === "templates" ? "flex flex-col h-full min-h-0" : "hidden"}>
-            <DocumentsList
-              docs={templates}
-              d={d}
-              heading={d.profile.usedTemplates}
-              emptyText={d.profile.noTemplates}
-              emptyCta={d.profile.fillTemplate}
-              emptyHref="/services?tab=templates"
-            />
+            <Suspense fallback={<PanelSkeleton />}>
+              <DocumentsListAsync
+                promise={templates}
+                d={d}
+                heading={d.profile.usedTemplates}
+                emptyText={d.profile.noTemplates}
+                emptyCta={d.profile.fillTemplate}
+                emptyHref="/services?tab=templates"
+              />
+            </Suspense>
           </div>
         )}
         {showReview && (
           <div className={activeTab === "reviews" ? "flex flex-col h-full min-h-0" : "hidden"}>
-            <ReviewsGrid items={reviews} d={d} />
+            <Suspense fallback={<PanelSkeleton />}>
+              <ReviewsGridAsync promise={reviews} d={d} />
+            </Suspense>
           </div>
         )}
       </section>

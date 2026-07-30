@@ -72,7 +72,9 @@ export function CustomPlanBuilder({
       if (document.visibilityState === "visible") refresh()
     }
     document.addEventListener("visibilitychange", onVisible)
-    const interval = setInterval(refresh, 15_000)
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") refresh()
+    }, 15_000)
     return () => {
       document.removeEventListener("visibilitychange", onVisible)
       clearInterval(interval)
@@ -214,7 +216,7 @@ export function CustomPlanBuilder({
           type="button"
           onClick={buildAndPay}
           disabled={belowMinimum || loading}
-          className="w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-gold/5"
+          className="w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-primary hover:border-primary hover:text-white"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mx-auto" />

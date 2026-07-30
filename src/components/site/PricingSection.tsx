@@ -115,7 +115,9 @@ export function PricingSection({
       if (document.visibilityState === "visible") refresh()
     }
     document.addEventListener("visibilitychange", onVisible)
-    const interval = setInterval(refresh, 15_000)
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") refresh()
+    }, 15_000)
     return () => {
       document.removeEventListener("visibilitychange", onVisible)
       clearInterval(interval)
@@ -186,22 +188,12 @@ export function PricingSection({
                 <UpgradeButton
                   plan={p.planKey}
                   label={p.ctaText}
-                  className={[
-                    "w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover",
-                    p.highlighted
-                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "border border-border text-gold hover:bg-gold/5",
-                  ].join(" ")}
+                  className="w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 btn-hover border border-border text-gold hover:bg-primary hover:border-primary hover:text-white"
                 />
               ) : (
                 <Link
                   href={p.ctaHref}
-                  className={[
-                    "w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors btn-hover",
-                    p.highlighted
-                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "border border-border text-gold hover:bg-gold/5",
-                  ].join(" ")}
+                  className="w-full text-center py-2 rounded-xl text-sm font-semibold transition-colors btn-hover border border-border text-gold hover:bg-primary hover:border-primary hover:text-white"
                 >
                   {p.ctaText}
                 </Link>

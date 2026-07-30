@@ -55,7 +55,7 @@ export function LegislationClient({ locale }: { locale: Locale }) {
       </div>
 
       <Tabs value={cat} onValueChange={setCat} className="mb-6">
-        <TabsList className="flex flex-wrap !h-auto">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1 !h-auto w-full">
           {categories.map((c) => (
             <TabsTrigger key={c.id} value={c.id}>
               {c.label}
