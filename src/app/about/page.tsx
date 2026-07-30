@@ -5,7 +5,8 @@ import { getDict } from '@/lib/i18n/dictionaries'
 import Image from 'next/image'
 import { AnimateIn } from '@/components/site/AnimateIn'
 import { PageHero } from '@/components/site/PageHero'
-import { buildMetadata } from '@/lib/seo'
+import { JsonLd } from '@/components/site/JsonLd'
+import { buildMetadata, breadcrumbJsonLd } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -53,9 +54,15 @@ export default async function AboutPage() {
     { id: 'mission', title: missionTitle, body: mission, multi: false },
   ]
 
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: locale === 'en' ? 'Home' : 'მთავარი', path: locale === 'en' ? '/en' : '/' },
+    { name: d.title, path: locale === 'en' ? '/en/about' : '/about' },
+  ])
+
   return (
     <div>
-      <PageHero title={dict.home.heroTitle} subtitle={d.heroSubtitle} />
+      <JsonLd data={breadcrumbs} />
+      <PageHero title={d.title} subtitle={d.heroSubtitle} />
 
       <section className="bg-background overflow-hidden">
         <div className="container mx-auto px-4 py-14 space-y-12">

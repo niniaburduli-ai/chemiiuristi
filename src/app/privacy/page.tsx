@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { PageHero } from "@/components/site/PageHero"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "კონფიდენციალურობის პოლიტიკა | ჩემი იურისტი",
-  description: "ჩემი იურისტის კონფიდენციალურობის პოლიტიკა",
-}
+export const metadata: Metadata = buildMetadata({
+  title: "კონფიდენციალურობის პოლიტიკა",
+  description: "ჩემი იურისტის კონფიდენციალურობის პოლიტიკა — რა მონაცემებს ვაგროვებთ და როგორ ვიცავთ თქვენს ინფორმაციას.",
+  path: "/privacy",
+})
 
 function Section({
   n,

@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { PageHero } from "@/components/site/PageHero"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "პასუხისმგებლობის შეზღუდვა | ჩემი იურისტი",
-  description: "ჩემი იურისტის პასუხისმგებლობის შეზღუდვა",
-}
+export const metadata: Metadata = buildMetadata({
+  title: "პასუხისმგებლობის შეზღუდვა",
+  description: "ჩემი იურისტის პასუხისმგებლობის შეზღუდვა — AI-ის მიერ გენერირებული ინფორმაციის შეზღუდვები და მომხმარებლის პასუხისმგებლობა.",
+  path: "/disclaimer",
+})
 
 function Section({
   n,

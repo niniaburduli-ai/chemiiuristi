@@ -45,13 +45,14 @@ export default async function FaqPage() {
   const faqData = await getFAQ(locale)
   const heading = pick(seed.faqHeading, seed.faqHeadingEn, locale)
   const groups = groupByCategory(faqData.items)
+  const subtitle =
+    locale === "en"
+      ? "Find the answer to your question, or write to us via the feedback button or email"
+      : "მოძებნეთ თქვენთვის საჭირო კითხვაზე პასუხი ან მოგვწერეთ გამოხმაურების ღილაკის და მეილის საშუალებით"
 
   return (
     <div>
-      <PageHero
-        title={heading}
-        subtitle="მოძებნეთ თქვენთვის საჭირო კითხვაზე პასუხი ან მოგვწერეთ გამოხმაურების ღილაკის და მეილის საშუალებით"
-      />
+      <PageHero title={heading} subtitle={subtitle} />
 
       {faqData.items.length > 0 && (
         <section className="bg-background overflow-hidden">

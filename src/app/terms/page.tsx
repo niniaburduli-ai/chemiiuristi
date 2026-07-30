@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { PageHero } from "@/components/site/PageHero"
+import { buildMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "მომსახურების პირობები | ჩემი იურისტი",
-  description: "ჩემი იურისტის მომსახურების პირობები",
-}
+export const metadata: Metadata = buildMetadata({
+  title: "მომსახურების პირობები",
+  description: "ჩემი იურისტის მომსახურების პირობები — პლატფორმის გამოყენების წესები და პირობები.",
+  path: "/terms",
+})
 
 function Section({
   n,
