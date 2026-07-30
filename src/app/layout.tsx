@@ -52,13 +52,13 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title: {
       default: isEn
-        ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation for Georgia"
-        : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია ქართულად",
+        ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation & Contracts for Georgia"
+        : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია და ხელშეკრულებები",
       template: isEn ? "%s | Chemi Iuristi (My Lawyer)" : "%s | ჩემი იურისტი (Chemi Iuristi)",
     },
     description: isEn
-      ? "AI lawyer — accessible legal consultation in plain language. Contract review and generation, risk analysis, and legal advice grounded in Georgian law."
-      : "AI იურისტი — ხელმისაწვდომი იურიდიული კონსულტაცია მარტივ ენაზე. ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
+      ? "AI lawyer for Georgia, in Georgian and English. Legal consultation, contract review and generation, risk analysis, and legal advice grounded in Georgian law."
+      : "AI იურისტი ქართულ და ინგლისურ ენებზე — იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
     applicationName: siteName,
     appleWebApp: {
       capable: true,
@@ -79,18 +79,18 @@ export async function generateMetadata(): Promise<Metadata> {
       alternateLocale: isEn ? ["ka_GE"] : ["en_US"],
       url: isEn ? `${SITE_URL}/en` : SITE_URL,
       title: isEn
-        ? "Chemi Iuristi — AI Legal Consultation for Georgia"
-        : "ჩემი იურისტი — AI იურიდიული კონსულტაცია ქართულად",
+        ? "Chemi Iuristi — AI Legal Consultation & Contracts for Georgia"
+        : "ჩემი იურისტი — AI იურიდიული კონსულტაცია და ხელშეკრულებები",
       description: isEn
-        ? "Accessible legal consultation, contract review and generation, risk analysis — grounded in Georgian law."
-        : "ხელმისაწვდომი იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი — საქართველოს კანონმდებლობის საფუძველზე.",
+        ? "Legal consultation, contract review and generation, risk analysis — in Georgian and English, grounded in Georgian law."
+        : "იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი — ქართულ და ინგლისურ ენებზე, საქართველოს კანონმდებლობის საფუძველზე.",
     },
     twitter: {
       card: "summary_large_image",
-      title: isEn ? "Chemi Iuristi — AI Legal Consultation" : "ჩემი იურისტი — AI იურიდიული კონსულტაცია",
+      title: isEn ? "Chemi Iuristi — AI Legal Consultation & Contracts" : "ჩემი იურისტი — AI კონსულტაცია და ხელშეკრულებები",
       description: isEn
-        ? "AI lawyer: legal advice, contract review/generation, risk analysis for Georgia."
-        : "AI იურისტი: იურიდიული რჩევები, ხელშეკრულების შემოწმება/გენერირება, რისკების ანალიზი ქართულად.",
+        ? "AI lawyer: legal advice, contract review/generation, risk analysis for Georgia — in Georgian and English."
+        : "AI იურისტი: იურიდიული რჩევები, ხელშეკრულების შემოწმება/გენერირება, რისკების ანალიზი — ქართულ და ინგლისურ ენებზე.",
     },
     robots: {
       index: true,

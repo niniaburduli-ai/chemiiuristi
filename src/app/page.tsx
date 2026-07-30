@@ -38,11 +38,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const isEn = locale === "en"
   return buildMetadata({
     title: isEn
-      ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation for Georgia"
-      : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია ქართულად",
+      ? "Chemi Iuristi (My Lawyer) — AI Legal Consultation & Contracts for Georgia"
+      : "ჩემი იურისტი (Chemi Iuristi) — AI იურიდიული კონსულტაცია და ხელშეკრულებები",
     description: isEn
-      ? "AI lawyer — accessible legal consultation in plain language. Contract review and generation, risk analysis, and legal advice grounded in Georgian law."
-      : "AI იურისტი — ხელმისაწვდომი იურიდიული კონსულტაცია მარტივ ენაზე. ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
+      ? "AI lawyer for Georgia, in Georgian and English. Legal consultation, contract review and generation, risk analysis, and legal advice grounded in Georgian law."
+      : "AI იურისტი ქართულ და ინგლისურ ენებზე — იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
     path: "/",
     keywords: isEn ? [...KEYWORDS_EN] : undefined,
     locale,
