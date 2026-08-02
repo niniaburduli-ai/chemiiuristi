@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/admin";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
 import { Upload } from "@/lib/models/upload";

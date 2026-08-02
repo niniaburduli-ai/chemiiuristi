@@ -7,7 +7,8 @@ import { STEP_QUANTITIES } from "@/lib/custom-plan-rates-config";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import type { Metadata } from "next";
-import { buildMetadata, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import { buildMetadata, breadcrumbJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -33,8 +34,14 @@ export default async function PricingPage() {
   const d = getDict(locale);
   const [plans, customRatesFull] = await Promise.all([getVisiblePlans(), getCustomPlanRatesFull()]);
 
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: locale === "en" ? "Home" : "მთავარი", path: locale === "en" ? "/en" : "/" },
+    { name: d.pricing.title, path: locale === "en" ? "/en/pricing" : "/pricing" },
+  ]);
+
   return (
     <div className="animate-fade-up">
+      <JsonLd data={breadcrumbs} />
       <PageHero title={d.pricing.title} subtitle={d.pricing.subtitle} />
 
       <PricingSection

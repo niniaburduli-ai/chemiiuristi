@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { Globe } from "lucide-react"
 import { LOCALES, LOCALE_COOKIE, LOCALE_LABELS, type Locale } from "@/lib/i18n/config"
+import { localizedPath } from "@/lib/seo"
 
 // Emoji flags render as bare "GE"/"GB" text on Windows (no flag glyphs in the
 // system emoji font), so these are hand-rolled SVGs for consistent rendering.
@@ -46,13 +47,21 @@ const LOCALE_FLAGS: Record<Locale, React.ComponentType<{ className?: string }>> 
 
 export function LanguageSwitcher({ current }: { current: Locale }) {
   const router = useRouter()
+  const pathname = usePathname()
 
   function setLocale(locale: Locale) {
     if (locale === current) return
-    // Persist the choice as a cookie (read server-side via getLocale), then refresh.
+    // Persist the choice as a cookie (read server-side via getLocale as a
+    // fallback for non-bilingual pages), then navigate to the matching URL —
+    // /en/<path> or the bare KA path — so the visible URL, canonical, and
+    // in-app links stay in sync with the selected locale instead of just
+    // silently re-rendering the same URL in a different language.
     // eslint-disable-next-line react-hooks/immutability -- document.cookie is a DOM write in an event handler
     document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`
-    router.refresh()
+    const stripped = pathname === "/en" || pathname.startsWith("/en/") ? pathname.slice(3) || "/" : pathname
+    const target = localizedPath(stripped, locale)
+    if (target !== pathname) router.push(target)
+    else router.refresh()
   }
 
   return (

@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // /chat was an older, standalone consultation UI that predates the
 // /services?tab=ai panel and had drifted out of sync with it (no bounded

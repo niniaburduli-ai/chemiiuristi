@@ -5,7 +5,7 @@ import { pick } from "@/lib/i18n/loc"
 import { getHomeSeed } from "@/lib/homepage-defaults"
 import { PageHero } from "@/components/site/PageHero"
 import { JsonLd } from "@/components/site/JsonLd"
-import { buildMetadata, faqJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
+import { buildMetadata, breadcrumbJsonLd, faqJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -50,8 +50,14 @@ export default async function FaqPage() {
       ? "Find the answer to your question, or write to us via the feedback button or email"
       : "მოძებნეთ თქვენთვის საჭირო კითხვაზე პასუხი ან მოგვწერეთ გამოხმაურების ღილაკის და მეილის საშუალებით"
 
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: locale === "en" ? "Home" : "მთავარი", path: locale === "en" ? "/en" : "/" },
+    { name: heading, path: locale === "en" ? "/en/faq" : "/faq" },
+  ])
+
   return (
     <div>
+      <JsonLd data={breadcrumbs} />
       <PageHero title={heading} subtitle={subtitle} />
 
       {faqData.items.length > 0 && (

@@ -4,6 +4,7 @@ import { getFooter, getSiteConfig } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
 import { getFeatureFlags, isPathEnabled } from "@/lib/features";
+import { localizedPath } from "@/lib/seo";
 
 const DEFAULT_DISCLAIMER =
   'გაფრთხილება: „პასუხი გენერირებულია ხელოვნური ინტელექტის მიერ და ეფუძნება მოქმედ კანონმდებლობას. ოფიციალური იურიდიული დასკვნისთვის მიმართეთ იურისტს."';
@@ -78,7 +79,9 @@ export async function Footer() {
     { href: "/legislation", label: d.footer.nav.legislation },
     { href: "/pricing", label: d.footer.nav.pricing },
     { href: "/faq", label: d.footer.nav.faq },
-  ].filter((n) => isPathEnabled(n.href, flags));
+  ]
+    .filter((n) => isPathEnabled(n.href, flags))
+    .map((n) => ({ ...n, href: localizedPath(n.href, locale) }));
 
   const staticLegal = [
     { href: "/privacy", label: d.footer.legal.privacy },
@@ -169,7 +172,7 @@ export async function Footer() {
           <ul className="flex flex-col gap-1.5">
             <li className="flex items-center gap-2 text-slate-400">
               <Globe className="h-3.5 w-3.5 shrink-0 text-gold" />
-              <a href="https://chemiiuristi.com" className="hover:text-white transition-colors footer-link">
+              <a href={`https://chemiiuristi.com${localizedPath("/", locale)}`} className="hover:text-white transition-colors footer-link">
                 chemiiuristi.com
               </a>
             </li>

@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Calendar, Receipt } from "lucide-react";
 import { auth } from "@/auth";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
 import { Payment } from "@/lib/models/payment";

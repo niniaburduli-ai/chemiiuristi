@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
@@ -6,6 +7,8 @@ import { RegisterForm } from "@/components/auth/register-form";
 import { GoogleButton } from "@/components/auth/google-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 type Props = { searchParams: Promise<{ callbackUrl?: string }> };
 

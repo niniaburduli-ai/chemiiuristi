@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import {
   MessagesSquare,
@@ -5,6 +6,8 @@ import {
   FileSearch,
   Clock,
 } from "lucide-react";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";

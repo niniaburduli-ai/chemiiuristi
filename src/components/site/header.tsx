@@ -11,6 +11,7 @@ import { getNavMenu, getSiteConfig } from "@/lib/cms";
 import { getFeatureFlags, isPathEnabled } from "@/lib/features";
 import { getLocale } from "@/lib/i18n/locale";
 import { getDict } from "@/lib/i18n/dictionaries";
+import { localizedPath } from "@/lib/seo";
 
 export async function Header() {
   const locale = await getLocale();
@@ -35,6 +36,11 @@ export async function Header() {
     { href: "/disclaimer", label: d.footer.legal.disclaimer },
   ];
 
+  const localizedNavItems = navItems.map((n) => ({
+    ...n,
+    href: n.isExternal ? n.href : localizedPath(n.href, locale),
+  }));
+
   const initials = user?.name
     ? user.name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase()
     : user?.email?.[0]?.toUpperCase() ?? "";
@@ -47,7 +53,7 @@ export async function Header() {
           <MobileNavSheet
             siteName={siteName}
             menuLabel={d.header.menu}
-            navItems={navItems}
+            navItems={localizedNavItems}
             legalItems={legalItems}
             navigationLabel={d.footer.navigation}
             usefulInfoLabel={d.footer.usefulInfo}
@@ -55,7 +61,7 @@ export async function Header() {
             contactEmail={contactEmail}
             contactAddress={contactAddress}
           />
-          <Link href="/" className="flex items-center gap-2 min-w-0 group">
+          <Link href={localizedPath("/", locale)} className="flex items-center gap-2 min-w-0 group">
             <span
               aria-hidden="true"
               className="inline-block h-9 w-[27px] shrink-0 bg-gold transition-opacity group-hover:opacity-80"
@@ -88,7 +94,7 @@ export async function Header() {
 
         {/* Nav */}
         <nav className="hidden lg:flex items-center gap-4 lg:gap-5 text-sm shrink-0 order-2">
-          {navItems.map((n) => (
+          {localizedNavItems.map((n) => (
             <Link
               key={n._id}
               href={n.href}
