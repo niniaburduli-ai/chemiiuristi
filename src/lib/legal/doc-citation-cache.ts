@@ -23,7 +23,7 @@ import { dbConnect } from "../db";
 import { DocCitationCacheModel } from "../models/doc-citation-cache";
 import type { Locale } from "../i18n/config";
 
-export type GeneratableDocType = "complaint" | "demand-letter";
+export type GeneratableDocType = "complaint" | "demand-letter" | "custom";
 
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 

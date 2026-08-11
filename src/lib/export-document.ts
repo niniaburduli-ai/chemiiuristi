@@ -1,7 +1,10 @@
 /** Client-side .docx / .pdf export for generated documents. Parses the
  * model's `**bold**` markdown into real bold runs instead of literal asterisks,
  * and renders consecutive tab-separated lines (e.g. invoice line items) as
- * real tables instead of raw tab characters.
+ * real tables instead of raw tab characters. When callers opt in via
+ * `highlightPlaceholders` (only the "custom" free-form generation result
+ * does — never document analysis/review), also colors `[missing-info
+ * placeholder]` brackets red, matching the on-screen preview.
  *
  * Shared layout rules applied to every generated document (all doc types):
  * - line 1 (the title) is centered
@@ -26,19 +29,27 @@ import {
   TabStopPosition,
 } from "docx";
 import { jsPDF } from "jspdf";
-import { findTitleIndex, findHeaderIndex, splitHeaderLine } from "@/lib/document-layout";
+import { findTitleIndex, findHeaderIndex, splitHeaderLine, parseRuns, type TextSegment } from "@/lib/document-layout";
 
-type Run = { text: string; bold: boolean };
+type Run = TextSegment;
 
-function boldRuns(line: string): Run[] {
-  return line
-    .split(/(\*\*[^*]+\*\*)/g)
-    .filter((part) => part.length > 0)
-    .map((part) =>
-      part.startsWith("**") && part.endsWith("**")
-        ? { text: part.slice(2, -2), bold: true }
-        : { text: part, bold: false }
-    );
+/** Word hex (no `#`) matching the PDF's rgb(192,0,0) / the on-screen `text-red-600`. */
+const PLACEHOLDER_COLOR_HEX = "C00000";
+const PLACEHOLDER_COLOR_RGB: [number, number, number] = [192, 0, 0];
+
+/** Parses a line into runs, clearing the `placeholder` flag unless the
+ * caller explicitly opted in — see the module doc comment. */
+function boldRuns(line: string, highlightPlaceholders: boolean): Run[] {
+  const runs = parseRuns(line);
+  return highlightPlaceholders ? runs : runs.map((r) => ({ ...r, placeholder: false }));
+}
+
+function docxTextRun(r: Run, extraBold = false): TextRun {
+  return new TextRun({
+    text: r.text,
+    bold: r.bold || extraBold,
+    color: r.placeholder ? PLACEHOLDER_COLOR_HEX : undefined,
+  });
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -50,7 +61,7 @@ function saveBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function buildDocxChildren(content: string): (Paragraph | Table)[] {
+function buildDocxChildren(content: string, highlightPlaceholders: boolean): (Paragraph | Table)[] {
   const lines = content.split("\n");
   const children: (Paragraph | Table)[] = [];
   const titleIndex = findTitleIndex(lines);
@@ -63,7 +74,7 @@ function buildDocxChildren(content: string): (Paragraph | Table)[] {
       children.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
-          children: boldRuns(lines[i]).map((r) => new TextRun({ text: r.text, bold: r.bold })),
+          children: boldRuns(lines[i], highlightPlaceholders).map((r) => docxTextRun(r)),
         })
       );
       i++;
@@ -74,9 +85,9 @@ function buildDocxChildren(content: string): (Paragraph | Table)[] {
         new Paragraph({
           tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
           children: [
-            ...boldRuns(header.left).map((r) => new TextRun({ text: r.text, bold: r.bold })),
+            ...boldRuns(header.left, highlightPlaceholders).map((r) => docxTextRun(r)),
             new TextRun({ text: "\t" }),
-            ...boldRuns(header.right).map((r) => new TextRun({ text: r.text, bold: r.bold })),
+            ...boldRuns(header.right, highlightPlaceholders).map((r) => docxTextRun(r)),
           ],
         })
       );
@@ -100,9 +111,7 @@ function buildDocxChildren(content: string): (Paragraph | Table)[] {
                     new TableCell({
                       children: [
                         new Paragraph({
-                          children: boldRuns(cell).map(
-                            (run) => new TextRun({ text: run.text, bold: run.bold || r === 0 })
-                          ),
+                          children: boldRuns(cell, highlightPlaceholders).map((run) => docxTextRun(run, r === 0)),
                         }),
                       ],
                     })
@@ -117,7 +126,9 @@ function buildDocxChildren(content: string): (Paragraph | Table)[] {
         new Paragraph({
           alignment: AlignmentType.JUSTIFIED,
           spacing: { line: 360, lineRule: LineRuleType.AUTO },
-          children: lines[i] ? boldRuns(lines[i]).map((r) => new TextRun({ text: r.text, bold: r.bold })) : [new TextRun("")],
+          children: lines[i]
+            ? boldRuns(lines[i], highlightPlaceholders).map((r) => docxTextRun(r))
+            : [new TextRun("")],
         })
       );
       i++;
@@ -126,11 +137,11 @@ function buildDocxChildren(content: string): (Paragraph | Table)[] {
   return children;
 }
 
-export async function exportAsDocx(content: string, filename: string) {
+export async function exportAsDocx(content: string, filename: string, highlightPlaceholders = false) {
   const doc = new Document({
     sections: [
       {
-        children: buildDocxChildren(content),
+        children: buildDocxChildren(content, highlightPlaceholders),
       },
     ],
   });
@@ -138,17 +149,25 @@ export async function exportAsDocx(content: string, filename: string) {
   saveBlob(blob, filename.endsWith(".docx") ? filename : `${filename}.docx`);
 }
 
-function wordWidth(pdf: jsPDF, run: Run): number {
+/** Sets font weight + text color for one run — every draw/measure call below
+ * goes through this so a placeholder's red never leaks onto the next run. */
+function setRunStyle(pdf: jsPDF, run: Run) {
   pdf.setFont("helvetica", run.bold ? "bold" : "normal");
+  if (run.placeholder) pdf.setTextColor(...PLACEHOLDER_COLOR_RGB);
+  else pdf.setTextColor(0, 0, 0);
+}
+
+function wordWidth(pdf: jsPDF, run: Run): number {
+  setRunStyle(pdf, run);
   return pdf.getTextWidth(run.text);
 }
 
-/** Greedy word-wrap that keeps each word's bold flag, so justify can still mix bold/normal runs. */
+/** Greedy word-wrap that keeps each word's bold/placeholder flags, so justify can still mix runs. */
 function wrapRuns(pdf: jsPDF, runs: Run[], maxWidth: number): Run[][] {
   const words: Run[] = [];
   for (const run of runs) {
     for (const w of run.text.split(/\s+/).filter(Boolean)) {
-      words.push({ text: w, bold: run.bold });
+      words.push({ text: w, bold: run.bold, placeholder: run.placeholder });
     }
   }
   pdf.setFont("helvetica", "normal");
@@ -185,7 +204,7 @@ function drawJustifiedLine(pdf: jsPDF, words: Run[], justify: boolean, x0: numbe
 
   let x = x0;
   words.forEach((word, idx) => {
-    pdf.setFont("helvetica", word.bold ? "bold" : "normal");
+    setRunStyle(pdf, word);
     pdf.text(word.text, x, y);
     x += widths[idx] + gap;
   });
@@ -195,7 +214,7 @@ function drawJustifiedLine(pdf: jsPDF, words: Run[], justify: boolean, x0: numbe
 function drawRunsFrom(pdf: jsPDF, runs: Run[], x0: number, y: number): number {
   let x = x0;
   for (const run of runs) {
-    pdf.setFont("helvetica", run.bold ? "bold" : "normal");
+    setRunStyle(pdf, run);
     pdf.text(run.text, x, y);
     x += pdf.getTextWidth(run.text);
   }
@@ -205,13 +224,13 @@ function drawRunsFrom(pdf: jsPDF, runs: Run[], x0: number, y: number): number {
 function runsWidth(pdf: jsPDF, runs: Run[]): number {
   let total = 0;
   for (const run of runs) {
-    pdf.setFont("helvetica", run.bold ? "bold" : "normal");
+    setRunStyle(pdf, run);
     total += pdf.getTextWidth(run.text);
   }
   return total;
 }
 
-export function exportAsPdf(content: string, filename: string) {
+export function exportAsPdf(content: string, filename: string, highlightPlaceholders = false) {
   const pdf = new jsPDF({ unit: "pt", format: "a4" });
   const marginX = 48;
   const marginTop = 56;
@@ -232,7 +251,7 @@ export function exportAsPdf(content: string, filename: string) {
   let i = 0;
   while (i < lines.length) {
     if (i === titleIndex) {
-      const wrapped = wrapRuns(pdf, boldRuns(lines[i]), maxWidth);
+      const wrapped = wrapRuns(pdf, boldRuns(lines[i], highlightPlaceholders), maxWidth);
       for (const words of wrapped) {
         if (y > pageHeight - marginTop) {
           pdf.addPage();
@@ -251,8 +270,8 @@ export function exportAsPdf(content: string, filename: string) {
         pdf.addPage();
         y = marginTop;
       }
-      const leftRuns = boldRuns(header.left);
-      const rightRuns = boldRuns(header.right);
+      const leftRuns = boldRuns(header.left, highlightPlaceholders);
+      const rightRuns = boldRuns(header.right, highlightPlaceholders);
       drawRunsFrom(pdf, leftRuns, marginX, y);
       drawRunsFrom(pdf, rightRuns, pageWidth - marginX - runsWidth(pdf, rightRuns), y);
       y += lineHeight;
@@ -290,7 +309,7 @@ export function exportAsPdf(content: string, filename: string) {
         i++;
         continue;
       }
-      const wrapped = wrapRuns(pdf, boldRuns(lines[i]), maxWidth);
+      const wrapped = wrapRuns(pdf, boldRuns(lines[i], highlightPlaceholders), maxWidth);
       for (let li = 0; li < wrapped.length; li++) {
         if (y > pageHeight - marginTop) {
           pdf.addPage();

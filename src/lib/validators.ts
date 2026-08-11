@@ -125,12 +125,13 @@ export const DOC_TYPES = {
   "child-travel-consent": "თანხმობა არასრულწლოვნის საზღვარგარეთ გაყვანაზე",
   invoice: "ინვოისი",
   "acceptance-act": "მიღება-ჩაბარების აქტი",
+  custom: "სხვა დოკუმენტი",
 } as const;
 
 export type DocType = keyof typeof DOC_TYPES;
 
 export const GenerateDocSchema = z.object({
-  type: z.enum(["complaint", "demand-letter"]),
+  type: z.enum(["complaint", "demand-letter", "custom"]),
   details: z.string().min(10).max(2000),
   locale: LocaleSchema,
 });

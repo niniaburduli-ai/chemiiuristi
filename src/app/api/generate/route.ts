@@ -15,6 +15,7 @@ import { DelimiterSplitter } from "@/lib/streaming/delimiter-splitter";
 import { encodeMeta } from "@/lib/streaming/chat-protocol";
 import { maskPII, unmaskPII } from "@/lib/privacy/pii-mask";
 import { PiiUnmaskStream } from "@/lib/privacy/pii-unmask-stream";
+import { planCustomDocument } from "@/lib/legal/doc-plan";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -122,6 +123,30 @@ function firstArticleNumber(articleLine: string): string | null {
   return m ? m[0] : null;
 }
 
+/** Appended to the drafting system prompt for "custom" (free-form) documents
+ * only — the mandatory-elements checklist the planning pass (doc-plan.ts)
+ * identified for this specific, otherwise-unknown document type. */
+function checklistAddendum(checklist: string[], locale: string): string {
+  const header =
+    locale === "en"
+      ? "\n\nMandatory elements this document type requires under Georgian law — ensure the drafted document includes every one of them:\n"
+      : "\n\nსავალდებულო ელემენტები, რომლებსაც ეს კონკრეტული დოკუმენტის ტიპი საქართველოს კანონმდებლობით მოითხოვს — დარწმუნდი, რომ დოკუმენტი მოიცავს მათგან ყველას:\n";
+  return header + checklist.map((c) => `- ${c}`).join("\n");
+}
+
+/** Appended to the drafting system prompt for "custom" documents only —
+ * overrides the base SYSTEM_KA/EN "never leave a placeholder" rule, since a
+ * free-form request routinely omits facts a fixed-type QUESTION_SCHEMAS form
+ * would have forced the user to enter. The bracket format must stay exactly
+ * this shape ([...], single line, no nested brackets) — it's what the
+ * on-screen preview and the docx/pdf export both key their red-highlighting
+ * off of (see PLACEHOLDER_RE in document-layout.ts). */
+function missingInfoAddendum(locale: string): string {
+  return locale === "en"
+    ? "\n\nException to the \"never leave a placeholder\" rule above, for this document only: if a specific fact needed for a complete document was not provided in the details, do not omit it or leave it vague — write a clear placeholder in square brackets, in capital letters, in English, exactly where that fact belongs (e.g. \"[ENTER PROPERTY ADDRESS]\", \"[ENTER AMOUNT]\"). Each placeholder must be a single short bracketed phrase on one line, with no nested brackets. Never use square brackets in the document for any other purpose."
+    : "\n\nგამონაკლისი ზემოთ მოცემული \"არასოდეს დატოვო placeholder\" წესთან, მხოლოდ ამ დოკუმენტისთვის: თუ დოკუმენტის სრულყოფილად შესადგენად საჭირო კონკრეტული ფაქტი დეტალებში არ იყო მოწოდებული, არ გამოტოვო ის და არ დატოვო ბუნდოვნად — დაწერე ცალსახა placeholder კვადრატულ ფრჩხილებში, დიდი ასოებით, ქართულად, ზუსტად იმ ადგილზე, სადაც ეს ფაქტი ეკუთვნის (მაგ. „[შეიყვანეთ ბინის მისამართი]“, „[შეიყვანეთ თანხა]“). თითოეული placeholder უნდა იყოს ერთი მოკლე ფრაზა ფრჩხილებში, ერთ სტრიქონზე, ჩადგმული ფრჩხილების გარეშე. კვადრატული ფრჩხილები დოკუმენტში არასოდეს გამოიყენო სხვა მიზნით.";
+}
+
 function serializeLegalBasis(groups: { lawName: string; articles: string[] }[]): string {
   return groups
     .filter((g) => g.articles.length > 0)
@@ -211,25 +236,51 @@ export async function POST(req: Request) {
   }
 
   const locale = parsed.data.locale;
-  const typeName = docTypeLabel(parsed.data.type, locale);
   const { masked: maskedDetails, map: piiMap } = maskPII(parsed.data.details);
+
+  // "custom" (free-form) documents have no fixed type, so a planning pass
+  // identifies the document type and its mandatory elements before drafting
+  // — see doc-plan.ts. Fixed types (complaint, demand-letter) skip this and
+  // keep their existing single-pass flow.
+  let typeName: string;
+  let planCostUsd = 0;
+  let checklist: string[] = [];
+  if (parsed.data.type === "custom") {
+    const plan = await planCustomDocument(maskedDetails, locale);
+    planCostUsd = plan.costUsd;
+    if (!plan.isDocument) {
+      return NextResponse.json(
+        { error: "The description doesn't describe a legal document to draft." },
+        { status: 400 }
+      );
+    }
+    typeName = locale === "en" ? plan.docTypeEn : plan.docTypeKa;
+    checklist = plan.checklist;
+  } else {
+    typeName = docTypeLabel(parsed.data.type, locale);
+  }
+
   const userMsg =
     locale === "en"
       ? `Document type: ${typeName}\n\nDetails:\n${maskedDetails}`
       : `დოკუმენტის ტიპი: ${typeName}\n\nდეტალები:\n${maskedDetails}`;
+  const systemPrompt =
+    (locale === "en" ? SYSTEM_EN : SYSTEM_KA) +
+    (checklist.length > 0 ? checklistAddendum(checklist, locale) : "") +
+    (parsed.data.type === "custom" ? missingInfoAddendum(locale) : "");
 
   let deltas: AsyncGenerator<string, number, unknown>;
   try {
     deltas = await streamOpenRouterChat(
       [
-        { role: "system", content: locale === "en" ? SYSTEM_EN : SYSTEM_KA },
+        { role: "system", content: systemPrompt },
         { role: "user", content: userMsg },
       ],
       undefined,
-      // Only 2 doc types (complaint, demand-letter) from a 2000-char detail
-      // input — realistic output is a few hundred to ~1500 words. 6000 tokens
-      // leaves ample headroom over that without paying for a 16k ceiling that
-      // was never actually reachable in practice.
+      // At most a 2000-char detail input (plus, for custom docs, a short
+      // checklist addendum) — realistic output is a few hundred to ~1500
+      // words. 6000 tokens leaves ample headroom over that without paying
+      // for a 16k ceiling that was never actually reachable in practice.
       6000
     );
   } catch (err) {
@@ -332,7 +383,7 @@ export async function POST(req: Request) {
         type: parsed.data.type,
         content,
         legalBasis,
-        costUsd: generationCostUsd + citationsCostUsd,
+        costUsd: generationCostUsd + citationsCostUsd + planCostUsd,
       });
       const saveOps: Promise<unknown>[] = [docCreate];
       if (!isAdmin && quotaSplit) {

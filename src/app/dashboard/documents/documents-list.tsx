@@ -22,6 +22,10 @@ export type GeneratedDocItem = {
 
 function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
   const typeName = DOC_TYPES[doc.type as keyof typeof DOC_TYPES] ?? doc.type;
+  // Only the free-form "custom" generation flow leaves [missing-info]
+  // placeholders — highlighting them red elsewhere (template/fixed-type
+  // docs, and never document analysis/review) would be misleading.
+  const highlightPlaceholders = doc.type === "custom";
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -42,7 +46,11 @@ function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
             </span>
           </div>
         </div>
-        <DocumentDownloadButton content={doc.content} filename={`${doc.title}.txt`} />
+        <DocumentDownloadButton
+          content={doc.content}
+          filename={`${doc.title}.txt`}
+          highlightPlaceholders={highlightPlaceholders}
+        />
       </div>
 
       <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
@@ -51,7 +59,7 @@ function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
       </div>
 
       <div className="text-xs text-muted-foreground bg-muted/40 rounded p-3 leading-relaxed">
-        {renderDocumentBody(doc.content)}
+        {renderDocumentBody(doc.content, highlightPlaceholders)}
       </div>
     </div>
   );

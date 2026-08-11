@@ -31,7 +31,15 @@ import { estimatePageCount } from "@/lib/page-count";
 import { getDict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 
-export type DocumentResult = { id: string; title: string; content: string; legalBasis?: string };
+export type DocumentResult = {
+  id: string;
+  title: string;
+  content: string;
+  legalBasis?: string;
+  /** Set to "custom" for the free-form generation flow's result — the only
+   * case where `[missing-info placeholder]` brackets should render red. */
+  type?: string;
+};
 
 function normalizeSpacing(text: string): string {
   return text.replace(/\n{3,}/g, "\n\n");
@@ -63,6 +71,7 @@ export function DocumentResultPanel({
 
   const wordCount = result ? result.content.trim().split(/\s+/).filter(Boolean).length : 0;
   const pageCount = result ? estimatePageCount(result.content) : 0;
+  const highlightPlaceholders = result?.type === "custom";
 
   function copy() {
     if (!result) return;
@@ -136,10 +145,10 @@ export function DocumentResultPanel({
                   }
                 />
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title)}>
+                  <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title, highlightPlaceholders)}>
                     Word (.docx)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title)}>
+                  <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title, highlightPlaceholders)}>
                     PDF (.pdf)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -167,7 +176,7 @@ export function DocumentResultPanel({
             />
           ) : (
             <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded p-4 leading-relaxed max-h-[70vh] overflow-y-auto">
-              {renderDocumentBody(normalizeSpacing(result.content))}
+              {renderDocumentBody(normalizeSpacing(result.content), highlightPlaceholders)}
             </div>
           )}
           {saving && <p className="text-xs text-muted-foreground mt-2">{drp.savingNote}</p>}
@@ -218,10 +227,10 @@ export function DocumentResultPanel({
                 }
               />
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title)}>
+                <DropdownMenuItem onClick={() => exportAsDocx(result.content, result.title, highlightPlaceholders)}>
                   Word (.docx)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title)}>
+                <DropdownMenuItem onClick={() => exportAsPdf(result.content, result.title, highlightPlaceholders)}>
                   PDF (.pdf)
                 </DropdownMenuItem>
               </DropdownMenuContent>

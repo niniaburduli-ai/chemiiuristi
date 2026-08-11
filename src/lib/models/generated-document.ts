@@ -9,8 +9,9 @@ const GeneratedDocumentSchema = new Schema(
     legalBasis: { type: String, default: "" },
     source: { type: String, enum: ["ai", "template"], default: "ai" },
     // Sum of the generation call's cost + the citation-verification call's
-    // cost (0 when citations came from the doc-type cache). 0 for documents
-    // saved before cost tracking existed.
+    // cost (0 when citations came from the doc-type cache) + the planning
+    // call's cost for free-form "custom" documents (0 otherwise). 0 for
+    // documents saved before cost tracking existed.
     costUsd: { type: Number, default: 0 },
   },
   { timestamps: true }

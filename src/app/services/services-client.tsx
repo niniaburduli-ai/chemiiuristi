@@ -26,6 +26,7 @@ import {
   PlaneTakeoff,
   Receipt,
   ClipboardCheck,
+  PenLine,
   type LucideIcon,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -78,6 +79,7 @@ const TEMPLATE_META: Record<string, { icon: LucideIcon; description: string; des
   "child-travel-consent": { icon: PlaneTakeoff, description: "მშობლის თანხმობა არასრულწლოვნის საზღვარგარეთ გასამგზავრებლად", descriptionEn: "Parental consent for a minor to travel abroad" },
   invoice: { icon: Receipt, description: "გადახდის მოთხოვნა მიწოდებული საქონლის ან მომსახურებისთვის", descriptionEn: "A payment request for goods or services provided" },
   "acceptance-act": { icon: ClipboardCheck, description: "საქონლის, სამუშაოს ან მომსახურების მიღება-ჩაბარების დამადასტურებელი აქტი", descriptionEn: "An act confirming acceptance of goods, work, or services" },
+  custom: { icon: PenLine, description: "აღწერე ნებისმიერი დოკუმენტი, რომელიც არ ჩამოთვლილა ზემოთ — AI შექმნის მას შენი აღწერის მიხედვით", descriptionEn: "Describe any document not listed above — the AI drafts it from your description" },
 };
 
 function AiConsultPanel({ locale }: { locale: Locale }) {

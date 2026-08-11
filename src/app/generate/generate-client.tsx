@@ -24,7 +24,7 @@ import { ChatStreamReader } from "@/lib/streaming/chat-protocol";
 import { getDict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 
-export const DOC_TYPE_VALUES = ["complaint", "demand-letter"] as const;
+export const DOC_TYPE_VALUES = ["complaint", "demand-letter", "custom"] as const;
 
 export function getDocTypes(locale: Locale) {
   return DOC_TYPE_VALUES.map((value) => ({ value, label: docTypeLabel(value, locale) }));
@@ -41,13 +41,14 @@ export function GenerateClient({
   const gp = d.generatePage;
   const DOC_TYPES = getDocTypes(locale);
 
-  const [type, setType] = useState(
-    initialType && QUESTION_SCHEMAS[initialType] ? initialType : "complaint"
-  );
+  const isValidType = (t?: string): t is (typeof DOC_TYPE_VALUES)[number] =>
+    !!t && (DOC_TYPE_VALUES as readonly string[]).includes(t);
+
+  const [type, setType] = useState<string>(isValidType(initialType) ? initialType : "complaint");
   const [syncedInitialType, setSyncedInitialType] = useState(initialType);
   if (initialType !== syncedInitialType) {
     setSyncedInitialType(initialType);
-    if (initialType && QUESTION_SCHEMAS[initialType]) setType(initialType);
+    if (isValidType(initialType)) setType(initialType);
   }
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [extra, setExtra] = useState("");
@@ -152,6 +153,7 @@ export function GenerateClient({
         title: meta.title!,
         content: meta.content!,
         legalBasis: meta.legalBasis,
+        type,
       });
       toast.success(gp.successToast);
     } catch {
@@ -218,6 +220,13 @@ export function GenerateClient({
               </div>
             )}
 
+            {type === "custom" && (
+              <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <p>{gp.customNotice}</p>
+              </div>
+            )}
+
             {fields.map((f) => {
               if (f.type === "select") {
                 return (
@@ -276,14 +285,16 @@ export function GenerateClient({
             })}
 
             <div className="grid grid-cols-[8rem_1fr] gap-3 items-start">
-              <Label htmlFor="extra" className="pt-2">{gp.extraLabel}</Label>
+              <Label htmlFor="extra" className="pt-2">
+                {type === "custom" ? gp.customExtraLabel : gp.extraLabel}
+              </Label>
               <div className="space-y-1">
                 <Textarea
                   id="extra"
                   value={extra}
                   onChange={(e) => setExtra(e.target.value)}
-                  placeholder={gp.extraPlaceholder}
-                  className="min-h-[80px]"
+                  placeholder={type === "custom" ? gp.customExtraPlaceholder : gp.extraPlaceholder}
+                  className={type === "custom" ? "min-h-[160px]" : "min-h-[80px]"}
                 />
                 <p className="text-xs text-muted-foreground">{details.length} / 2000 {gp.charCountSuffix}</p>
               </div>
