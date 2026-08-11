@@ -77,7 +77,7 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
       title: "დოკუმენტის მომზადება", titleEn: "Document generation",
       steps: [
         { text: "აღწერე შენი სიტუაცია", textEn: "Describe your situation" },
-        { text: "AI ადგენს საჩივარს ან მოთხოვნას შენს მონაცემებზე დაყრდნობით", textEn: "AI drafts the complaint or demand based on your details" },
+        { text: "AI ადგენს საჩივარს, მოთხოვნას ან ნებისმიერ სხვა დოკუმენტს შენს მონაცემებზე დაყრდნობით", textEn: "AI drafts a complaint, demand, or any other document based on your details" },
         { text: "გადახედე, მოითხოვე შესწორება ან ჩამოტვირთე", textEn: "Review it, request a revision, or download" },
       ],
       ctaText: "დოკუმენტის შექმნა", ctaTextEn: "Create a document",

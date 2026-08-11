@@ -16,7 +16,7 @@ export const DOC_TYPE_LABELS: Record<string, { label: string; labelEn: string }>
   "child-travel-consent": { label: "თანხმობა არასრულწლოვნის საზღვარგარეთ გაყვანაზე", labelEn: "Child travel consent" },
   invoice: { label: "ინვოისი", labelEn: "Invoice" },
   "acceptance-act": { label: "მიღება-ჩაბარების აქტი", labelEn: "Acceptance act" },
-  custom: { label: "სხვა დოკუმენტი", labelEn: "Other document" },
+  custom: { label: "ნებისმიერი სხვა დოკუმენტი", labelEn: "Any other document" },
 };
 
 export function docTypeLabel(type: string, locale: Locale): string {
