@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { AnimateIn } from '@/components/site/AnimateIn'
 import { PageHero } from '@/components/site/PageHero'
 import { JsonLd } from '@/components/site/JsonLd'
-import { buildMetadata, breadcrumbJsonLd } from '@/lib/seo'
+import { buildMetadata, breadcrumbJsonLd, BRAND_KEYWORDS } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -17,6 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
       ? 'Chemi Iuristi — a modern AI legal platform making legal consultation, contract review, and contract generation accessible to everyone.'
       : 'ჩემი იურისტი — თანამედროვე AI იურიდიული პლატფორმა, რომელიც იურიდიულ კონსულტაციას, ხელშეკრულების შემოწმებას და გენერირებას ხელმისაწვდომს ხდის ყველასთვის.',
     path: '/about',
+    keywords: isEn
+      ? ["about chemi iuristi", "AI legal platform Georgia", "who we are", ...BRAND_KEYWORDS]
+      : ["ჩემი იურისტის შესახებ", "AI იურიდიული პლატფორმა", "ჩვენს შესახებ", ...BRAND_KEYWORDS],
     locale,
     bilingual: true,
   })

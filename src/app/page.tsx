@@ -22,7 +22,7 @@ import { getHomeSeed } from "@/lib/homepage-defaults"
 import { getDict } from "@/lib/i18n/dictionaries"
 import { resolveIcon } from "@/lib/icon-map"
 import { JsonLd } from "@/components/site/JsonLd"
-import { buildMetadata, faqJsonLd, KEYWORDS_EN } from "@/lib/seo"
+import { buildMetadata, faqJsonLd, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
 
 function statsGrid(n: number) {
   if (n <= 1) return "grid-cols-1"
@@ -44,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ? "AI lawyer for Georgia, in Georgian and English. Legal consultation, contract review and generation, risk analysis, and legal advice grounded in Georgian law."
       : "AI იურისტი ქართულ და ინგლისურ ენებზე — იურიდიული კონსულტაცია, ხელშეკრულების შემოწმება და გენერირება, რისკების ანალიზი და იურიდიული რჩევები საქართველოს კანონმდებლობის საფუძველზე.",
     path: "/",
-    keywords: isEn ? [...KEYWORDS_EN] : undefined,
+    keywords: isEn ? [...KEYWORDS_EN] : [...KEYWORDS_KA],
     locale,
     bilingual: true,
   })

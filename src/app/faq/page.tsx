@@ -16,7 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
       ? "Answers to frequently asked questions about Chemi Iuristi — AI consultation, plans, and subscriptions."
       : "პასუხები ხშირად დასმულ კითხვებზე „ჩემი იურისტი“-ს შესახებ — AI კონსულტაცია, პაკეტები და გამოწერა.",
     path: "/faq",
-    keywords: isEn ? [...KEYWORDS_EN] : [...KEYWORDS_KA],
+    keywords: isEn
+      ? ["legal consultation FAQ", "how does AI lawyer work", "legal advice questions", ...KEYWORDS_EN]
+      : ["ხშირად დასმული კითხვები", "იურიდიული კონსულტაცია როგორ მუშაობს", "AI იურისტის კითხვები", ...KEYWORDS_KA],
     locale,
     bilingual: true,
   })
