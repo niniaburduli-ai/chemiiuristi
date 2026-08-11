@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import {
@@ -25,6 +25,8 @@ import {
   Loader2,
   FileStack,
   Search,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -179,8 +181,7 @@ function SectionLoading() {
   );
 }
 
-/** Search box shown above a table. Filtering itself happens in the caller via
- * `filterRows` — this component only owns the query string input. */
+/** Search box shown above a table. */
 function TableSearch({ value, onChange, placeholder = "ძებნა..." }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div className="relative mb-3 max-w-sm">
@@ -190,12 +191,39 @@ function TableSearch({ value, onChange, placeholder = "ძებნა..." }: { 
   );
 }
 
-/** Case-insensitive substring match across a row's searchable fields —
- * `fields` may include nulls/undefined (e.g. an optional owner name). */
-function filterRows<T>(rows: T[], query: string, fields: (row: T) => (string | null | undefined)[]): T[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return rows;
-  return rows.filter((row) => fields(row).some((v) => v?.toLowerCase().includes(q)));
+/** Prev/next page controls shown below a table — hidden when everything
+ * already fits on one page. Mirrors the generic DB browser's pagination. */
+function TablePagination({
+  skip,
+  limit,
+  total,
+  loading,
+  onPrev,
+  onNext,
+}: {
+  skip: number;
+  limit: number;
+  total: number;
+  loading: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  if (total <= limit) return null;
+  return (
+    <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
+      <span>
+        {skip + 1}–{Math.min(skip + limit, total)} / {total}
+      </span>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" disabled={skip === 0 || loading} onClick={onPrev}>
+          <ChevronLeft className="h-4 w-4 text-gold" />
+        </Button>
+        <Button variant="outline" size="sm" disabled={skip + limit >= total || loading} onClick={onNext}>
+          <ChevronRight className="h-4 w-4 text-gold" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 type AdminSection =
@@ -212,30 +240,81 @@ type SectionCounts = {
   feedback: number;
 };
 
-/** Section row data loads lazily (one fetch, the first time a tab opens) and
- * is cached here for the lifetime of the dashboard — switching tabs back and
- * forth never re-fetches. `null` means "not loaded yet". */
-function useLazySection<T>(url: string, active: boolean) {
-  const [rows, setRows] = useState<T[] | null>(null);
+type PaginatedSection<T> = {
+  rows: T[];
+  total: number;
+  skip: number;
+  limit: number;
+  loading: boolean;
+  initialized: boolean;
+  query: string;
+  setQuery: (q: string) => void;
+  prevPage: () => void;
+  nextPage: () => void;
+  mutate: (updater: (prev: T[]) => T[]) => void;
+};
+
+/** Server-paginated + server-searched section list: fetches one page
+ * (`skip..skip+limit`) matching the free-text `query` at a time, so an admin
+ * table never renders — or downloads — every row in a growing collection.
+ * The first page loads lazily, the first time a tab opens, and search input
+ * is debounced so typing doesn't hammer the API. */
+function usePaginatedSection<T>(url: string, active: boolean, limit = 25): PaginatedSection<T> {
+  const [rows, setRows] = useState<T[]>([]);
+  const [total, setTotal] = useState(0);
+  const [skip, setSkip] = useState(0);
+  const [query, setQueryState] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const loadedOnceRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const load = useCallback(
+    (nextSkip: number, q: string) => {
+      setLoading(true);
+      const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
+      fetch(`${url}?skip=${nextSkip}&limit=${limit}${qParam}`)
+        .then((r) => r.json())
+        .then(({ items, total: t }) => {
+          setRows(Array.isArray(items) ? items : []);
+          setTotal(t ?? 0);
+          setSkip(nextSkip);
+        })
+        .catch(() => {
+          setRows([]);
+          setTotal(0);
+        })
+        .finally(() => {
+          setLoading(false);
+          setInitialized(true);
+        });
+    },
+    [url, limit]
+  );
 
   useEffect(() => {
-    if (!active || rows !== null) return;
-    let cancelled = false;
-    fetch(url)
-      .then((r) => r.json())
-      .then(({ items }) => {
-        if (!cancelled) setRows(Array.isArray(items) ? items : []);
-      })
-      .catch(() => {
-        if (!cancelled) setRows([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, rows === null]);
+    if (!active || loadedOnceRef.current) return;
+    loadedOnceRef.current = true;
+    load(0, "");
+  }, [active, load]);
 
-  return [rows, setRows] as const;
+  function setQuery(next: string) {
+    setQueryState(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => load(0, next), 300);
+  }
+
+  function prevPage() {
+    load(Math.max(0, skip - limit), query);
+  }
+  function nextPage() {
+    load(skip + limit, query);
+  }
+  function mutate(updater: (prev: T[]) => T[]) {
+    setRows(updater);
+  }
+
+  return { rows, total, skip, limit, loading, initialized, query, setQuery, prevPage, nextPage, mutate };
 }
 
 export function AdminDashboard({
@@ -248,19 +327,13 @@ export function AdminDashboard({
   const [section, setSection] = useState<AdminSection>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [users, setUsers] = useLazySection<UserRow>("/api/admin/users", section === "users");
-  const [consultations] = useLazySection<ConsultationRow>(
-    "/api/admin/consultations",
-    section === "consultations"
-  );
-  const [generatedDocs] = useLazySection<GeneratedDocRow>(
-    "/api/admin/generated-documents",
-    section === "documents"
-  );
-  const [templates] = useLazySection<GeneratedDocRow>("/api/admin/templates", section === "templates");
-  const [reviews] = useLazySection<ReviewRow>("/api/admin/reviews", section === "reviews");
-  const [feedback] = useLazySection<FeedbackRow>("/api/admin/feedback", section === "feedback");
-  const [uploads, setUploads] = useLazySection<UploadRow>("/api/admin/uploads", section === "files");
+  const usersSection = usePaginatedSection<UserRow>("/api/admin/users", section === "users");
+  const consultationsSection = usePaginatedSection<ConsultationRow>("/api/admin/consultations", section === "consultations");
+  const generatedDocsSection = usePaginatedSection<GeneratedDocRow>("/api/admin/generated-documents", section === "documents");
+  const templatesSection = usePaginatedSection<GeneratedDocRow>("/api/admin/templates", section === "templates");
+  const reviewsSection = usePaginatedSection<ReviewRow>("/api/admin/reviews", section === "reviews");
+  const feedbackSection = usePaginatedSection<FeedbackRow>("/api/admin/feedback", section === "feedback");
+  const uploadsSection = usePaginatedSection<UploadRow>("/api/admin/uploads", section === "files");
 
   const NAV: { group: string; items: { id: AdminSection; label: string; icon: LucideIcon; count?: number }[] }[] = [
     {
@@ -352,29 +425,29 @@ export function AdminDashboard({
   switch (section) {
     case "overview": content = <OverviewPanel />; break;
     case "users":
-      content = users === null
+      content = !usersSection.initialized
         ? <SectionLoading />
-        : <UsersTable initial={users} currentUserId={currentUserId} onUsersChange={setUsers} />;
+        : <UsersTable section={usersSection} currentUserId={currentUserId} />;
       break;
     case "consultations":
-      content = consultations === null ? <SectionLoading /> : <ConsultationsTable initial={consultations} />;
+      content = !consultationsSection.initialized ? <SectionLoading /> : <ConsultationsTable section={consultationsSection} />;
       break;
     case "documents":
-      content = generatedDocs === null ? <SectionLoading /> : <GeneratedDocsTable initial={generatedDocs} />;
+      content = !generatedDocsSection.initialized ? <SectionLoading /> : <GeneratedDocsTable section={generatedDocsSection} />;
       break;
     case "templates":
-      content = templates === null ? <SectionLoading /> : <GeneratedDocsTable initial={templates} emptyLabel="შაბლონები არ არის" />;
+      content = !templatesSection.initialized ? <SectionLoading /> : <GeneratedDocsTable section={templatesSection} emptyLabel="შაბლონები არ არის" />;
       break;
     case "reviews":
-      content = reviews === null ? <SectionLoading /> : <ReviewsTable initial={reviews} />;
+      content = !reviewsSection.initialized ? <SectionLoading /> : <ReviewsTable section={reviewsSection} />;
       break;
     case "feedback":
-      content = feedback === null ? <SectionLoading /> : <FeedbackTable initial={feedback} />;
+      content = !feedbackSection.initialized ? <SectionLoading /> : <FeedbackTable section={feedbackSection} />;
       break;
     case "files":
-      content = uploads === null
+      content = !uploadsSection.initialized
         ? <SectionLoading />
-        : <UploadsTable initial={uploads} onFilesChange={setUploads} />;
+        : <UploadsTable section={uploadsSection} />;
       break;
     case "cms": content = <CMSPanel />; break;
     case "theme": content = <ThemePanel />; break;
@@ -416,16 +489,13 @@ export function AdminDashboard({
 /* -------------------------------- Users -------------------------------- */
 
 function UsersTable({
-  initial,
+  section,
   currentUserId,
-  onUsersChange,
 }: {
-  initial: UserRow[];
+  section: PaginatedSection<UserRow>;
   currentUserId: string;
-  onUsersChange: (updater: (prev: UserRow[] | null) => UserRow[] | null) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const users = filterRows(initial, query, (u) => [u.name, u.email, u.role, u.plan]);
+  const users = section.rows;
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -440,7 +510,7 @@ function UsersTable({
       const res = await fetch(`/api/admin/users/${u.id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) { toast.error(data?.error ?? "წაშლა ვერ მოხერხდა"); return; }
-      onUsersChange((prev) => (prev ?? []).filter((x) => x.id !== u.id));
+      section.mutate((prev) => prev.filter((x) => x.id !== u.id));
       toast.success("მომხმარებელი წაიშალა");
     } catch { toast.error("ქსელის შეცდომა"); }
     finally { setBusyId(null); }
@@ -448,7 +518,7 @@ function UsersTable({
 
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა სახელით, ემეილით, როლით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სახელით, ემეილით, როლით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -498,12 +568,20 @@ function UsersTable({
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
       <EditUserDialog
         user={editing}
         currentUserId={currentUserId}
         onClose={() => setEditing(null)}
         onSaved={(updated) => {
-          onUsersChange((prev) => (prev ?? []).map((x) => (x.id === updated.id ? updated : x)));
+          section.mutate((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
           setEditing(null);
         }}
       />
@@ -663,13 +741,12 @@ function EditUserDialog({
 
 /* -------------------------------- Consultations -------------------------------- */
 
-function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
+function ConsultationsTable({ section }: { section: PaginatedSection<ConsultationRow> }) {
+  const rows = section.rows;
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const rows = filterRows(initial, query, (c) => [c.question, c.answer, c.owner?.name, c.owner?.email]);
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა შეკითხვით, მომხმარებლით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა შეკითხვით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -727,23 +804,31 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
     </div>
   );
 }
 
 /* -------------------------------- Generated Docs -------------------------------- */
 
-function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტები არ არის" }: { initial: GeneratedDocRow[]; emptyLabel?: string }) {
-  const [query, setQuery] = useState("");
-  const rows = filterRows(initial, query, (d) => [
-    d.title,
-    DOC_TYPES[d.type as keyof typeof DOC_TYPES] ?? d.type,
-    d.owner?.name,
-    d.owner?.email,
-  ]);
+function GeneratedDocsTable({
+  section,
+  emptyLabel = "დოკუმენტები არ არის",
+}: {
+  section: PaginatedSection<GeneratedDocRow>;
+  emptyLabel?: string;
+}) {
+  const rows = section.rows;
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა სათაურით, ტიპით, მომხმარებლით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სათაურით, ტიპით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -780,19 +865,26 @@ function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტე
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
     </div>
   );
 }
 
 /* -------------------------------- Reviews -------------------------------- */
 
-function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
+function ReviewsTable({ section }: { section: PaginatedSection<ReviewRow> }) {
+  const rows = section.rows;
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const rows = filterRows(initial, query, (r) => [r.fileName, r.owner?.name, r.owner?.email, r.summary]);
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ფაილით, მომხმარებლით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -842,6 +934,14 @@ function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
     </div>
   );
 }
@@ -865,17 +965,15 @@ function StarRating({ rating }: { rating: number | null }) {
   );
 }
 
-function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
-  const [rows, setRows] = useState(initial);
+function FeedbackTable({ section }: { section: PaginatedSection<FeedbackRow> }) {
+  const filtered = section.rows;
   const [expanded, setExpanded] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const filtered = filterRows(rows, query, (f) => [f.userEmail, f.message]);
 
   async function toggleApproved(f: FeedbackRow) {
     const next = !f.isApproved;
     setBusyId(f.id);
-    setRows((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: next } : r)));
+    section.mutate((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: next } : r)));
     try {
       const res = await fetch(`/api/admin/db/feedback/${f.id}`, {
         method: "PATCH",
@@ -884,7 +982,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
       });
       if (!res.ok) throw new Error("request failed");
     } catch {
-      setRows((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: !next } : r)));
+      section.mutate((prev) => prev.map((r) => (r.id === f.id ? { ...r, isApproved: !next } : r)));
       toast.error("განახლება ვერ მოხერხდა");
     } finally {
       setBusyId(null);
@@ -893,7 +991,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
 
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ემეილით, შეტყობინებით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ემეილით, შეტყობინებით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -950,6 +1048,14 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
     </div>
   );
 }
@@ -957,14 +1063,11 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
 /* -------------------------------- Files -------------------------------- */
 
 function UploadsTable({
-  initial,
-  onFilesChange,
+  section,
 }: {
-  initial: UploadRow[];
-  onFilesChange: (updater: (prev: UploadRow[] | null) => UploadRow[] | null) => void;
+  section: PaginatedSection<UploadRow>;
 }) {
-  const [query, setQuery] = useState("");
-  const files = filterRows(initial, query, (f) => [f.originalName, f.publicId, f.owner?.name, f.owner?.email, f.note]);
+  const files = section.rows;
   const [editing, setEditing] = useState<UploadRow | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -975,7 +1078,7 @@ function UploadsTable({
       const res = await fetch(`/api/admin/uploads/${f.id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) { toast.error(data?.error ?? "წაშლა ვერ მოხერხდა"); return; }
-      onFilesChange((prev) => (prev ?? []).filter((x) => x.id !== f.id));
+      section.mutate((prev) => prev.filter((x) => x.id !== f.id));
       toast.success("ფაილი წაიშალა");
     } catch { toast.error("ქსელის შეცდომა"); }
     finally { setBusyId(null); }
@@ -983,7 +1086,7 @@ function UploadsTable({
 
   return (
     <div>
-      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ფაილით, მფლობელით..." />
+      <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მფლობელით..." />
       <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
@@ -1041,12 +1144,20 @@ function UploadsTable({
         </tbody>
       </table>
       </div>
+      <TablePagination
+        skip={section.skip}
+        limit={section.limit}
+        total={section.total}
+        loading={section.loading}
+        onPrev={section.prevPage}
+        onNext={section.nextPage}
+      />
 
       <EditNoteDialog
         file={editing}
         onClose={() => setEditing(null)}
         onSaved={(id, note) => {
-          onFilesChange((prev) => (prev ?? []).map((x) => (x.id === id ? { ...x, note } : x)));
+          section.mutate((prev) => prev.map((x) => (x.id === id ? { ...x, note } : x)));
           setEditing(null);
         }}
       />

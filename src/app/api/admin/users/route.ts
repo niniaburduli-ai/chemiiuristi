@@ -1,30 +1,39 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/lib/models/user";
 import { Consultation } from "@/lib/models/consultation";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { DocumentReview } from "@/lib/models/document-review";
+import { buildSearchFilter } from "@/lib/admin-search";
 
 export const runtime = "nodejs";
 
 type CostBucket = { _id: string; total: number };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const sp = req.nextUrl.searchParams;
+  const limit = Math.min(100, Math.max(1, Number(sp.get("limit")) || 25));
+  const skip = Math.max(0, Number(sp.get("skip")) || 0);
+  const q = sp.get("q")?.trim();
+
   await dbConnect();
-  const [items, consultationCosts, docCosts, reviewCosts] = await Promise.all([
-    User.find()
+  const filter = await buildSearchFilter(q, ["name", "email", "role", "plan"]);
+  const [items, total, consultationCosts, docCosts, reviewCosts] = await Promise.all([
+    User.find(filter)
       .select(
         "name email image role plan consultationsRemaining docGenerationRemaining docReviewRemaining docTemplatesRemaining planExpiresAt createdAt"
       )
       .sort({ createdAt: -1 })
-      .limit(500)
+      .skip(skip)
+      .limit(limit)
       .lean(),
+    User.countDocuments(filter),
     Consultation.aggregate<CostBucket>([
       { $group: { _id: "$userId", total: { $sum: "$costUsd" } } },
     ]),
@@ -43,6 +52,7 @@ export async function GET() {
   }
 
   return NextResponse.json({
+    total,
     items: items.map((u) => {
       const id = String((u as { _id: unknown })._id);
       return {
