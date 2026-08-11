@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
+import type { SchemaType } from "mongoose"
 import { getAdminSession } from "@/lib/admin"
 import { dbConnect } from "@/lib/db"
 import { getCollection, sanitizeWrite, stripHidden } from "@/lib/admin-collections"
@@ -17,10 +18,24 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ collection:
   const sp = req.nextUrl.searchParams
   const limit = Math.min(100, Math.max(1, Number(sp.get("limit")) || 25))
   const skip = Math.max(0, Number(sp.get("skip")) || 0)
+  const q = sp.get("q")?.trim()
 
   // Correspondence rows an admin archived (soft-deleted) stay in the DB for
   // audit purposes but drop out of the default list view.
-  const filter = collection === "email-log" ? { archivedAt: null } : {}
+  const filter: Record<string, unknown> = collection === "email-log" ? { archivedAt: null } : {}
+
+  // Free-text search across every string field in the collection's schema —
+  // lets the admin filter a growing collection without needing to know which
+  // field a value lives in.
+  if (q) {
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    const stringPaths = Object.entries(col.model.schema.paths as Record<string, SchemaType>)
+      .filter(([key, path]) => path.instance === "String" && key !== "_id" && key !== "__v")
+      .map(([key]) => key)
+    if (stringPaths.length) {
+      filter.$or = stringPaths.map((key) => ({ [key]: { $regex: escaped, $options: "i" } }))
+    }
+  }
 
   await dbConnect()
   const [docs, total] = await Promise.all([

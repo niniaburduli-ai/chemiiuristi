@@ -24,6 +24,7 @@ import {
   Star,
   Loader2,
   FileStack,
+  Search,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -218,6 +219,25 @@ function SectionLoading() {
       <Loader2 className="mr-2 h-5 w-5 animate-spin" /> იტვირთება…
     </div>
   );
+}
+
+/** Search box shown above a table. Filtering itself happens in the caller via
+ * `filterRows` — this component only owns the query string input. */
+function TableSearch({ value, onChange, placeholder = "ძებნა..." }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div className="relative mb-3 max-w-sm">
+      <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="h-9 pl-8" />
+    </div>
+  );
+}
+
+/** Case-insensitive substring match across a row's searchable fields —
+ * `fields` may include nulls/undefined (e.g. an optional owner name). */
+function filterRows<T>(rows: T[], query: string, fields: (row: T) => (string | null | undefined)[]): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return rows;
+  return rows.filter((row) => fields(row).some((v) => v?.toLowerCase().includes(q)));
 }
 
 type AdminSection =
@@ -492,7 +512,8 @@ function UsersTable({
   currentUserId: string;
   onUsersChange: (updater: (prev: UserRow[] | null) => UserRow[] | null) => void;
 }) {
-  const users = initial;
+  const [query, setQuery] = useState("");
+  const users = filterRows(initial, query, (u) => [u.name, u.email, u.role, u.plan]);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -514,7 +535,9 @@ function UsersTable({
   }
 
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა სახელით, ემეილით, როლით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -527,7 +550,7 @@ function UsersTable({
             <th>მიმ.</th>
             <th>AI ხარჯი</th>
             <th>რეგ.</th>
-            <th className="text-right">ქმედება</th>
+            <th className="sticky right-0 z-10 bg-muted text-right shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.15)]">ქმედება</th>
           </tr>
         </thead>
         <tbody>
@@ -548,7 +571,7 @@ function UsersTable({
               <td>{u.docReviewRemaining}</td>
               <td className="text-muted-foreground">{formatCostUsd(u.totalAiCostUsd)}</td>
               <td className="text-muted-foreground">{formatDate(u.createdAt)}</td>
-              <td>
+              <td className="sticky right-0 z-10 bg-background shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.15)]">
                 <div className="flex justify-end gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setEditing(u)} aria-label="რედაქტირება">
                     <Pencil className="h-4 w-4 text-gold" />
@@ -562,6 +585,7 @@ function UsersTable({
           ))}
         </tbody>
       </table>
+      </div>
       <EditUserDialog
         user={editing}
         currentUserId={currentUserId}
@@ -729,8 +753,12 @@ function EditUserDialog({
 
 function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const rows = filterRows(initial, query, (c) => [c.question, c.answer, c.owner?.name, c.owner?.email]);
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა შეკითხვით, მომხმარებლით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -743,10 +771,10 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {initial.length === 0 && (
+          {rows.length === 0 && (
             <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">კონსულტაციები არ არის</td></tr>
           )}
-          {initial.map((c) => (
+          {rows.map((c) => (
             <React.Fragment key={c.id}>
               <tr className="border-b [&>td]:px-4 [&>td]:py-3">
                 <td className="max-w-[280px]">
@@ -786,6 +814,7 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -793,8 +822,17 @@ function ConsultationsTable({ initial }: { initial: ConsultationRow[] }) {
 /* -------------------------------- Generated Docs -------------------------------- */
 
 function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტები არ არის" }: { initial: GeneratedDocRow[]; emptyLabel?: string }) {
+  const [query, setQuery] = useState("");
+  const rows = filterRows(initial, query, (d) => [
+    d.title,
+    DOC_TYPES[d.type as keyof typeof DOC_TYPES] ?? d.type,
+    d.owner?.name,
+    d.owner?.email,
+  ]);
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა სათაურით, ტიპით, მომხმარებლით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -806,10 +844,10 @@ function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტე
           </tr>
         </thead>
         <tbody>
-          {initial.length === 0 && (
+          {rows.length === 0 && (
             <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{emptyLabel}</td></tr>
           )}
-          {initial.map((d) => (
+          {rows.map((d) => (
             <tr key={d.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">
               <td className="max-w-[260px] truncate font-medium">{d.title}</td>
               <td>
@@ -829,6 +867,7 @@ function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტე
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -837,8 +876,12 @@ function GeneratedDocsTable({ initial, emptyLabel = "დოკუმენტე
 
 function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const rows = filterRows(initial, query, (r) => [r.fileName, r.owner?.name, r.owner?.email, r.summary]);
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ფაილით, მომხმარებლით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -852,10 +895,10 @@ function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {initial.length === 0 && (
+          {rows.length === 0 && (
             <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">მიმოხილვები არ არის</td></tr>
           )}
-          {initial.map((r) => (
+          {rows.map((r) => (
             <React.Fragment key={r.id}>
               <tr className="border-b [&>td]:px-4 [&>td]:py-3">
                 <td className="max-w-[180px] truncate font-medium">{r.fileName}</td>
@@ -886,6 +929,7 @@ function ReviewsTable({ initial }: { initial: ReviewRow[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -913,6 +957,8 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
   const [rows, setRows] = useState(initial);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const filtered = filterRows(rows, query, (f) => [f.userEmail, f.message]);
 
   async function toggleApproved(f: FeedbackRow) {
     const next = !f.isApproved;
@@ -934,7 +980,9 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
   }
 
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ემეილით, შეტყობინებით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -947,10 +995,10 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.length === 0 && (
+          {filtered.length === 0 && (
             <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">შეფასებები არ არის</td></tr>
           )}
-          {rows.map((f) => (
+          {filtered.map((f) => (
             <React.Fragment key={f.id}>
               <tr className="border-b [&>td]:px-4 [&>td]:py-3">
                 <td className="text-muted-foreground">{f.userEmail ?? "ანონიმური"}</td>
@@ -989,6 +1037,7 @@ function FeedbackTable({ initial }: { initial: FeedbackRow[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -1002,7 +1051,8 @@ function UploadsTable({
   initial: UploadRow[];
   onFilesChange: (updater: (prev: UploadRow[] | null) => UploadRow[] | null) => void;
 }) {
-  const files = initial;
+  const [query, setQuery] = useState("");
+  const files = filterRows(initial, query, (f) => [f.originalName, f.publicId, f.owner?.name, f.owner?.email, f.note]);
   const [editing, setEditing] = useState<UploadRow | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -1020,7 +1070,9 @@ function UploadsTable({
   }
 
   return (
-    <div className="rounded-lg border overflow-x-auto">
+    <div>
+      <TableSearch value={query} onChange={setQuery} placeholder="ძებნა ფაილით, მფლობელით..." />
+      <div className="rounded-lg border overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/40 text-muted-foreground">
           <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
@@ -1076,6 +1128,7 @@ function UploadsTable({
           ))}
         </tbody>
       </table>
+      </div>
 
       <EditNoteDialog
         file={editing}

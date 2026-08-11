@@ -1,9 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { Loader2, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Database } from "lucide-react"
+import { Loader2, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Database, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Dialog,
@@ -54,14 +55,16 @@ export function DatabasePanel() {
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState<{ doc: Doc; isNew: boolean } | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [query, setQuery] = useState("")
 
   const loadRows = useCallback(
-    async (slug: string, nextSkip: number) => {
+    async (slug: string, nextSkip: number, q: string = "") => {
       if (!slug) return
       setActive(slug)
       setLoading(true)
       try {
-        const res = await fetch(`/api/admin/db/${slug}?skip=${nextSkip}&limit=${LIMIT}`)
+        const qParam = q ? `&q=${encodeURIComponent(q)}` : ""
+        const res = await fetch(`/api/admin/db/${slug}?skip=${nextSkip}&limit=${LIMIT}${qParam}`)
         const { data, total } = await res.json()
         setRows(data ?? [])
         setTotal(total ?? 0)
@@ -88,6 +91,14 @@ export function DatabasePanel() {
       })
   }, [loadRows])
 
+  // Debounce free-text search so we don't hit the API on every keystroke.
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  function onSearchChange(next: string) {
+    setQuery(next)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => loadRows(active, 0, next), 300)
+  }
+
   async function remove(doc: Doc) {
     const id = String(doc._id)
     if (!confirm("ჩანაწერი წაიშლება (ან დაარქივდება, თუ აუდიტისთვის მუდმივი ტიპია). გავაგრძელო?")) return
@@ -100,7 +111,7 @@ export function DatabasePanel() {
         return
       }
       toast.success(data?.archived ? "დაარქივდა" : "წაიშალა")
-      loadRows(active, skip)
+      loadRows(active, skip, query)
     } catch {
       toast.error("ქსელის შეცდომა")
     } finally {
@@ -117,7 +128,10 @@ export function DatabasePanel() {
           <Database className="h-5 w-5 text-gold" />
           <select
             value={active}
-            onChange={(e) => loadRows(e.target.value, 0)}
+            onChange={(e) => {
+              setQuery("")
+              loadRows(e.target.value, 0)
+            }}
             className="h-9 rounded-md border bg-transparent px-3 text-sm"
           >
             {colls.map((c) => (
@@ -126,6 +140,15 @@ export function DatabasePanel() {
               </option>
             ))}
           </select>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="ძებნა ყველა ველში..."
+              className="h-9 w-56 pl-8"
+            />
+          </div>
         </div>
         <Button
           size="sm"
@@ -188,10 +211,10 @@ export function DatabasePanel() {
             {skip + 1}–{Math.min(skip + LIMIT, total)} / {total}
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={skip === 0 || loading} onClick={() => loadRows(active, Math.max(0, skip - LIMIT))}>
+            <Button variant="outline" size="sm" disabled={skip === 0 || loading} onClick={() => loadRows(active, Math.max(0, skip - LIMIT), query)}>
               <ChevronLeft className="h-4 w-4 text-gold" />
             </Button>
-            <Button variant="outline" size="sm" disabled={skip + LIMIT >= total || loading} onClick={() => loadRows(active, skip + LIMIT)}>
+            <Button variant="outline" size="sm" disabled={skip + LIMIT >= total || loading} onClick={() => loadRows(active, skip + LIMIT, query)}>
               <ChevronRight className="h-4 w-4 text-gold" />
             </Button>
           </div>
@@ -204,7 +227,7 @@ export function DatabasePanel() {
         onClose={() => setEditing(null)}
         onSaved={() => {
           setEditing(null)
-          loadRows(active, skip)
+          loadRows(active, skip, query)
         }}
       />
     </div>
