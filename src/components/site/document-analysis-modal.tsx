@@ -13,6 +13,7 @@ import { getDict } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
 import type { DiffSegment } from "@/lib/diff-text";
+import { renderMarkdownBold } from "@/lib/markdown-bold";
 
 const ACCEPT = ".pdf,.docx,.txt,.md";
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -639,7 +640,7 @@ export function DocumentAnalysisPanel({
               <div className="space-y-3 pt-2">
                 <h4 className="text-sm font-bold text-foreground">{t.stepDoneTitle}</h4>
                 <pre className="whitespace-pre-wrap text-sm bg-muted/50 rounded-lg p-3 max-h-96 overflow-y-auto">
-                  {revision.text}
+                  {renderMarkdownBold(revision.text)}
                 </pre>
                 <DocumentDownloadButton
                   content={revision.text}

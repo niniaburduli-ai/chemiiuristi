@@ -1,4 +1,5 @@
 import type { DiffSegment } from "@/lib/diff-text";
+import { renderMarkdownBold } from "@/lib/markdown-bold";
 
 export function TextDiff({ segments }: { segments: DiffSegment[] }) {
   return (
@@ -7,7 +8,7 @@ export function TextDiff({ segments }: { segments: DiffSegment[] }) {
         if (seg.type === "added") {
           return (
             <span key={i} className="bg-green-500/20 text-green-800 dark:text-green-300 rounded-sm">
-              {seg.text}
+              {renderMarkdownBold(seg.text)}
             </span>
           );
         }
@@ -17,11 +18,11 @@ export function TextDiff({ segments }: { segments: DiffSegment[] }) {
               key={i}
               className="bg-red-500/10 text-red-700 dark:text-red-400 line-through rounded-sm"
             >
-              {seg.text}
+              {renderMarkdownBold(seg.text)}
             </span>
           );
         }
-        return <span key={i}>{seg.text}</span>;
+        return <span key={i}>{renderMarkdownBold(seg.text)}</span>;
       })}
     </pre>
   );
