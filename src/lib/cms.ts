@@ -7,17 +7,11 @@ import { AboutPage } from "@/lib/models/AboutPage"
 import { FAQ } from "@/lib/models/FAQ"
 import { FooterContent } from "@/lib/models/FooterContent"
 import { LegalNotice } from "@/lib/models/LegalNotice"
-import { BlogPost } from "@/lib/models/BlogPost"
 import type {
   SiteConfigData, NavMenuData, HomePageData, AboutPageData,
-  FAQData, FooterData, LegalNoticeData, LegalNoticeType, BlogPostData,
+  FAQData, FooterData, LegalNoticeData, LegalNoticeType,
 } from "@/types/cms"
 import type { Locale } from "@/lib/i18n/config"
-
-/** Mongo filter selecting the requested locale's docs (ka = anything not "en"). */
-function localeMatch(locale: Locale) {
-  return locale === "en" ? { locale: "en" } : { locale: { $ne: "en" } }
-}
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
 
@@ -261,60 +255,5 @@ export async function getLegalNotice(type: LegalNoticeType, locale: Locale = "ka
       _id: String(doc._id), type: doc.type as import("@/types/cms").LegalNoticeType, title: doc.title, body: doc.body,
       status: doc.status as import("@/types/cms").CMSStatus, publishedAt: doc.publishedAt ? doc.publishedAt.toISOString() : null,
     }) as LegalNoticeData
-  } catch { return null }
-}
-
-export async function getPublishedBlogPosts(locale: Locale = "ka", limit = 20): Promise<BlogPostData[]> {
-  try {
-    await dbConnect()
-    let docs = await BlogPost.find({ status: "published", ...localeMatch(locale) })
-      .sort({ publishedAt: -1 }).limit(limit).lean()
-    if (locale === "en" && docs.length === 0) {
-      docs = await BlogPost.find({ status: "published", locale: { $ne: "en" } })
-        .sort({ publishedAt: -1 }).limit(limit).lean()
-    }
-    return toPlain(docs.map((d) => ({
-      _id: String(d._id), title: d.title, slug: d.slug, body: d.body,
-      excerpt: d.excerpt, coverImageUrl: d.coverImageUrl, coverImagePubId: d.coverImagePubId,
-      category: String(d.category), tags: d.tags, author: d.author, status: d.status as import("@/types/cms").CMSStatus,
-      publishedAt: d.publishedAt ? d.publishedAt.toISOString() : null,
-      createdAt: (d as { createdAt?: Date }).createdAt?.toISOString() ?? "",
-    })))
-  } catch { return [] }
-}
-
-/** All published blog slugs (both locales) with dates — used by sitemap + static params. */
-export async function getAllPublishedSlugs(): Promise<
-  { slug: string; publishedAt: string | null; updatedAt: string | null }[]
-> {
-  try {
-    await dbConnect()
-    const docs = await BlogPost.find({ status: "published" }, { slug: 1, publishedAt: 1, updatedAt: 1 })
-      .sort({ publishedAt: -1 })
-      .lean()
-    return docs.map((d) => ({
-      slug: String(d.slug),
-      publishedAt: d.publishedAt ? new Date(d.publishedAt).toISOString() : null,
-      updatedAt: (d as { updatedAt?: Date }).updatedAt
-        ? new Date((d as { updatedAt: Date }).updatedAt).toISOString()
-        : null,
-    }))
-  } catch {
-    return []
-  }
-}
-
-export async function getBlogPost(slug: string): Promise<BlogPostData | null> {
-  try {
-    await dbConnect()
-    const doc = await BlogPost.findOne({ slug, status: "published" }).lean()
-    if (!doc) return null
-    return toPlain({
-      _id: String(doc._id), title: doc.title, slug: doc.slug, body: doc.body,
-      excerpt: doc.excerpt, coverImageUrl: doc.coverImageUrl, coverImagePubId: doc.coverImagePubId,
-      category: String(doc.category), tags: doc.tags, author: doc.author, status: doc.status as import("@/types/cms").CMSStatus,
-      publishedAt: doc.publishedAt ? doc.publishedAt.toISOString() : null,
-      createdAt: (doc as { createdAt?: Date }).createdAt?.toISOString() ?? "",
-    }) as BlogPostData
   } catch { return null }
 }

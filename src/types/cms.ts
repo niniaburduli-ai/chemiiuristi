@@ -160,30 +160,6 @@ export interface FAQItem {
 }
 export interface FAQData { items: FAQItem[] }
 
-export interface BlogCategoryData {
-  _id: string
-  name: string
-  slug: string
-  description: string
-  status: CMSStatus
-}
-
-export interface BlogPostData {
-  _id: string
-  title: string
-  slug: string
-  body: object
-  excerpt: string
-  coverImageUrl: string
-  coverImagePubId: string
-  category: string
-  tags: string[]
-  author: string
-  status: CMSStatus
-  publishedAt: string | null
-  createdAt: string
-}
-
 export interface FooterColumn {
   _id: string
   heading: string

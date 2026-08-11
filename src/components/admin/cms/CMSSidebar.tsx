@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 
 export type CMSSection =
   | "site-config" | "nav" | "homepage" | "about"
-  | "faq" | "blog" | "footer" | "legal"
+  | "faq" | "footer" | "legal"
 
 const sections: { id: CMSSection; label: string; sub: string }[] = [
   { id: "site-config", label: "საიტის პარამეტრები", sub: "Site Config" },
@@ -11,7 +11,6 @@ const sections: { id: CMSSection; label: string; sub: string }[] = [
   { id: "homepage", label: "მთავარი გვერდი", sub: "Homepage" },
   { id: "about", label: "ჩვენ შესახებ", sub: "About" },
   { id: "faq", label: "კითხვა-პასუხი", sub: "FAQ" },
-  { id: "blog", label: "ბლოგი", sub: "Blog" },
   { id: "footer", label: "ქვედა კოლონტიტული", sub: "Footer" },
   { id: "legal", label: "სამართლებრივი", sub: "Legal Notices" },
 ]

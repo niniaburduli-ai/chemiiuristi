@@ -14,8 +14,6 @@ import { AboutPage } from "@/lib/models/AboutPage"
 import { FAQ } from "@/lib/models/FAQ"
 import { FooterContent } from "@/lib/models/FooterContent"
 import { LegalNotice } from "@/lib/models/LegalNotice"
-import { BlogPost } from "@/lib/models/BlogPost"
-import { BlogCategory } from "@/lib/models/BlogCategory"
 import { ThemeConfig } from "@/lib/models/ThemeConfig"
 import { FeatureFlags } from "@/lib/models/FeatureFlags"
 import { EmailLog } from "@/lib/models/EmailLog"
@@ -52,8 +50,6 @@ export const ADMIN_COLLECTIONS: AdminCollection[] = [
   { slug: "faqs", label: "FAQ", labelKa: "ხშირად დასმული კითხვები", model: FAQ as unknown as Model<unknown>, hidden: [] },
   { slug: "footers", label: "Footers", labelKa: "ქვედა კოლონტიტულები", model: FooterContent as unknown as Model<unknown>, hidden: [] },
   { slug: "legal-notices", label: "Legal Notices", labelKa: "სამართლებრივი შეტყობინებები", model: LegalNotice as unknown as Model<unknown>, hidden: [] },
-  { slug: "blog-posts", label: "Blog Posts", labelKa: "ბლოგის სტატიები", model: BlogPost as unknown as Model<unknown>, hidden: [] },
-  { slug: "blog-categories", label: "Blog Categories", labelKa: "ბლოგის კატეგორიები", model: BlogCategory as unknown as Model<unknown>, hidden: [] },
   { slug: "theme-config", label: "Theme Config", labelKa: "თემის კონფიგურაცია", model: ThemeConfig as unknown as Model<unknown>, hidden: [] },
   { slug: "feature-flags", label: "Feature Flags", labelKa: "ფუნქციების ალმები", model: FeatureFlags as unknown as Model<unknown>, hidden: [] },
   { slug: "email-log", label: "Correspondence", labelKa: "მიმოწერა", model: EmailLog as unknown as Model<unknown>, hidden: [] },
