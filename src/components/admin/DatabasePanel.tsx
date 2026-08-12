@@ -159,7 +159,7 @@ export function DatabasePanel() {
         </Button>
       </div>
 
-      <div className="relative overflow-x-auto rounded-lg border">
+      <div className="relative overflow-auto max-h-[70dvh] rounded-lg border">
         {loading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/60">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />

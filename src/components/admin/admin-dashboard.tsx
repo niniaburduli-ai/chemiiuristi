@@ -519,7 +519,7 @@ function UsersTable({
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სახელით, ემეილით, როლით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
@@ -747,7 +747,7 @@ function ConsultationsTable({ section }: { section: PaginatedSection<Consultatio
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა შეკითხვით, მომხმარებლით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
@@ -829,7 +829,7 @@ function GeneratedDocsTable({
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სათაურით, ტიპით, მომხმარებლით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
@@ -885,7 +885,7 @@ function ReviewsTable({ section }: { section: PaginatedSection<ReviewRow> }) {
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მომხმარებლით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
@@ -992,7 +992,7 @@ function FeedbackTable({ section }: { section: PaginatedSection<FeedbackRow> }) 
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ემეილით, შეტყობინებით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
@@ -1087,7 +1087,7 @@ function UploadsTable({
   return (
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მფლობელით..." />
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="rounded-lg border overflow-auto max-h-[70dvh]">
       <table className="w-full text-xs">
         <thead className="border-b text-muted-foreground">
           <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">

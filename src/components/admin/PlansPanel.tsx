@@ -153,7 +153,7 @@ export function PlansPanel() {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-auto max-h-[70dvh] rounded-lg border">
         <table className="w-full text-xs">
           <thead className="border-b text-muted-foreground">
             <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">

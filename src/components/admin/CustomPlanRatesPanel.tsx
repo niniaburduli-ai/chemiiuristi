@@ -124,7 +124,7 @@ export function CustomPlanRatesPanel() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-auto max-h-[70dvh] rounded-lg border">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b [&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:whitespace-nowrap">
