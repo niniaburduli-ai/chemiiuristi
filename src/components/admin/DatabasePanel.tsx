@@ -161,13 +161,13 @@ export function DatabasePanel() {
 
       <div className="relative overflow-x-auto rounded-lg border">
         {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/60">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         )}
-        <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-muted-foreground">
-            <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+        <table className="w-full text-xs">
+          <thead className="border-b text-muted-foreground">
+            <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
               <th className="w-[220px]">_id</th>
               <th>მონაცემები</th>
               <th className="text-right">ქმედება</th>
@@ -184,9 +184,9 @@ export function DatabasePanel() {
             {rows.map((d) => {
                 const id = String(d._id)
                 return (
-                  <tr key={id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3 align-top">
+                  <tr key={id} className="border-b last:border-0 [&>td]:px-2 [&>td]:py-2 align-top">
                     <td className="font-mono text-xs text-muted-foreground">{id}</td>
-                    <td className="max-w-[640px] truncate text-xs" title={preview(d)}>{preview(d)}</td>
+                    <td className="max-w-[420px] truncate text-xs" title={preview(d)}>{preview(d)}</td>
                     <td>
                       <div className="flex justify-end gap-1">
                         <Button size="icon" variant="ghost" onClick={() => setEditing({ doc: d, isNew: false })} aria-label="რედაქტირება">

@@ -154,9 +154,9 @@ export function PlansPanel() {
       </div>
 
       <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-muted-foreground">
-            <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+        <table className="w-full text-xs">
+          <thead className="border-b text-muted-foreground">
+            <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
               <th>გეგმა</th>
               <th>Key</th>
               <th>ფასი</th>
@@ -167,7 +167,7 @@ export function PlansPanel() {
           </thead>
           <tbody>
             {plans.map((p) => (
-              <tr key={p.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">
+              <tr key={p.id} className="border-b last:border-0 [&>td]:px-2 [&>td]:py-2">
                 <td>
                   <div className="flex items-center gap-2 font-medium">
                     {p.name}

@@ -127,17 +127,17 @@ export function CustomPlanRatesPanel() {
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-muted/40">
-              <th className="px-4 py-2 text-left font-medium">სერვისი</th>
+            <tr className="border-b [&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:whitespace-nowrap">
+              <th className="px-2 py-2 text-left font-medium">სერვისი</th>
               {STEP_QUANTITIES.map((q) => (
-                <th key={q} className="px-4 py-2 text-right font-medium">{q}</th>
+                <th key={q} className="px-2 py-2 text-right font-medium">{q}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {CUSTOM_SERVICES.map((service) => (
               <tr key={service} className="border-b last:border-b-0">
-                <td className="px-4 py-2 font-medium">{SERVICE_LABELS[service]}</td>
+                <td className="px-2 py-2 font-medium">{SERVICE_LABELS[service]}</td>
                 {STEP_QUANTITIES.map((q, idx) => {
                   const regular = rates[service][idx] / 100
                   const discountMinor = discountRates[service][idx]

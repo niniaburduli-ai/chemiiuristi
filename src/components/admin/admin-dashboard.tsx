@@ -520,9 +520,9 @@ function UsersTable({
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სახელით, ემეილით, როლით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>მომხმარებელი</th>
             <th>როლი</th>
             <th>გეგმა</th>
@@ -540,7 +540,7 @@ function UsersTable({
             <tr><td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">მომხმარებლები არ არის</td></tr>
           )}
           {users.map((u) => (
-            <tr key={u.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">
+            <tr key={u.id} className="border-b last:border-0 [&>td]:px-2 [&>td]:py-2">
               <td>
                 <div className="font-medium">{u.name}</div>
                 <div className="text-xs text-muted-foreground">{u.email}</div>
@@ -748,9 +748,9 @@ function ConsultationsTable({ section }: { section: PaginatedSection<Consultatio
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა შეკითხვით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>შეკითხვა</th>
             <th>მომხმარებელი</th>
             <th>მოდელი</th>
@@ -765,8 +765,8 @@ function ConsultationsTable({ section }: { section: PaginatedSection<Consultatio
           )}
           {rows.map((c) => (
             <React.Fragment key={c.id}>
-              <tr className="border-b [&>td]:px-4 [&>td]:py-3">
-                <td className="max-w-[280px]">
+              <tr className="border-b [&>td]:px-2 [&>td]:py-2">
+                <td className="max-w-[200px]">
                   <div className="truncate font-medium">{c.question}</div>
                 </td>
                 <td>
@@ -830,9 +830,9 @@ function GeneratedDocsTable({
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა სათაურით, ტიპით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>სათაური</th>
             <th>ტიპი</th>
             <th>ღირებულება</th>
@@ -845,8 +845,8 @@ function GeneratedDocsTable({
             <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{emptyLabel}</td></tr>
           )}
           {rows.map((d) => (
-            <tr key={d.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">
-              <td className="max-w-[260px] truncate font-medium">{d.title}</td>
+            <tr key={d.id} className="border-b last:border-0 [&>td]:px-2 [&>td]:py-2">
+              <td className="max-w-[180px] truncate font-medium">{d.title}</td>
               <td>
                 <Badge variant="secondary" className="text-xs">
                   {DOC_TYPES[d.type as keyof typeof DOC_TYPES] ?? d.type}
@@ -886,9 +886,9 @@ function ReviewsTable({ section }: { section: PaginatedSection<ReviewRow> }) {
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მომხმარებლით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>ფაილი</th>
             <th>მომხმარებელი</th>
             <th>პრობლ.</th>
@@ -904,7 +904,7 @@ function ReviewsTable({ section }: { section: PaginatedSection<ReviewRow> }) {
           )}
           {rows.map((r) => (
             <React.Fragment key={r.id}>
-              <tr className="border-b [&>td]:px-4 [&>td]:py-3">
+              <tr className="border-b [&>td]:px-2 [&>td]:py-2">
                 <td className="max-w-[180px] truncate font-medium">{r.fileName}</td>
                 <td>
                   <div className="text-xs">
@@ -993,9 +993,9 @@ function FeedbackTable({ section }: { section: PaginatedSection<FeedbackRow> }) 
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ემეილით, შეტყობინებით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>მომხმარებელი</th>
             <th>შეფასება</th>
             <th>შეტყობინება</th>
@@ -1010,10 +1010,10 @@ function FeedbackTable({ section }: { section: PaginatedSection<FeedbackRow> }) 
           )}
           {filtered.map((f) => (
             <React.Fragment key={f.id}>
-              <tr className="border-b [&>td]:px-4 [&>td]:py-3">
+              <tr className="border-b [&>td]:px-2 [&>td]:py-2">
                 <td className="text-muted-foreground">{f.userEmail ?? "ანონიმური"}</td>
                 <td><StarRating rating={f.rating} /></td>
-                <td className="max-w-[320px] truncate text-muted-foreground">{f.message || "—"}</td>
+                <td className="max-w-[220px] truncate text-muted-foreground">{f.message || "—"}</td>
                 <td className="text-muted-foreground">{formatDate(f.createdAt)}</td>
                 <td>
                   <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -1088,9 +1088,9 @@ function UploadsTable({
     <div>
       <TableSearch value={section.query} onChange={section.setQuery} placeholder="ძებნა ფაილით, მფლობელით..." />
       <div className="rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-muted-foreground">
-          <tr className="[&>th]:px-4 [&>th]:py-3 [&>th]:text-left [&>th]:font-medium">
+      <table className="w-full text-xs">
+        <thead className="border-b text-muted-foreground">
+          <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-muted [&>th]:px-2 [&>th]:py-2 [&>th]:text-left [&>th]:font-medium [&>th]:whitespace-nowrap">
             <th>ფაილი</th>
             <th>მფლობელი</th>
             <th>ზომა</th>
@@ -1104,7 +1104,7 @@ function UploadsTable({
             <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">ფაილები არ არის</td></tr>
           )}
           {files.map((f) => (
-            <tr key={f.id} className="border-b last:border-0 [&>td]:px-4 [&>td]:py-3">
+            <tr key={f.id} className="border-b last:border-0 [&>td]:px-2 [&>td]:py-2">
               <td>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 shrink-0 rounded border bg-muted flex items-center justify-center overflow-hidden">
