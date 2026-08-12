@@ -438,6 +438,7 @@ const ka = {
     templateAlertMessage: "⚠️ გაითვალისწინეთ, რომ ამ დოკუმენტის მზა შაბლონი უკვე არსებობს საიტზე, განყოფილებაში 'შაბლონები/განაცხადები'. შეგიძლიათ გამოიყენოთ ის, ან შექმნათ ახალი დოკუმენტი თქვენი მოთხოვნის მიხედვით.",
     templateAlertUseTemplate: "შაბლონის გამოყენება",
     templateAlertGenerateAnyway: "შექმენი ახალი დოკუმენტი",
+    genericFallbackNotice: "თუ დეტალურად არ ახსნით თქვენ მოთხოვნებს, AI აგენერირებს ზოგად დოკუმენტს, რომელიც შეგიძლიათ დაარედაქტიროთ, წაშალოთ ან დაამატოთ ნებისმიერი ტექსტი თქვენი სიტუაციის მიხედვით.",
   },
   templatesPage: {
     pageTitle: "მზა შაბლონები",
@@ -914,6 +915,7 @@ const en: Dict = {
     templateAlertMessage: "⚠️ Please note that a ready-made template for this document already exists on the site, under 'Templates'. You can use it, or create a new custom document based on your request.",
     templateAlertUseTemplate: "Use the template",
     templateAlertGenerateAnyway: "Create a new document anyway",
+    genericFallbackNotice: "If you don't explain your requirements in detail, the AI will generate a generic document, which you can edit, delete, or add any text to according to your situation.",
   },
   templatesPage: {
     pageTitle: "Ready-made templates",

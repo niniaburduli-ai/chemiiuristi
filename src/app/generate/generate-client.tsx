@@ -182,7 +182,7 @@ export function GenerateClient({
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <SubPageHeader
-        backHref="/dashboard"
+        backHref="/services?tab=templates"
         icon={<FileText className="h-5 w-5 text-gold" />}
         title={gp.pageTitle}
         subtitle={gp.pageSubtitle}
@@ -194,7 +194,8 @@ export function GenerateClient({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[460px_1fr] items-start">
-        <Card>
+        <div className="space-y-3">
+          <Card>
           <CardHeader>
             <CardTitle className="text-base">{gp.cardTitle}</CardTitle>
             <CardDescription>{gp.cardSubtitle}</CardDescription>
@@ -372,7 +373,9 @@ export function GenerateClient({
               )}
             </Button>
           </CardContent>
-        </Card>
+          </Card>
+          <p className="text-xs text-muted-foreground">{gp.genericFallbackNotice}</p>
+        </div>
 
         {loading ? (
           <Card className="min-h-[300px]">

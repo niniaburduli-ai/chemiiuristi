@@ -7,15 +7,26 @@
  *   split into a left-aligned city and a right-aligned date
  * - every other paragraph is justified
  * - `**bold**` markers render as bold text
- * - `[BRACKETED PLACEHOLDERS]` — missing-info fields the "custom" free-form
- *   drafting flow (see /api/generate's doc-plan.ts) leaves for the user to
- *   fill in — render in red, same detection logic in every renderer.
+ * - `[წითელი: ...]` / `[RED: ...]` placeholders — missing-info fields the
+ *   "custom" free-form drafting flow (see /api/generate's missingInfoAddendum)
+ *   leaves for the user to fill in — render in red, same detection logic in
+ *   every renderer.
  */
 
 /** Missing-info placeholder the model is instructed to write for details it
  * wasn't given (custom/free-form documents only — fixed doc types never
- * leave one). Capturing group so `String.split` keeps the match itself. */
-export const PLACEHOLDER_RE = /(\[[^[\]\n]{1,80}\])/g;
+ * leave one). Requires the literal "წითელი:"/"RED:" prefix the drafting
+ * prompt mandates, rather than matching any bracketed text — precise
+ * detection instead of accidentally coloring an unrelated bracket the model
+ * wrote for some other reason. Capturing group so `String.split` keeps the
+ * match itself. */
+export const PLACEHOLDER_RE = /(\[(?:წითელი|RED):[^[\]\n]{1,140}\])/giu;
+
+/** The "წითელი:"/"RED:" marker word itself is only there for PLACEHOLDER_RE
+ * to detect the bracket reliably — showing it to the user is redundant with
+ * the red color it triggers, so it's stripped before display, leaving just
+ * the concrete field name (e.g. "[ქალაქი]" instead of "[წითელი: ქალაქი]"). */
+const PLACEHOLDER_MARKER_RE = /^\[(?:წითელი|RED):\s*/iu;
 
 export type TextSegment = { text: string; bold: boolean; placeholder: boolean };
 
@@ -31,7 +42,8 @@ export function parseRuns(line: string): TextSegment[] {
     for (const part of inner.split(PLACEHOLDER_RE)) {
       if (!part) continue;
       const isPlaceholder = part.startsWith("[") && part.endsWith("]");
-      runs.push({ text: part, bold: isBold, placeholder: isPlaceholder });
+      const text = isPlaceholder ? part.replace(PLACEHOLDER_MARKER_RE, "[") : part;
+      runs.push({ text, bold: isBold, placeholder: isPlaceholder });
     }
   }
   return runs;

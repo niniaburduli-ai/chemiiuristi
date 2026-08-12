@@ -18,11 +18,13 @@ const MODEL = () =>
 export async function streamOpenRouterChat(
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
   model?: string,
-  maxTokens = 2500
+  maxTokens = 2500,
+  temperature?: number
 ) {
   return openOpenRouterStream(messages, {
     model: model ?? MODEL(),
     maxTokens,
+    temperature,
   });
 }
 

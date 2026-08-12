@@ -139,18 +139,38 @@ function checklistAddendum(checklist: string[], locale: string): string {
  * overrides the base SYSTEM_KA/EN "never leave a placeholder" rule, since a
  * free-form request routinely omits facts a fixed-type QUESTION_SCHEMAS form
  * would have forced the user to enter. Placeholder format is fixed and
- * mandatory (user-specified 2026-08-12): "[წითელი: გთხოვთ შეავსოთ <field>]" /
- * "[RED: Please fill in <field>]" — PLACEHOLDER_RE in document-layout.ts
- * matches only this exact prefix, so on-screen and docx/pdf red-highlighting
- * stay precise instead of coloring any stray bracket red.
+ * mandatory (user-specified 2026-08-12, tightened same day): "[წითელი: <field>]" /
+ * "[RED: <field>]" — just the field name, no "please fill in" wording (that
+ * was repeating on every single field and reading as noise once every field
+ * is already red). PLACEHOLDER_RE in document-layout.ts matches only this
+ * exact prefix, so on-screen and docx/pdf red-highlighting stay precise
+ * instead of coloring any stray bracket red; parseRuns strips the marker
+ * word itself before display, so only "[field]" is actually shown.
  *
  * Prompt wording alone couldn't fully stop the model from occasionally
  * dropping or swapping facts it WAS given anyway — see looksUnreliable below
  * for the deterministic check + one retry that catches it instead. */
 function missingInfoAddendum(locale: string): string {
   return locale === "en"
-    ? "\n\nMissing-data handling (critical):\n- Extract and insert every fact the user actually provided in the details, exactly as given — never substitute, swap, or convert it (e.g. GEL into USD) to a different value.\n- Never invent or hallucinate any fact, name, or term that isn't in the details.\n- For every required legal fact or term missing from the details, mark it with an explicit, highly visible placeholder in exactly this format: [RED: Please fill in <specific field name>] (e.g. \"[RED: Please fill in the employer's name]\", \"[RED: Please fill in the monthly salary]\"). This is the only acceptable placeholder format for this document — never use any other format or leave a blank field."
-    : "\n\nმონაცემების დამუშავება (კრიტიკულია):\n- ამოიცნე და ჩასვი დოკუმენტში ყველა მონაცემი, რომელიც მომხმარებელმა დეტალებში მოგაწოდა, ზუსტად ისე, როგორც წერია — არასოდეს შეცვალო, ჩაანაცვლო ან გადააკონვერტირო (მაგ. ლარი დოლარად) სხვა მნიშვნელობით.\n- არასოდეს გამოიგონო რაიმე ფაქტი, სახელი ან პირობა, რომელიც დეტალებში მოცემული არ არის.\n- ყოველი სავალდებულო იურიდიული მონაცემი ან პირობა, რომელიც დეტალებში არ არის მოცემული, აღნიშნე ცალსახა, თვალშისაცემი placeholder-ით, ზუსტად ამ ფორმატით: [წითელი: გთხოვთ შეავსოთ <კონკრეტული მონაცემის დასახელება>] (მაგ. „[წითელი: გთხოვთ შეავსოთ დამსაქმებლის დასახელება]“, „[წითელი: გთხოვთ შეავსოთ ყოველთვიური ხელფასი]“). ეს არის ერთადერთი მისაღები placeholder ფორმატი ამ დოკუმენტისთვის — არასოდეს გამოიყენო სხვა ფორმატი ან ცარიელი ველი.";
+    ? "\n\nMissing-data handling (critical):\n- Extract and insert every fact the user actually provided in the details, exactly as given — never substitute, swap, or convert it (e.g. GEL into USD) to a different value.\n- Never invent or hallucinate any fact, name, or term that isn't in the details.\n- For every required legal fact or term missing from the details, mark it with a placeholder in exactly this format: [RED: <specific field name only>] — just the concrete name of what's missing, nothing else (e.g. \"[RED: employer's name]\", \"[RED: monthly salary]\"). Never repeat instructional phrases like \"please fill in\" inside the brackets — the field is already visually highlighted, so just name it. This is the only acceptable placeholder format for this document — never use any other format or leave a blank field."
+    : "\n\nმონაცემების დამუშავება (კრიტიკულია):\n- ამოიცნე და ჩასვი დოკუმენტში ყველა მონაცემი, რომელიც მომხმარებელმა დეტალებში მოგაწოდა, ზუსტად ისე, როგორც წერია — არასოდეს შეცვალო, ჩაანაცვლო ან გადააკონვერტირო (მაგ. ლარი დოლარად) სხვა მნიშვნელობით.\n- არასოდეს გამოიგონო რაიმე ფაქტი, სახელი ან პირობა, რომელიც დეტალებში მოცემული არ არის.\n- ყოველი სავალდებულო იურიდიული მონაცემი ან პირობა, რომელიც დეტალებში არ არის მოცემული, აღნიშნე placeholder-ით ზუსტად ამ ფორმატით: [წითელი: <კონკრეტული მონაცემის დასახელება, მხოლოდ სახელი>] — მხოლოდ რა არის შესავსები, სხვა არაფერი (მაგ. „[წითელი: დამსაქმებლის დასახელება]“, „[წითელი: ყოველთვიური ხელფასი]“). არასოდეს გაიმეორო ფრჩხილებში ისეთი ინსტრუქციული ფრაზები, როგორიცაა „გთხოვთ შეავსოთ“ — ველი ისედაც თვალშისაცემად გამოკვეთილია, უბრალოდ დაასახელე. ეს არის ერთადერთი მისაღები placeholder ფორმატი ამ დოკუმენტისთვის — არასოდეს გამოიყენო სხვა ფორმატი ან ცარიელი ველი.";
+}
+
+/** Appended to the drafting system prompt for "custom" documents only — since
+ * the city/date input fields were removed from the "custom" form (2026-08-12,
+ * see generate-client.tsx), the model gets no explicit city/date line in the
+ * details and must write the standard header itself: a line right after the
+ * title, in the exact "ქ. CITY<gap>DATE" shape splitHeaderLine (in
+ * document-layout.ts) parses for left/right alignment. Both city and date get
+ * the same missing-info red placeholder as any other absent fact (unless the
+ * details state one explicitly) — deliberately never auto-filled with
+ * today's date (user-specified 2026-08-12): the date the document is drafted
+ * and the date it's actually filed/sent commonly differ, so the user fills it
+ * in themselves, same as any other missing field. */
+function headerAddendum(locale: string): string {
+  return locale === "en"
+    ? `\n\nDocument header (mandatory, custom documents only):\n- Immediately after the title line, write one line with the city and date in this exact shape: "City of **[RED: city]**" then exactly 8 space characters (never more, never a tab, never a new line) then "**[RED: date]**" — unless the details clearly state a city and/or date, in which case use that value instead of the corresponding placeholder. Never guess or fill in today's date yourself — the date the document is actually filed may differ from the date it was drafted, so leave it for the user unless the details state one explicitly.`
+    : `\n\nდოკუმენტის თავსართი (სავალდებულო, მხოლოდ თავისუფალი ფორმის დოკუმენტებისთვის):\n- სათაურის სტრიქონის ზუსტად შემდეგ დაწერე ერთი სტრიქონი ქალაქითა და თარიღით, ზუსტად ამ ფორმით: "ქ. **[წითელი: ქალაქი]**" შემდეგ ზუსტად 8 space სიმბოლო (არასოდეს მეტი, არასოდეს tab, არასოდეს ახალი ხაზი) და "**[წითელი: თარიღი]**" — გარდა იმ შემთხვევისა, როცა დეტალებში ცალსახად მითითებულია ქალაქი და/ან თარიღი, მაშინ ის მნიშვნელობა გამოიყენე შესაბამისი placeholder-ის ნაცვლად. არასოდეს გამოიგონო ან თავად ჩასვა დღევანდელი თარიღი — დოკუმენტის შედგენის თარიღი და ფაქტობრივი შეტანის/გაგზავნის თარიღი შეიძლება განსხვავდებოდეს, ამიტომ თარიღი დატოვე მომხმარებლისთვის შესავსებად, თუ დეტალებში ცალსახად მითითებული არ არის.`;
 }
 
 /** Which currency signals (word or symbol, KA+EN) appear in a text. */
@@ -163,19 +183,23 @@ function detectCurrencySignals(text: string): { gel: boolean; usd: boolean; eur:
 }
 
 /**
- * Deterministic (non-AI) check for the two custom-doc failure modes repeated
- * live testing (2026-08-11/12, purchase/sale contract) actually reproduced,
- * even with the prompt fixes above in place:
+ * Deterministic (non-AI) check for custom-doc failure modes repeated live
+ * testing (2026-08-11/12, purchase/sale contract) actually reproduced, even
+ * with the prompt fixes above in place:
  *  - the currency the user gave (GEL/USD/EUR) disappears from the draft
  *    entirely (replaced by a different one, e.g. GEL silently drafted as
- *    USD), and
+ *    USD),
  *  - the draft is dense with unfilled [placeholder] brackets even though
  *    the user actually wrote a substantial, detailed request — a sign the
- *    model blanked out facts it was given instead of using them.
- * Prompt wording alone couldn't reliably prevent either — see the retry
- * this gates in the POST handler below. Deliberately cheap/approximate
+ *    model blanked out facts it was given instead of using them, and
+ *  - the model gets stuck repeating the header line's city/date gap (see
+ *    headerAddendum) far past the handful of spaces asked for, burning the
+ *    token budget on blank padding instead of the document — reproduced live
+ *    2026-08-12 even after pinning the gap to an exact 8 spaces.
+ * Prompt wording alone couldn't reliably prevent any of these — see the
+ * retry this gates in the POST handler below. Deliberately cheap/approximate
  * (no NLP name-matching) rather than exhaustive: it only needs to catch the
- * two concrete failures actually observed, not every conceivable drift.
+ * concrete failures actually observed, not every conceivable drift.
  */
 function looksUnreliable(detailsRaw: string, draftedBody: string): boolean {
   const given = detectCurrencySignals(detailsRaw);
@@ -186,7 +210,9 @@ function looksUnreliable(detailsRaw: string, draftedBody: string): boolean {
   const placeholderCount = (draftedBody.match(PLACEHOLDER_RE) ?? []).length;
   const excessivePlaceholders = detailsRaw.trim().length > 150 && placeholderCount > 6;
 
-  return currencyDropped || excessivePlaceholders;
+  const runawayWhitespace = /[ \t]{30,}/.test(draftedBody);
+
+  return currencyDropped || excessivePlaceholders || runawayWhitespace;
 }
 
 function serializeLegalBasis(groups: { lawName: string; articles: string[] }[]): string {
@@ -319,7 +345,8 @@ export async function POST(req: Request) {
   const systemPrompt =
     (locale === "en" ? SYSTEM_EN : SYSTEM_KA) +
     (checklist.length > 0 ? checklistAddendum(checklist, locale) : "") +
-    (parsed.data.type === "custom" ? missingInfoAddendum(locale) : "");
+    (parsed.data.type === "custom" ? missingInfoAddendum(locale) : "") +
+    (parsed.data.type === "custom" ? headerAddendum(locale) : "");
 
   let deltas: AsyncGenerator<string, number, unknown>;
   try {
@@ -446,6 +473,12 @@ export async function POST(req: Request) {
           // Retry failed to even connect — keep the first attempt, no extra cost.
         }
       }
+
+      // Defense in depth: even a passing draft, or the kept first attempt
+      // when neither draft clears looksUnreliable's bar, can still carry a
+      // long run of the header-gap whitespace described above — collapse it
+      // so a saved/displayed document is never a wall of blank padding.
+      content = content.replace(/[ \t]{20,}/g, " ");
 
       // Verify the citations this specific document actually generated
       // (never another document's cached set — see doc-citation-cache.ts).
