@@ -5,7 +5,7 @@ import { User } from "@/lib/models/user";
 import { GeneratedDocument } from "@/lib/models/generated-document";
 import { GenerateDocSchema } from "@/lib/validators";
 import { docTypeLabel } from "@/lib/legal/doc-type-labels";
-import { streamOpenRouterChat } from "@/lib/ai-call";
+import { streamOpenRouterChat, callOpenRouterChat } from "@/lib/ai-call";
 import { verifyLegalCitations, STRICT_BREVITY_RULE } from "@/lib/legal/openrouter";
 import { getCachedCitations, setCachedCitations } from "@/lib/legal/doc-citation-cache";
 import { parseDocumentLegalBasis } from "@/lib/legal/citations";
@@ -16,6 +16,7 @@ import { encodeMeta } from "@/lib/streaming/chat-protocol";
 import { maskPII, unmaskPII } from "@/lib/privacy/pii-mask";
 import { PiiUnmaskStream } from "@/lib/privacy/pii-unmask-stream";
 import { planCustomDocument } from "@/lib/legal/doc-plan";
+import { PLACEHOLDER_RE } from "@/lib/document-layout";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -137,14 +138,55 @@ function checklistAddendum(checklist: string[], locale: string): string {
 /** Appended to the drafting system prompt for "custom" documents only —
  * overrides the base SYSTEM_KA/EN "never leave a placeholder" rule, since a
  * free-form request routinely omits facts a fixed-type QUESTION_SCHEMAS form
- * would have forced the user to enter. The bracket format must stay exactly
- * this shape ([...], single line, no nested brackets) — it's what the
- * on-screen preview and the docx/pdf export both key their red-highlighting
- * off of (see PLACEHOLDER_RE in document-layout.ts). */
+ * would have forced the user to enter. Placeholder format is fixed and
+ * mandatory (user-specified 2026-08-12): "[წითელი: გთხოვთ შეავსოთ <field>]" /
+ * "[RED: Please fill in <field>]" — PLACEHOLDER_RE in document-layout.ts
+ * matches only this exact prefix, so on-screen and docx/pdf red-highlighting
+ * stay precise instead of coloring any stray bracket red.
+ *
+ * Prompt wording alone couldn't fully stop the model from occasionally
+ * dropping or swapping facts it WAS given anyway — see looksUnreliable below
+ * for the deterministic check + one retry that catches it instead. */
 function missingInfoAddendum(locale: string): string {
   return locale === "en"
-    ? "\n\nException to the \"never leave a placeholder\" rule above, for this document only: if a specific fact needed for a complete document was not provided in the details, do not omit it or leave it vague — write a clear placeholder in square brackets, in capital letters, in English, exactly where that fact belongs (e.g. \"[ENTER PROPERTY ADDRESS]\", \"[ENTER AMOUNT]\"). Each placeholder must be a single short bracketed phrase on one line, with no nested brackets. Never use square brackets in the document for any other purpose."
-    : "\n\nგამონაკლისი ზემოთ მოცემული \"არასოდეს დატოვო placeholder\" წესთან, მხოლოდ ამ დოკუმენტისთვის: თუ დოკუმენტის სრულყოფილად შესადგენად საჭირო კონკრეტული ფაქტი დეტალებში არ იყო მოწოდებული, არ გამოტოვო ის და არ დატოვო ბუნდოვნად — დაწერე ცალსახა placeholder კვადრატულ ფრჩხილებში, დიდი ასოებით, ქართულად, ზუსტად იმ ადგილზე, სადაც ეს ფაქტი ეკუთვნის (მაგ. „[შეიყვანეთ ბინის მისამართი]“, „[შეიყვანეთ თანხა]“). თითოეული placeholder უნდა იყოს ერთი მოკლე ფრაზა ფრჩხილებში, ერთ სტრიქონზე, ჩადგმული ფრჩხილების გარეშე. კვადრატული ფრჩხილები დოკუმენტში არასოდეს გამოიყენო სხვა მიზნით.";
+    ? "\n\nMissing-data handling (critical):\n- Extract and insert every fact the user actually provided in the details, exactly as given — never substitute, swap, or convert it (e.g. GEL into USD) to a different value.\n- Never invent or hallucinate any fact, name, or term that isn't in the details.\n- For every required legal fact or term missing from the details, mark it with an explicit, highly visible placeholder in exactly this format: [RED: Please fill in <specific field name>] (e.g. \"[RED: Please fill in the employer's name]\", \"[RED: Please fill in the monthly salary]\"). This is the only acceptable placeholder format for this document — never use any other format or leave a blank field."
+    : "\n\nმონაცემების დამუშავება (კრიტიკულია):\n- ამოიცნე და ჩასვი დოკუმენტში ყველა მონაცემი, რომელიც მომხმარებელმა დეტალებში მოგაწოდა, ზუსტად ისე, როგორც წერია — არასოდეს შეცვალო, ჩაანაცვლო ან გადააკონვერტირო (მაგ. ლარი დოლარად) სხვა მნიშვნელობით.\n- არასოდეს გამოიგონო რაიმე ფაქტი, სახელი ან პირობა, რომელიც დეტალებში მოცემული არ არის.\n- ყოველი სავალდებულო იურიდიული მონაცემი ან პირობა, რომელიც დეტალებში არ არის მოცემული, აღნიშნე ცალსახა, თვალშისაცემი placeholder-ით, ზუსტად ამ ფორმატით: [წითელი: გთხოვთ შეავსოთ <კონკრეტული მონაცემის დასახელება>] (მაგ. „[წითელი: გთხოვთ შეავსოთ დამსაქმებლის დასახელება]“, „[წითელი: გთხოვთ შეავსოთ ყოველთვიური ხელფასი]“). ეს არის ერთადერთი მისაღები placeholder ფორმატი ამ დოკუმენტისთვის — არასოდეს გამოიყენო სხვა ფორმატი ან ცარიელი ველი.";
+}
+
+/** Which currency signals (word or symbol, KA+EN) appear in a text. */
+function detectCurrencySignals(text: string): { gel: boolean; usd: boolean; eur: boolean } {
+  return {
+    gel: text.includes("₾") || /ლარ/u.test(text) || /\bGEL\b/i.test(text),
+    usd: text.includes("$") || /დოლარ/u.test(text) || /\bUSD\b/i.test(text),
+    eur: text.includes("€") || /ევრო/u.test(text) || /\bEUR\b/i.test(text),
+  };
+}
+
+/**
+ * Deterministic (non-AI) check for the two custom-doc failure modes repeated
+ * live testing (2026-08-11/12, purchase/sale contract) actually reproduced,
+ * even with the prompt fixes above in place:
+ *  - the currency the user gave (GEL/USD/EUR) disappears from the draft
+ *    entirely (replaced by a different one, e.g. GEL silently drafted as
+ *    USD), and
+ *  - the draft is dense with unfilled [placeholder] brackets even though
+ *    the user actually wrote a substantial, detailed request — a sign the
+ *    model blanked out facts it was given instead of using them.
+ * Prompt wording alone couldn't reliably prevent either — see the retry
+ * this gates in the POST handler below. Deliberately cheap/approximate
+ * (no NLP name-matching) rather than exhaustive: it only needs to catch the
+ * two concrete failures actually observed, not every conceivable drift.
+ */
+function looksUnreliable(detailsRaw: string, draftedBody: string): boolean {
+  const given = detectCurrencySignals(detailsRaw);
+  const drafted = detectCurrencySignals(draftedBody);
+  const currencyDropped =
+    (given.gel && !drafted.gel) || (given.usd && !drafted.usd) || (given.eur && !drafted.eur);
+
+  const placeholderCount = (draftedBody.match(PLACEHOLDER_RE) ?? []).length;
+  const excessivePlaceholders = detailsRaw.trim().length > 150 && placeholderCount > 6;
+
+  return currencyDropped || excessivePlaceholders;
 }
 
 function serializeLegalBasis(groups: { lawName: string; articles: string[] }[]): string {
@@ -256,6 +298,16 @@ export async function POST(req: Request) {
     }
     typeName = locale === "en" ? plan.docTypeEn : plan.docTypeKa;
     checklist = plan.checklist;
+    if (plan.matchedTemplateType && !parsed.data.confirmed) {
+      // A ready-made static template (templates.ts) already covers this
+      // exact request — stop before drafting/saving/charging quota and let
+      // the client show the alert with a "generate anyway" option, which
+      // resubmits with confirmed: true to bypass this check.
+      return NextResponse.json(
+        { templateAlert: true, matchedType: plan.matchedTemplateType },
+        { status: 409 }
+      );
+    }
   } else {
     typeName = docTypeLabel(parsed.data.type, locale);
   }
@@ -282,6 +334,11 @@ export async function POST(req: Request) {
       // words. 6000 tokens leaves ample headroom over that without paying
       // for a 16k ceiling that was never actually reachable in practice.
       6000
+      // Tried lowering temperature here for custom docs to curb data-fidelity
+      // drift — reverted: live testing showed it didn't reliably fix the
+      // drift, and separately caused the model to get stuck repeating
+      // whitespace in the header line, ballooning one generation past 100k
+      // characters. Left at the provider default for every doc type.
     );
   } catch (err) {
     // Connection never opened — nothing streamed yet, safe to return a
@@ -347,9 +404,48 @@ export async function POST(req: Request) {
       // rare case, but the authoritative `content` below (what's actually
       // saved, and what the client swaps to once the stream ends) is always
       // fully stripped either way.
-      const content = unmaskPII(body_.replace(/^#{1,6}\s*/gm, ""), piiMap);
-      const citationsSection =
+      let content = unmaskPII(body_.replace(/^#{1,6}\s*/gm, ""), piiMap);
+      let citationsSection =
         delimIndex === -1 ? "" : full.slice(delimIndex + CITATIONS_DELIM.length).trim();
+
+      if (parsed.data.type === "custom" && looksUnreliable(maskedDetails, content)) {
+        // Custom docs only: the prompt-level fixes above still don't reliably
+        // stop the model from occasionally dropping/substituting facts it
+        // was actually given (see looksUnreliable's doc comment) — one
+        // automatic non-streaming retry catches most of those before saving.
+        // The browser may have already streamed the flawed first attempt
+        // live during "generating…" — only what's saved/shown below (this
+        // block runs before the DB write and before the meta payload is
+        // sent) reflects whichever attempt is actually better.
+        try {
+          const retry = await callOpenRouterChat(
+            [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userMsg },
+            ],
+            undefined,
+            6000
+          );
+          const retryDelimIndex = retry.content.indexOf(CITATIONS_DELIM);
+          const retryBody = (
+            retryDelimIndex === -1 ? retry.content : retry.content.slice(0, retryDelimIndex)
+          ).trim();
+          const retryContent = unmaskPII(retryBody.replace(/^#{1,6}\s*/gm, ""), piiMap);
+          generationCostUsd += retry.costUsd;
+          // Only swap to the retry if it actually clears the bar — a longer
+          // retry that still drops/swaps the same facts isn't an improvement,
+          // so an earlier version of this check that treated "longer" as
+          // good enough on its own ended up keeping the same bug most of the
+          // time. If the retry doesn't clearly pass, keep the first attempt.
+          if (!looksUnreliable(maskedDetails, retryContent)) {
+            content = retryContent;
+            citationsSection =
+              retryDelimIndex === -1 ? "" : retry.content.slice(retryDelimIndex + CITATIONS_DELIM.length).trim();
+          }
+        } catch {
+          // Retry failed to even connect — keep the first attempt, no extra cost.
+        }
+      }
 
       // Verify the citations this specific document actually generated
       // (never another document's cached set — see doc-citation-cache.ts).

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FileText, Loader2, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { SubPageHeader } from "@/components/site/SubPageHeader";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,12 @@ export function GenerateClient({
   const [result, setResult] = useState<DocumentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
+  // Set when the server reports an existing static template already covers
+  // this "custom" request (see /api/generate's matchedTemplateType check).
+  // Cleared on any edit so a changed request re-runs the check instead of
+  // silently reusing a stale confirmation.
+  const [templateMatch, setTemplateMatch] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
 
   const fields = [...COMMON_FIELDS, ...(QUESTION_SCHEMAS[type] ?? [])];
 
@@ -83,22 +90,26 @@ export function GenerateClient({
 
   function setAnswer(key: string, value: string) {
     setAnswers((prev) => ({ ...prev, [key]: value }));
+    setTemplateMatch(null);
+    setConfirmed(false);
   }
 
-  async function generate() {
+  async function generate(confirmOverride = false) {
     if (details.trim().length < 10) {
       toast.error(gp.minLengthError);
       return;
     }
+    const confirmNow = confirmOverride || confirmed;
     setLoading(true);
     setError(null);
     setResult(null);
     setStreamingText("");
+    setTemplateMatch(null);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, details, locale }),
+        body: JSON.stringify({ type, details, locale, confirmed: confirmNow }),
       });
 
       if (!res.ok) {
@@ -107,6 +118,10 @@ export function GenerateClient({
           return;
         }
         const data = await res.json().catch(() => ({}));
+        if (res.status === 409 && data.templateAlert) {
+          setTemplateMatch(data.matchedType ?? "");
+          return;
+        }
         setError(data.error ?? gp.genericError);
         return;
       }
@@ -195,6 +210,8 @@ export function GenerateClient({
                   setAnswers({});
                   setExtra("");
                   setResult(null);
+                  setTemplateMatch(null);
+                  setConfirmed(false);
                 }}
                 className="w-full h-10 rounded-md border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
@@ -292,7 +309,11 @@ export function GenerateClient({
                 <Textarea
                   id="extra"
                   value={extra}
-                  onChange={(e) => setExtra(e.target.value)}
+                  onChange={(e) => {
+                    setExtra(e.target.value);
+                    setTemplateMatch(null);
+                    setConfirmed(false);
+                  }}
                   placeholder={type === "custom" ? gp.customExtraPlaceholder : gp.extraPlaceholder}
                   className={type === "custom" ? "min-h-[160px]" : "min-h-[80px]"}
                 />
@@ -306,11 +327,38 @@ export function GenerateClient({
               </p>
             )}
 
+            {templateMatch !== null && (
+              <div className="flex flex-col gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <p>{gp.templateAlertMessage}</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={templateMatch ? `/templates?type=${templateMatch}` : "/templates"}
+                    className={buttonVariants({ size: "sm", variant: "outline" })}
+                  >
+                    {gp.templateAlertUseTemplate}
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setConfirmed(true);
+                      generate(true);
+                    }}
+                  >
+                    {gp.templateAlertGenerateAnyway}
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
 
-            <Button onClick={generate} disabled={loading || missingRequired.length > 0} className="w-full">
+            <Button onClick={() => generate()} disabled={loading || missingRequired.length > 0} className="w-full">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

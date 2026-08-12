@@ -134,6 +134,9 @@ export const GenerateDocSchema = z.object({
   type: z.enum(["complaint", "demand-letter", "custom"]),
   details: z.string().min(10).max(2000),
   locale: LocaleSchema,
+  // Set once the user has seen the "a template already exists" alert and
+  // chosen to draft a custom document anyway — see the /api/generate route.
+  confirmed: z.boolean().optional().default(false),
 });
 export type GenerateDocInput = z.infer<typeof GenerateDocSchema>;
 

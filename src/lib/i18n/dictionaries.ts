@@ -435,6 +435,9 @@ const ka = {
     connectionError: "სერვისთან კავშირი ვერ დამყარდა",
     successToast: "დოკუმენტი შეიქმნა",
     resultEmptyHint: "შეავსე დეტალები და დააჭირე „შექმენი დოკუმენტი”",
+    templateAlertMessage: "⚠️ გაითვალისწინეთ, რომ ამ დოკუმენტის მზა შაბლონი უკვე არსებობს საიტზე, განყოფილებაში 'შაბლონები/განაცხადები'. შეგიძლიათ გამოიყენოთ ის, ან შექმნათ ახალი დოკუმენტი თქვენი მოთხოვნის მიხედვით.",
+    templateAlertUseTemplate: "შაბლონის გამოყენება",
+    templateAlertGenerateAnyway: "შექმენი ახალი დოკუმენტი",
   },
   templatesPage: {
     pageTitle: "მზა შაბლონები",
@@ -908,6 +911,9 @@ const en: Dict = {
     connectionError: "Could not connect to the service",
     successToast: "Document created",
     resultEmptyHint: "Fill in the details and click “Create document”",
+    templateAlertMessage: "⚠️ Please note that a ready-made template for this document already exists on the site, under 'Templates'. You can use it, or create a new custom document based on your request.",
+    templateAlertUseTemplate: "Use the template",
+    templateAlertGenerateAnyway: "Create a new document anyway",
   },
   templatesPage: {
     pageTitle: "Ready-made templates",
