@@ -19,10 +19,12 @@ const ACCEPT = ".pdf,.docx,.txt,.md";
 const MAX_BYTES = 10 * 1024 * 1024;
 const SUPPORTED = ["pdf", "docx", "txt", "md"];
 
-const IMAGE_ACCEPT = ".jpg,.jpeg";
+const IMAGE_ACCEPT = ".jpg,.jpeg,.png";
 const MAX_IMAGES = 10;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-const IMAGE_SUPPORTED = ["jpg", "jpeg"];
+const IMAGE_SUPPORTED = ["jpg", "jpeg", "png"];
+
+const COMBINED_ACCEPT = `${ACCEPT},${IMAGE_ACCEPT}`;
 
 type AnalysisResult = {
   id: string;
@@ -46,7 +48,6 @@ type RevisionResult = {
 type ImproveStatus = "idle" | "loading" | "error";
 
 type Status = "idle" | "ready" | "analyzing" | "results" | "error";
-type Mode = "document" | "photos";
 type ImageItem = { file: File; url: string };
 
 function extOf(name: string): string {
@@ -77,12 +78,11 @@ export function DocumentAnalysisPanel({
   initialReviewId?: string;
 }) {
   const t = getDict(locale).documentAnalysis;
-  const [mode, setMode] = useState<Mode>("document");
   const [status, setStatus] = useState<Status>("idle");
   const [file, setFile] = useState<File | null>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
   const [errorKind, setErrorKind] = useState<
-    "unsupported" | "tooLarge" | "unauthorized" | "quota" | "generic" | "unsupportedImage" | "noImages" | null
+    "unsupported" | "tooLarge" | "unauthorized" | "quota" | "generic" | null
   >(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [revision, setRevision] = useState<RevisionResult | null>(null);
@@ -92,8 +92,7 @@ export function DocumentAnalysisPanel({
   const [improveErrorKind, setImproveErrorKind] = useState<
     "unauthorized" | "quota" | "generic" | null
   >(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const imagesRef = useRef<HTMLInputElement>(null);
+  const pickerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!initialReviewId) return;
@@ -136,7 +135,6 @@ export function DocumentAnalysisPanel({
   }
 
   function reset() {
-    setMode("document");
     setStatus("idle");
     setFile(null);
     clearImages();
@@ -147,60 +145,49 @@ export function DocumentAnalysisPanel({
     setInstructionText("");
     setImproveStatus("idle");
     setImproveErrorKind(null);
-    if (fileRef.current) fileRef.current.value = "";
-    if (imagesRef.current) imagesRef.current.value = "";
-  }
-
-  function switchMode(next: Mode) {
-    if (next === mode) return;
-    setMode(next);
-    setFile(null);
-    clearImages();
-    setStatus("idle");
-    setErrorKind(null);
-    if (fileRef.current) fileRef.current.value = "";
-    if (imagesRef.current) imagesRef.current.value = "";
+    if (pickerRef.current) pickerRef.current.value = "";
   }
 
   function handlePick(e: React.ChangeEvent<HTMLInputElement>) {
-    const picked = e.target.files?.[0];
-    if (!picked) return;
-    if (!SUPPORTED.includes(extOf(picked.name))) {
+    const picked = Array.from(e.target.files ?? []);
+    if (picked.length === 0) return;
+
+    const docFiles = picked.filter((f) => SUPPORTED.includes(extOf(f.name)));
+    const imgFiles = picked.filter((f) => IMAGE_SUPPORTED.includes(extOf(f.name)));
+
+    if (docFiles.length === 0 && imgFiles.length === 0) {
       setErrorKind("unsupported");
       setStatus("error");
       return;
     }
-    if (picked.size > MAX_BYTES) {
-      setErrorKind("tooLarge");
-      setStatus("error");
-      return;
-    }
-    setFile(picked);
-    setErrorKind(null);
-    setStatus("ready");
-  }
 
-  function handleImagesPick(e: React.ChangeEvent<HTMLInputElement>) {
-    const picked = Array.from(e.target.files ?? []);
-    if (picked.length === 0) return;
-    if (picked.some((f) => !IMAGE_SUPPORTED.includes(extOf(f.name)))) {
-      setErrorKind("unsupportedImage");
-      setStatus("error");
-      return;
+    if (docFiles.length > 0) {
+      const doc = docFiles[0];
+      if (doc.size > MAX_BYTES) {
+        setErrorKind("tooLarge");
+        setStatus("error");
+        return;
+      }
+      clearImages();
+      setFile(doc);
+      setErrorKind(null);
+      setStatus("ready");
+    } else {
+      if (imgFiles.some((f) => f.size > MAX_IMAGE_BYTES)) {
+        setErrorKind("tooLarge");
+        setStatus("error");
+        return;
+      }
+      setFile(null);
+      setImages((prev) => {
+        const room = Math.max(MAX_IMAGES - prev.length, 0);
+        const accepted = imgFiles.slice(0, room).map((f) => ({ file: f, url: URL.createObjectURL(f) }));
+        return [...prev, ...accepted];
+      });
+      setErrorKind(null);
+      setStatus("ready");
     }
-    if (picked.some((f) => f.size > MAX_IMAGE_BYTES)) {
-      setErrorKind("tooLarge");
-      setStatus("error");
-      return;
-    }
-    setImages((prev) => {
-      const room = Math.max(MAX_IMAGES - prev.length, 0);
-      const accepted = picked.slice(0, room).map((f) => ({ file: f, url: URL.createObjectURL(f) }));
-      return [...prev, ...accepted];
-    });
-    setErrorKind(null);
-    setStatus("ready");
-    if (imagesRef.current) imagesRef.current.value = "";
+    if (pickerRef.current) pickerRef.current.value = "";
   }
 
   function removeImage(index: number) {
@@ -214,13 +201,8 @@ export function DocumentAnalysisPanel({
   }
 
   async function analyze() {
-    if (mode === "document" && !file) {
+    if (!file && images.length === 0) {
       setErrorKind("unsupported");
-      setStatus("error");
-      return;
-    }
-    if (mode === "photos" && images.length === 0) {
-      setErrorKind("noImages");
       setStatus("error");
       return;
     }
@@ -228,7 +210,7 @@ export function DocumentAnalysisPanel({
     setErrorKind(null);
     try {
       const formData = new FormData();
-      if (mode === "document" && file) {
+      if (file) {
         formData.append("file", file);
       } else {
         images.forEach((img) => formData.append("images", img.file));
@@ -302,7 +284,7 @@ export function DocumentAnalysisPanel({
     toast.success(t.improveCopied);
   }
 
-  const analyzeDisabled = mode === "document" ? !file : images.length === 0;
+  const analyzeDisabled = !file && images.length === 0;
 
   return (
     <div className="flex flex-col h-full">
@@ -316,120 +298,79 @@ export function DocumentAnalysisPanel({
 
       {(status === "idle" || status === "ready") && (
           <div className="space-y-4">
-            <div className="flex rounded-lg border border-border p-1 gap-1">
-              <button
-                type="button"
-                onClick={() => switchMode("document")}
-                className={`flex-1 rounded px-2 py-1.5 text-sm font-medium transition-colors ${
-                  mode === "document"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.modeDocumentLabel}
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode("photos")}
-                className={`flex-1 rounded px-2 py-1.5 text-sm font-medium transition-colors ${
-                  mode === "photos"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.modePhotosLabel}
-              </button>
-            </div>
+            <p className="text-sm font-medium text-foreground text-center">{t.dropzoneHint}</p>
 
-            {mode === "document" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition-colors p-4 flex flex-col items-center gap-1.5 text-center"
-                >
-                  <FileUp className="h-5 w-5 text-gold" />
-                  <p className="text-sm font-medium text-foreground">
-                    {file ? file.name : t.dropzoneHint}
-                  </p>
-                  <span className="text-xs text-muted-foreground">
-                    {file ? t.changeFile : t.chooseFile}
-                  </span>
-                </button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept={ACCEPT}
-                  className="hidden"
-                  onChange={handlePick}
-                />
-                <p className="text-xs text-muted-foreground text-center">
-                  {t.pageCreditNotice}
-                </p>
-              </>
-            ) : (
-              <>
-                {images.length > 0 ? (
-                  <div className="grid grid-cols-4 gap-2">
-                    {images.map((img, i) => (
-                      <div
-                        key={img.url}
-                        className="relative aspect-square rounded-lg overflow-hidden border border-border group"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img.url} alt="" className="w-full h-full object-cover" />
-                        <span className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center">
-                          {i + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeImage(i)}
-                          className="absolute top-1 right-1 h-5 w-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <XIcon className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                    {images.length < MAX_IMAGES && (
+            <div className="flex justify-center">
+              {images.length > 0 ? (
+                <div className="grid grid-cols-4 gap-2 w-72">
+                  {images.map((img, i) => (
+                    <div
+                      key={img.url}
+                      className="relative aspect-square rounded-lg overflow-hidden border border-border group"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.url} alt="" className="w-full h-full object-cover" />
+                      <span className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center">
+                        {i + 1}
+                      </span>
                       <button
                         type="button"
-                        onClick={() => imagesRef.current?.click()}
-                        className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/60 flex items-center justify-center text-muted-foreground hover:text-gold transition-colors"
-                        aria-label={t.addMoreLabel}
+                        onClick={() => removeImage(i)}
+                        className="absolute top-1 right-1 h-5 w-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <Plus className="h-5 w-5 text-gold" />
+                        <XIcon className="h-3 w-3" />
                       </button>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => imagesRef.current?.click()}
-                    className="w-full rounded-xl border-2 border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition-colors p-4 flex flex-col items-center gap-1.5 text-center"
-                  >
-                    <ImageIcon className="h-5 w-5 text-gold" />
-                    <p className="text-sm font-medium text-foreground">{t.dropzoneHintPhotos}</p>
-                    <span className="text-xs text-muted-foreground">{t.chooseFile}</span>
-                  </button>
-                )}
-                <input
-                  ref={imagesRef}
-                  type="file"
-                  accept={IMAGE_ACCEPT}
-                  multiple
-                  className="hidden"
-                  onChange={handleImagesPick}
-                />
-                {images.length >= MAX_IMAGES && (
-                  <p className="text-xs text-muted-foreground text-center">{t.maxImagesNotice}</p>
-                )}
-              </>
+                    </div>
+                  ))}
+                  {images.length < MAX_IMAGES && (
+                    <button
+                      type="button"
+                      onClick={() => pickerRef.current?.click()}
+                      className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/60 flex items-center justify-center text-muted-foreground hover:text-gold transition-colors"
+                      aria-label={t.addMoreLabel}
+                    >
+                      <Plus className="h-5 w-5 text-gold" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => pickerRef.current?.click()}
+                  className="w-72 rounded-xl border-2 border-dashed border-border hover:border-primary/60 hover:bg-primary/5 transition-colors p-6 flex flex-col items-center gap-1.5 text-center"
+                >
+                  {file ? <FileUp className="h-5 w-5 text-gold" /> : <ImageIcon className="h-5 w-5 text-gold" />}
+                  <p className="text-sm font-medium text-foreground">
+                    {file ? file.name : t.chooseFile}
+                  </p>
+                  {file && <span className="text-xs text-muted-foreground">{t.changeFile}</span>}
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={pickerRef}
+              type="file"
+              accept={COMBINED_ACCEPT}
+              multiple
+              className="hidden"
+              onChange={handlePick}
+            />
+
+            {images.length >= MAX_IMAGES && (
+              <p className="text-xs text-muted-foreground text-center">{t.maxImagesNotice}</p>
             )}
 
-            <Button onClick={analyze} disabled={analyzeDisabled} className="w-full">
-              <Sparkles className="mr-2 h-4 w-4" />
-              {t.analyzeCta}
-            </Button>
+            <p className="text-xs text-muted-foreground text-center max-w-sm mx-auto">
+              {t.pageCreditNotice}
+            </p>
+
+            <div className="flex justify-center">
+              <Button onClick={analyze} disabled={analyzeDisabled} className="h-10 rounded-full px-8">
+                <Sparkles className="mr-2 h-4 w-4" />
+                {t.analyzeCta}
+              </Button>
+            </div>
           </div>
         )}
 
@@ -450,8 +391,6 @@ export function DocumentAnalysisPanel({
                 {errorKind === "unauthorized" && t.loginRequired}
                 {errorKind === "quota" && t.quotaExceeded}
                 {errorKind === "generic" && t.genericError}
-                {errorKind === "unsupportedImage" && t.unsupportedImageTypeError}
-                {errorKind === "noImages" && t.noImagesError}
               </span>
             </div>
             {errorKind === "unauthorized" && (
@@ -466,9 +405,7 @@ export function DocumentAnalysisPanel({
             )}
             {(errorKind === "generic" ||
               errorKind === "unsupported" ||
-              errorKind === "tooLarge" ||
-              errorKind === "unsupportedImage" ||
-              errorKind === "noImages") && (
+              errorKind === "tooLarge") && (
               <Button variant="outline" className="w-full" onClick={reset}>
                 {t.retryCta}
               </Button>
