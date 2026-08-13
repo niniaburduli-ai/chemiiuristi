@@ -37,7 +37,7 @@ const DEFAULT_FOOTER: FooterData = {
 }
 
 const DEFAULT_SITE_CONFIG_EN: SiteConfigData = {
-  logoUrl: "", logoPubId: "", siteName: "My Lawyer", tagline: "Law in plain language",
+  logoUrl: "", logoPubId: "", siteName: "My Lawyer", tagline: "Law Simplified",
   favicon: "", contactEmail: "", contactPhone: "", contactPhoneVisible: false, contactAddress: "", socialLinks: {},
 }
 

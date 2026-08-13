@@ -26,7 +26,7 @@ export async function Header() {
   const navItems = nav.items.filter((n) => isPathEnabled(n.href, flags));
 
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
-  const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
+  const tagline = config.tagline?.trim() || "კანონი მარტივად";
   const contactEmail = config.contactEmail?.trim() || "contact.chemiiuristi@gmail.com";
   const contactAddress = config.contactAddress?.trim() || d.footer.address;
 

@@ -92,7 +92,7 @@ export async function Footer() {
   const disclaimer = footer.disclaimer?.trim() || DEFAULT_DISCLAIMER;
   const copyright = footer.copyright?.trim() || DEFAULT_COPYRIGHT;
   const siteName = config.siteName?.trim() || "ჩემი იურისტი";
-  const tagline = config.tagline?.trim() || "კანონი მარტივ ენაზე";
+  const tagline = config.tagline?.trim() || "კანონი მარტივად";
   const contactEmail = config.contactEmail?.trim() || "contact.chemiiuristi@gmail.com";
   const contactPhone = config.contactPhone?.trim() || "";
   const showPhone = Boolean(config.contactPhoneVisible && contactPhone);

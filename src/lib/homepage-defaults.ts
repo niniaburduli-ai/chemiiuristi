@@ -7,8 +7,8 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
   hero: {
     title: "ჩემი იურისტი",
     titleEn: "My Lawyer",
-    subtitle: "კანონი მარტივ ენაზე",
-    subtitleEn: "Law in plain language",
+    subtitle: "კანონი მარტივად",
+    subtitleEn: "Law Simplified",
     ctaText: "",
     ctaHref: "",
     imageUrl: "",
