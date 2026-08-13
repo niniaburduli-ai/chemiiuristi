@@ -65,7 +65,11 @@ export function GenerateClient({
   const [templateMatch, setTemplateMatch] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
 
-  const fields = [...COMMON_FIELDS, ...(QUESTION_SCHEMAS[type] ?? [])];
+  // Custom documents skip city/date as input fields entirely — the model
+  // writes the header itself and red-placeholders whatever the free-form
+  // details don't state (see headerAddendum in /api/generate's route.ts).
+  const fields =
+    type === "custom" ? QUESTION_SCHEMAS[type] ?? [] : [...COMMON_FIELDS, ...(QUESTION_SCHEMAS[type] ?? [])];
 
   function buildDetails(): string {
     const lines = fields
