@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, AlertTriangle, FileText, Search } from "lucide-react";
+import { ArrowLeft, Clock, AlertTriangle, BookOpen, FileText, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DocumentDownloadButton } from "@/components/site/document-download-button";
@@ -10,6 +10,7 @@ import { DOC_TYPES } from "@/lib/validators";
 import { estimatePageCount } from "@/lib/page-count";
 import { formatDate } from "@/lib/utils";
 import { renderDocumentBody } from "@/lib/markdown-bold";
+import { parseDocumentLegalBasis } from "@/lib/legal/citations";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
 export type GeneratedDocItem = {
@@ -17,11 +18,12 @@ export type GeneratedDocItem = {
   title: string;
   type: string;
   content: string;
+  legalBasis?: string;
   createdAt: string | null;
   source?: string;
 };
 
-function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
+function DocumentDetail({ doc, d }: { doc: GeneratedDocItem; d: Dict }) {
   const typeName = DOC_TYPES[doc.type as keyof typeof DOC_TYPES] ?? doc.type;
   // Only the free-form "custom" generation flow leaves [missing-info]
   // placeholders — highlighting them red elsewhere (template/fixed-type
@@ -62,6 +64,28 @@ function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
       <div className="text-xs text-foreground bg-muted/40 rounded p-3 leading-relaxed">
         {renderDocumentBody(doc.content, highlightPlaceholders)}
       </div>
+
+      {doc.legalBasis?.trim() && (
+        <div className="space-y-3 border-t border-border pt-3">
+          <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+            <BookOpen className="h-3.5 w-3.5 text-gold" /> {d.chat.legalBasis}
+          </p>
+          {parseDocumentLegalBasis(doc.legalBasis).map((g, i) => (
+            <div key={`${g.lawName}|${i}`} className="space-y-1">
+              {g.lawName && <p className="text-xs font-medium">{g.lawName}:</p>}
+              {g.articles.length > 0 && (
+                <ul className="ml-1 space-y-0.5">
+                  {g.articles.map((a, j) => (
+                    <li key={j} className="text-xs text-muted-foreground">
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -129,7 +153,7 @@ export function DocumentsList({
             >
               <ArrowLeft className="h-3.5 w-3.5 text-gold" /> {d.faq.back}
             </button>
-            <DocumentDetail doc={active} />
+            <DocumentDetail doc={active} d={d} />
           </div>
         ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-12 px-5">{dp.noSearchResults}</p>

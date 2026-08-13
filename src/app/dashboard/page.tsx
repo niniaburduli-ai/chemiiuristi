@@ -266,6 +266,7 @@ export default async function DashboardPage({
           title: string;
           type: string;
           content: string;
+          legalBasis?: string;
           createdAt?: Date;
           source?: string;
         };
@@ -274,6 +275,7 @@ export default async function DashboardPage({
           title: item.title,
           type: item.type,
           content: item.content,
+          legalBasis: item.legalBasis ?? "",
           createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
           source: item.source ?? "ai",
         };
