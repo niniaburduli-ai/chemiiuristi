@@ -56,10 +56,9 @@ export const HOME_SEED: Omit<HomePageData, "status"> = {
       key: "review",
       title: "დოკუმენტის ანალიზი", titleEn: "Document review",
       steps: [
-        { text: "აირჩიე დოკუმენტის ან ფოტოს რეჟიმი", textEn: "Choose document or photo mode" },
-        { text: "ატვირთე ფაილი (PDF, DOCX, TXT ან სურათები)", textEn: "Upload your file (PDF, DOCX, TXT, or images)" },
-        { text: "ნახე გამოვლენილი რისკები კატეგორიების მიხედვით და რეკომენდაციები", textEn: "Review the categorized risks and recommendations" },
-        { text: "სურვილიის შემთხვევაში, დააგენერირეთ გაუმჯობესებული დოკუმენტი გამოვლენილი რისკების და რეკომენდაციების მიხედვით. ჩამოტვირთეთ.", textEn: "If you'd like, generate an improved document based on the identified risks and recommendations. Download it." },
+        { text: "ატვირთე დოკუმენტი (PDF, DOCX, TXT, MD, JPG, PNG)", textEn: "Upload a document (PDF, DOCX, TXT, MD, JPG, PNG)" },
+        { text: "ნახე გამოვლენილი რისკები და რეკომენდაციები", textEn: "View identified risks and recommendations" },
+        { text: "შეასწორე დოკუმენტი შენი სურვილისამებრ, AI-ს დახმარებით", textEn: "Edit and improve the document as you wish, powered by AI" },
       ],
       ctaText: "დოკუმენტის შემოწმება", ctaTextEn: "Check a document",
     },
