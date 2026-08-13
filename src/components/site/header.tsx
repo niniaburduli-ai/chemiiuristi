@@ -80,7 +80,7 @@ export async function Header() {
               <span className="text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80 shrink-0">
                 {siteName}
               </span>
-              <span className="text-xs text-foreground font-normal truncate min-w-0">
+              <span className="text-sm text-foreground font-normal truncate min-w-0">
                 {tagline}
               </span>
             </span>
