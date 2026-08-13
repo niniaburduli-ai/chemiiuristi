@@ -28,14 +28,23 @@ export async function streamOpenRouterChat(
   });
 }
 
-export async function callOpenRouterChat(
-  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-  model?: string,
-  maxTokens = 2500
-): Promise<{ content: string; costUsd: number }> {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("OPENROUTER_API_KEY not set");
+const RETRYABLE_UPSTREAM_RETRIES = 2;
+const RETRYABLE_UPSTREAM_DELAY_MS = 1500;
 
+/**
+ * OpenRouter can return HTTP 200 while embedding a failed generation in the
+ * choice itself (`finish_reason: "error"`, e.g. an upstream 429 mid-stream)
+ * — `res.ok` alone doesn't catch this, and the accompanying `content` is
+ * partial/truncated, which fails JSON parsing downstream in a confusing way.
+ * These are transient (observed clearing on the very next attempt), so a
+ * short bounded retry is worth it before surfacing an error.
+ */
+async function requestOpenRouterChat(
+  key: string,
+  model: string,
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+  maxTokens: number
+): Promise<{ content: string; costUsd: number }> {
   const res = await fetch(OPENROUTER_URL, {
     method: "POST",
     headers: {
@@ -43,7 +52,7 @@ export async function callOpenRouterChat(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: model ?? MODEL(),
+      model,
       messages,
       max_tokens: maxTokens,
     }),
@@ -55,10 +64,44 @@ export async function callOpenRouterChat(
   }
 
   const data = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
+    choices?: Array<{
+      message?: { content?: string };
+      finish_reason?: string;
+      error?: { code?: number; message?: string };
+    }>;
   };
+  const choice = data.choices?.[0];
+  if (choice?.finish_reason === "error" || choice?.error) {
+    throw new Error(
+      `OpenRouter upstream error: ${choice?.error?.message ?? "generation failed mid-stream"}`
+    );
+  }
+
   return {
-    content: data.choices?.[0]?.message?.content ?? "",
+    content: choice?.message?.content ?? "",
     costUsd: extractCostUsd(data),
   };
+}
+
+export async function callOpenRouterChat(
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+  model?: string,
+  maxTokens = 2500
+): Promise<{ content: string; costUsd: number }> {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error("OPENROUTER_API_KEY not set");
+  const resolvedModel = model ?? MODEL();
+
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= RETRYABLE_UPSTREAM_RETRIES; attempt++) {
+    try {
+      return await requestOpenRouterChat(key, resolvedModel, messages, maxTokens);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < RETRYABLE_UPSTREAM_RETRIES) {
+        await new Promise((r) => setTimeout(r, RETRYABLE_UPSTREAM_DELAY_MS));
+      }
+    }
+  }
+  throw lastErr;
 }

@@ -26,6 +26,8 @@ export async function dbConnect(): Promise<typeof mongoose> {
       .connect(MONGODB_URI!, {
         bufferCommands: false,
         dbName: process.env.MONGODB_DB,
+        serverSelectionTimeoutMS: 10_000,
+        socketTimeoutMS: 20_000,
       })
       .then((m) => m);
   }
