@@ -456,6 +456,7 @@ export function DocumentAnalysisPanel({
                 )}
 
                 <p className="text-xs text-muted-foreground pt-2 border-t">{t.resultsSavedNote}</p>
+                <p className="text-sm text-foreground">{t.improveOptionalHint}</p>
 
                 <Button onClick={() => setUiStep(3)} className="w-full h-9 rounded-full">
                   {t.stepContinueToFixCta}
@@ -477,7 +478,6 @@ export function DocumentAnalysisPanel({
                     <Button
                       onClick={() => improve()}
                       disabled={improveStatus === "loading"}
-                      variant="outline"
                       className="w-full h-9 rounded-full"
                     >
                       {improveStatus === "loading" ? (
