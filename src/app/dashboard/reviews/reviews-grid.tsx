@@ -12,10 +12,12 @@ import {
   Wand2,
   Paperclip,
   Play,
+  Search,
 } from "lucide-react";
 import { RiskFindingCard, isStructuredFinding } from "@/components/site/risk-finding-card";
 import { TextDiff } from "@/components/site/text-diff";
 import { DocumentDownloadButton } from "@/components/site/document-download-button";
+import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/utils";
 import { computeWordDiff } from "@/lib/diff-text";
 import type { RiskFinding } from "@/lib/legal/document-analysis";
@@ -317,16 +319,34 @@ function ReviewDetail({ review }: { review: ReviewItem }) {
 
 export function ReviewsGrid({ items, d }: { items: ReviewItem[]; d: Dict }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const active = items.find((it) => it.id === openId) ?? null;
   const dp = d.profile;
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((it) => (it.fileName ?? "").toLowerCase().includes(q));
+  }, [items, query]);
+
   return (
     <div className="flex flex-col h-full">
-      <header className="p-5 border-b border-border shrink-0">
+      <header className="p-5 border-b border-border shrink-0 space-y-3">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <FileSearch className="h-5 w-5 text-gold" />
           {dp.analysisResults}
         </h3>
+        {items.length > 0 && !active && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={dp.searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+        )}
       </header>
 
       <div className="flex-1 overflow-y-auto">
@@ -348,9 +368,11 @@ export function ReviewsGrid({ items, d }: { items: ReviewItem[]; d: Dict }) {
             </button>
             <ReviewDetail review={active} />
           </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12 px-5">{dp.noSearchResults}</p>
         ) : (
           <div className="divide-y divide-border">
-            {items.map((review) => (
+            {filtered.map((review) => (
               <button
                 key={review.id}
                 type="button"

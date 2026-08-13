@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Clock, MessagesSquare } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, MessagesSquare, Search } from "lucide-react";
 import { groupItemsByArticle, type LegalBasisItem } from "@/lib/legal/citations";
 import { renderMarkdownBold } from "@/lib/markdown-bold";
+import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/utils";
 import type { Dict } from "@/lib/i18n/dictionaries";
 
@@ -65,16 +66,34 @@ function groupSources(sources: RawSource[]): SourceGroup[] {
 
 export function ConsultationsGrid({ items, d }: { items: ConsultationItem[]; d: Dict }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const active = items.find((it) => it.id === openId) ?? null;
   const dp = d.profile;
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((it) => it.question.toLowerCase().includes(q));
+  }, [items, query]);
+
   return (
     <div className="flex flex-col h-full">
-      <header className="p-5 border-b border-border shrink-0">
+      <header className="p-5 border-b border-border shrink-0 space-y-3">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <MessagesSquare className="h-5 w-5 text-gold" />
           {dp.aiConsultations}
         </h3>
+        {items.length > 0 && !active && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={dp.searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+        )}
       </header>
 
       <div className="flex-1 overflow-y-auto">
@@ -134,9 +153,11 @@ export function ConsultationsGrid({ items, d }: { items: ConsultationItem[]; d: 
               </div>
             )}
           </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12 px-5">{dp.noSearchResults}</p>
         ) : (
           <div className="divide-y divide-border">
-            {items.map((item) => (
+            {filtered.map((item) => (
               <button
                 key={item.id}
                 type="button"

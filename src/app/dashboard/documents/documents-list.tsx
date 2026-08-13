@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, AlertTriangle, FileText } from "lucide-react";
+import { ArrowLeft, Clock, AlertTriangle, FileText, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { DocumentDownloadButton } from "@/components/site/document-download-button";
 import { DOC_TYPES } from "@/lib/validators";
 import { estimatePageCount } from "@/lib/page-count";
@@ -82,15 +83,33 @@ export function DocumentsList({
 }) {
   const dp = d.profile;
   const [openId, setOpenId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const active = docs.find((doc) => doc.id === openId) ?? null;
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return docs;
+    return docs.filter((doc) => doc.title.toLowerCase().includes(q));
+  }, [docs, query]);
 
   return (
     <div className="flex flex-col h-full">
-      <header className="p-5 border-b border-border shrink-0">
+      <header className="p-5 border-b border-border shrink-0 space-y-3">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <FileText className="h-5 w-5 text-gold" />
           {heading ?? dp.generatedDocs}
         </h3>
+        {docs.length > 0 && !active && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={dp.searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+        )}
       </header>
 
       <div className="flex-1 overflow-y-auto">
@@ -112,9 +131,11 @@ export function DocumentsList({
             </button>
             <DocumentDetail doc={active} />
           </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12 px-5">{dp.noSearchResults}</p>
         ) : (
           <div className="divide-y divide-border">
-            {docs.map((doc) => (
+            {filtered.map((doc) => (
               <button
                 key={doc.id}
                 type="button"
