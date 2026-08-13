@@ -137,9 +137,28 @@ async function* consumeSse(
           } catch {
             continue;
           }
-          const delta = (
-            json as { choices?: Array<{ delta?: { content?: string } }> }
-          )?.choices?.[0]?.delta?.content;
+          const choice = (
+            json as {
+              choices?: Array<{
+                delta?: { content?: string };
+                finish_reason?: string;
+                error?: { message?: string };
+              }>;
+            }
+          )?.choices?.[0];
+          if (choice?.finish_reason === "error" || choice?.error) {
+            // Same failure mode requestOpenRouterChat guards against on the
+            // non-streaming path: HTTP 200 + SSE frames already sent, but the
+            // upstream generation itself died mid-stream (e.g. a 429 from the
+            // underlying provider) — leaving only whatever partial text
+            // happened to stream before the failure. Left unchecked, the
+            // caller sees a normal-looking end of stream and saves that
+            // truncated fragment as if it were the complete document.
+            throw new Error(
+              `OpenRouter upstream error: ${choice?.error?.message ?? "generation failed mid-stream"}`
+            );
+          }
+          const delta = choice?.delta?.content;
           if (delta) yield delta;
           const cost = extractCostUsd(json);
           if (cost > 0) costUsd = cost;
