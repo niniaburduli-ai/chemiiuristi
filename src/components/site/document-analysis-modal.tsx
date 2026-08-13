@@ -365,7 +365,7 @@ export function DocumentAnalysisPanel({
               {t.pageCreditNotice}
             </p>
 
-            <Button onClick={analyze} disabled={analyzeDisabled} className="w-full">
+            <Button onClick={analyze} disabled={analyzeDisabled} className="w-full h-9 rounded-full">
               <Sparkles className="mr-2 h-4 w-4" />
               {t.analyzeCta}
             </Button>
@@ -393,18 +393,18 @@ export function DocumentAnalysisPanel({
             </div>
             {errorKind === "unauthorized" && (
               <a href="/login" className="block">
-                <Button className="w-full">{t.loginCta}</Button>
+                <Button className="w-full h-9 rounded-full">{t.loginCta}</Button>
               </a>
             )}
             {errorKind === "quota" && (
               <a href="/pricing" className="block">
-                <Button className="w-full">{t.upgradeCta}</Button>
+                <Button className="w-full h-9 rounded-full">{t.upgradeCta}</Button>
               </a>
             )}
             {(errorKind === "generic" ||
               errorKind === "unsupported" ||
               errorKind === "tooLarge") && (
-              <Button variant="outline" className="w-full" onClick={reset}>
+              <Button variant="outline" className="w-full h-9 rounded-full" onClick={reset}>
                 {t.retryCta}
               </Button>
             )}
@@ -457,7 +457,7 @@ export function DocumentAnalysisPanel({
 
                 <p className="text-xs text-muted-foreground pt-2 border-t">{t.resultsSavedNote}</p>
 
-                <Button onClick={() => setUiStep(3)} className="w-full">
+                <Button onClick={() => setUiStep(3)} className="w-full h-9 rounded-full">
                   {t.stepContinueToFixCta}
                 </Button>
               </>
@@ -478,7 +478,7 @@ export function DocumentAnalysisPanel({
                       onClick={() => improve()}
                       disabled={improveStatus === "loading"}
                       variant="outline"
-                      className="w-full"
+                      className="w-full h-9 rounded-full"
                     >
                       {improveStatus === "loading" ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -560,7 +560,7 @@ export function DocumentAnalysisPanel({
                       </div>
                     )}
 
-                    <Button onClick={() => setUiStep(4)} className="w-full">
+                    <Button onClick={() => setUiStep(4)} className="w-full h-9 rounded-full">
                       {t.stepFinishCta}
                     </Button>
                   </div>
