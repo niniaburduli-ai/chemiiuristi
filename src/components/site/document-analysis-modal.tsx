@@ -365,12 +365,10 @@ export function DocumentAnalysisPanel({
               {t.pageCreditNotice}
             </p>
 
-            <div className="flex justify-center">
-              <Button onClick={analyze} disabled={analyzeDisabled} className="h-10 rounded-full px-8">
-                <Sparkles className="mr-2 h-4 w-4" />
-                {t.analyzeCta}
-              </Button>
-            </div>
+            <Button onClick={analyze} disabled={analyzeDisabled} className="w-full">
+              <Sparkles className="mr-2 h-4 w-4" />
+              {t.analyzeCta}
+            </Button>
           </div>
         )}
 
@@ -585,10 +583,6 @@ export function DocumentAnalysisPanel({
                 />
               </div>
             )}
-
-            <Button variant="outline" className="w-full" onClick={reset}>
-              {t.newAnalysisCta}
-            </Button>
           </div>
         )}
     </div>
