@@ -560,10 +560,7 @@ export function DocumentAnalysisPanel({
                       </div>
                     )}
 
-                    <Button
-                      onClick={() => setUiStep(4)}
-                      className="w-full bg-green-600 hover:bg-green-600/90 text-white"
-                    >
+                    <Button onClick={() => setUiStep(4)} className="w-full">
                       {t.stepFinishCta}
                     </Button>
                   </div>

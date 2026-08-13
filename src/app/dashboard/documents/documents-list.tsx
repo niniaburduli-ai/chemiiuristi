@@ -59,7 +59,7 @@ function DocumentDetail({ doc }: { doc: GeneratedDocItem }) {
         <p>ხელშეკრულება შეინახება ისტორიაში 1 თვის ვადით, რის შემდეგაც ავტომატურად წაიშლება.</p>
       </div>
 
-      <div className="text-xs text-muted-foreground bg-muted/40 rounded p-3 leading-relaxed">
+      <div className="text-xs text-foreground bg-muted/40 rounded p-3 leading-relaxed">
         {renderDocumentBody(doc.content, highlightPlaceholders)}
       </div>
     </div>

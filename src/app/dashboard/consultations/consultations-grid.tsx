@@ -117,7 +117,7 @@ export function ConsultationsGrid({ items, d }: { items: ConsultationItem[]; d: 
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 mb-4">
               <Clock className="h-3 w-3 text-gold" /> {formatDate(active.createdAt)}
             </p>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
               {renderMarkdownBold(active.answer)}
             </p>
             {active.sources.length > 0 && (

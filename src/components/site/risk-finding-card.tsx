@@ -66,7 +66,7 @@ export function RiskFindingCard({
       </div>
       <p className="font-semibold text-sm text-foreground">{finding.title}</p>
       {finding.explanation && (
-        <p className="text-sm text-muted-foreground mt-1">{finding.explanation}</p>
+        <p className="text-sm text-foreground mt-1">{finding.explanation}</p>
       )}
       {finding.recommendation && (
         <p className="text-sm mt-2 flex items-start gap-1.5">

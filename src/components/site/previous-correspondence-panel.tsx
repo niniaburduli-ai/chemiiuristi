@@ -124,7 +124,7 @@ export function PreviousCorrespondenceButton({ locale }: { locale: Locale }) {
                       </div>
                     </button>
                     {isOpen && (
-                      <div className="px-3 pb-3 text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed border-t border-border pt-2">
+                      <div className="px-3 pb-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed border-t border-border pt-2">
                         {renderMarkdownBold(item.answer)}
                         {item.legalBasis.length > 0 && (
                           <div className="mt-3 space-y-2 border-t border-border/60 pt-2">
