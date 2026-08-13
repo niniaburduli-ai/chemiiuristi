@@ -650,7 +650,7 @@ export function DocumentAnalysisPanel({
             )}
 
             <Button variant="outline" className="w-full" onClick={reset}>
-              {t.chooseFile}
+              {t.newAnalysisCta}
             </Button>
           </div>
         )}
