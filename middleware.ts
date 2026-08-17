@@ -22,6 +22,8 @@ const URL_LOCALE_HEADER = "x-url-locale";
  * `bilingual: true` list in src/lib/seo.ts — keep the two in sync). Everything
  * else stays Georgian-only; an /en/<other> hit just 404s instead of silently
  * rewriting into an app route with the wrong locale forced on it.
+ * /guides is a dynamic route family (every slug is bilingual), so it's matched
+ * by prefix below instead of being enumerated here.
  */
 const EN_BILINGUAL_PATHS = new Set([
   "/",
@@ -45,7 +47,7 @@ async function routeRequest(
     const stripped = pathname.slice(3); // "/en" -> "", "/en/services" -> "/services"
     const target = stripped === "" ? "/" : stripped;
 
-    if (EN_BILINGUAL_PATHS.has(target)) {
+    if (EN_BILINGUAL_PATHS.has(target) || target === "/guides" || target.startsWith("/guides/")) {
       const url = request.nextUrl.clone();
       url.pathname = target;
       const requestHeaders = new Headers(request.headers);
