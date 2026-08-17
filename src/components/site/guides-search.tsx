@@ -49,14 +49,14 @@ export function GuidesSearch({ guides, locale }: { guides: GuideItem[]; locale: 
               className="group bg-card border border-border rounded-2xl p-6 flex items-start justify-between gap-4 hover:border-primary/50 transition-colors"
             >
               <div>
-                <h2 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                <h2 className="text-lg font-bold text-foreground group-hover:text-primary dark:group-hover:text-gold transition-colors">
                   {pick(guide.title, guide.titleEn, locale)}
                 </h2>
                 <p className="text-sm text-foreground/70 mt-1.5 leading-relaxed">
                   {pick(guide.description, guide.descriptionEn, locale)}
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 shrink-0 text-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all mt-1" />
+              <ArrowRight className="h-5 w-5 shrink-0 text-foreground/40 group-hover:text-primary dark:group-hover:text-gold group-hover:translate-x-0.5 transition-all mt-1" />
             </Link>
           ))}
         </div>
