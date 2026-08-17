@@ -3,7 +3,7 @@ import type { GuideItem } from "@/types/cms"
 /**
  * Shown until the admin publishes real guide content in the DB (Guides
  * collection), so /guides is never empty on a fresh install — same role as
- * DEFAULT_FAQ in lib/cms.ts. These 6 articles are the ones originally
+ * DEFAULT_FAQ in lib/cms.ts. These articles are the ones originally
  * shipped; content verified against matsne.gov.ge (see each item's `sources`).
  */
 export const DEFAULT_GUIDES: GuideItem[] = [
@@ -463,6 +463,117 @@ export const DEFAULT_GUIDES: GuideItem[] = [
       },
     ],
     order: 5,
+    status: "published",
+  },
+  {
+    _id: "guide-7",
+    slug: "biznesis-registracia-saqartveloshi",
+    title: "ბიზნესის რეგისტრაცია საქართველოში — რა ნაბიჯებია საჭირო",
+    titleEn: "Registering a Business in Georgia — What Steps Are Needed",
+    description:
+      "როგორ დარეგისტრირდეთ ინდივიდუალურ მეწარმედ ან შპს-დ საქართველოში — სად ხდება რეგისტრაცია, რა დოკუმენტებია საჭირო, რა ღირს და რა ხდება რეგისტრაციის შემდეგ საგადასახადო თვალსაზრისით.",
+    descriptionEn:
+      "How to register as an individual entrepreneur or LLC in Georgia — where registration happens, what documents are needed, what it costs, and what follows on the tax side after registration.",
+    keywords: [
+      "ბიზნესის რეგისტრაცია საქართველოში",
+      "შპს-ს რეგისტრაცია",
+      "ინდივიდუალური მეწარმის რეგისტრაცია",
+      "საჯარო რეესტრი",
+    ],
+    keywordsEn: [
+      "business registration Georgia",
+      "register LLC Georgia",
+      "individual entrepreneur registration",
+      "public registry Georgia",
+    ],
+    intro:
+      "ბიზნესის დაწყება საქართველოში სამართლებრივად იწყება სუბიექტის რეგისტრაციით მეწარმეთა და არასამეწარმეო (არაკომერციულ) იურიდიულ პირთა რეესტრში. პროცედურა შედარებით მარტივი და სწრაფია, თუმცა რამდენიმე არჩევანი — ორგანიზაციულ-სამართლებრივი ფორმა, რეგისტრაციის სისწრაფე და საგადასახადო სტატუსი — გავლენას ახდენს შემდგომ ვალდებულებებზე.",
+    introEn:
+      "Starting a business in Georgia legally begins with registering the entity in the register of entrepreneurs and non-commercial (non-profit) legal entities. The procedure is relatively simple and fast, though a few choices — legal form, registration speed, and tax status — affect the obligations that follow.",
+    sections: [
+      {
+        title: "რომელი ორგანიზაციულ-სამართლებრივი ფორმა აირჩიოთ",
+        titleEn: "Which legal form to choose",
+        paragraphs: [
+          "ყველაზე ხშირად გამოყენებული ორი ფორმაა ინდივიდუალური მეწარმე და შეზღუდული პასუხისმგებლობის საზოგადოება (შპს). ინდივიდუალური მეწარმე შეეფერება ერთპიროვნულ, მარტივი სტრუქტურის საქმიანობას — რეგისტრაცია და ადმინისტრირება უფრო მარტივია, მაგრამ პირი პასუხს აგებს ბიზნესის ვალდებულებებზე მთელი პირადი ქონებით.",
+          "შპს, თავის მხრივ, გამოსადეგია რამდენიმე პარტნიორის ან უფრო დიდი მოცულობის საქმიანობისთვის — პარტნიორთა პასუხისმგებლობა შემოფარგლულია საზოგადოების კაპიტალით, თუმცა რეგისტრაცია და მართვა შედარებით მეტ ფორმალობას მოითხოვს (წესდება, პარტნიორთა შეთანხმება).",
+        ],
+        paragraphsEn: [
+          "The two most commonly used forms are the individual entrepreneur and the limited liability company (LLC). An individual entrepreneur suits a one-person, simple-structure activity — registration and administration are simpler, but the person is liable for the business's obligations with their entire personal property.",
+          "An LLC, in turn, suits several partners or a larger-scale activity — partners' liability is limited to the company's capital, though registration and management require relatively more formality (a charter, a partners' agreement).",
+        ],
+      },
+      {
+        title: "სად და როგორ ხდება რეგისტრაცია",
+        titleEn: "Where and how registration happens",
+        paragraphs: [
+          "„მეწარმეთა შესახებ“ საქართველოს კანონის მე-4 მუხლის მიხედვით, მეწარმე სუბიექტის რეგისტრაციას ახორციელებს საჯარო რეესტრის ეროვნული სააგენტო (იუსტიციის სამინისტროს სისტემაში შემავალი სსიპ) — განცხადების შეტანა შესაძლებელია იუსტიციის სახლის ნებისმიერ ფილიალში ან ონლაინ.",
+          "შპს-ს რეგისტრაციისას კანონის მე-5 მუხლის შესაბამისად საჭიროა ყველა პარტნიორის მიერ ხელმოწერილი სარეგისტრაციო განცხადება, რომელშიც მითითებულია საზოგადოების სახელწოდება და ორგანიზაციულ-სამართლებრივი ფორმა, იურიდიული მისამართი, პარტნიორთა მონაცემები და წილები (ჯამში 100%), მმართველობის სტრუქტურა და წარმომადგენლის მონაცემები. ინდივიდუალური მეწარმის რეგისტრაციისას კი, 54-ე მუხლის მიხედვით, საკმარისია განცხადება, პირადობის დამადასტურებელი დოკუმენტი და საქმიანობის მისამართის მითითება.",
+          "ორივე შემთხვევაში სავალდებულოა კანონით განსაზღვრული იურიდიული მისამართის მითითება (მე-4 მუხლის მე-4 ნაწილი) — მასზე გაგზავნილი კორესპონდენცია ითვლება ჩაბარებულად, ამიტომ რეალურად ხელმისაწვდომი მისამართის მითითება მნიშვნელოვანია.",
+        ],
+        paragraphsEn: [
+          "Under Article 4 of the Law of Georgia on Entrepreneurs, registration of an entrepreneurial subject is carried out by the National Agency of the Public Registry (a public legal entity under the Ministry of Justice) — the application can be filed at any House of Justice branch or online.",
+          "For an LLC, Article 5 requires a registration statement signed by all partners, stating the company's name and legal form, its legal address, the partners' details and shares (totaling 100%), the management structure, and the representative's details. For an individual entrepreneur, Article 54 requires only an application, an identity document, and the address of the activity.",
+          "In both cases, a legally defined address must be stated (Article 4(4)) — correspondence sent there is deemed delivered, so it matters that the address is one you actually have access to.",
+        ],
+      },
+      {
+        title: "ვადები და საფასური",
+        titleEn: "Timeframes and fees",
+        paragraphs: [
+          "რეგისტრაცია, საჯარო რეესტრის ეროვნული სააგენტოს მიერ დადგენილი განაკვეთების მიხედვით, სტანდარტული წესით სრულდება 1 სამუშაო დღეში — შპს-სთვის საფასურია 200 ლარი, ინდივიდუალური მეწარმისთვის — 26 ლარი. დაჩქარებული (იმავე დღეს) რეგისტრაცია ღირს შესაბამისად 400 და 75 ლარი.",
+          "ცვლილებების რეგისტრაცია (მაგალითად, დირექტორის ან წილის მონაცემების განახლება) იმავე განაკვეთებით ხორციელდება. საფასურის კონკრეტული ოდენობა და ვადები დროდადრო იცვლება, ამიტომ გადახდამდე ღირს გადამოწმება საჯარო რეესტრის ეროვნული სააგენტოს ოფიციალურ გვერდზე.",
+        ],
+        paragraphsEn: [
+          "According to the fee schedule set by the National Agency of the Public Registry, standard registration is completed within 1 business day — the fee is 200 GEL for an LLC and 26 GEL for an individual entrepreneur. Expedited (same-day) registration costs 400 GEL and 75 GEL respectively.",
+          "Registering changes (for example, updating director or shareholding data) follows the same fee structure. Exact fee amounts and timeframes change from time to time, so it's worth checking the National Agency of the Public Registry's official page before paying.",
+        ],
+      },
+      {
+        title: "საგადასახადო რეგისტრაცია რეგისტრაციის შემდეგ",
+        titleEn: "Tax registration after incorporation",
+        paragraphs: [
+          "საჯარო რეესტრში რეგისტრაციის შემდეგ მონაცემები ავტომატურად გადაეცემა შემოსავლების სამსახურს (RS.GE), ცალკე განცხადება ამისთვის საჭირო არაა. დამატებითი, ცალკე მიმართვა სჭირდება მხოლოდ სპეციალური სტატუსების მოსაპოვებლად.",
+          "ფიზიკური პირისთვის ხშირად აქტუალურია „მცირე ბიზნესის სტატუსი“ — საშემოსავლო გადასახადის 1%-იანი განაკვეთი წლიური 500 000 ლარამდე ბრუნვაზე (საგადასახადო კოდექსის 82-ე და 90-ე მუხლები); სტატუსის მისაღებად საჭიროა ცალკე ელექტრონული განცხადება RS.GE-ზე.",
+          "დღგ-ის გადამხდელად რეგისტრაცია სავალდებულოა, თუ დღგ-ით დასაბეგრი ოპერაციების საერთო თანხა ნებისმიერ უწყვეტ 12 კალენდარულ თვეში აღემატება 100 000 ლარს — ამ შემთხვევაში საგადასახადო კოდექსის 157-ე მუხლის პირველი ნაწილის „ა“ ქვეპუნქტის მიხედვით, პირი ვალდებულია მიმართოს საგადასახადო ორგანოს ზღვრის გადაჭარბებიდან არაუგვიანეს 2 სამუშაო დღისა.",
+        ],
+        paragraphsEn: [
+          "After registration with the Public Registry, the data is automatically forwarded to the Revenue Service (RS.GE) — no separate application is needed for that. A separate application is required only to obtain special statuses.",
+          "For a physical person, \"small business status\" is often relevant — a 1% income tax rate on annual turnover up to 500,000 GEL (Tax Code, Articles 82 and 90); obtaining the status requires a separate electronic application on RS.GE.",
+          "Registering as a VAT payer is mandatory if the total amount of VAT-taxable operations exceeds 100,000 GEL in any rolling 12 calendar months — in that case, under Article 157(1)(a) of the Tax Code, the person must apply to the tax authority no later than 2 business days after exceeding the threshold.",
+        ],
+      },
+      {
+        title: "რა ხდება რეგისტრაციის შემდეგ",
+        titleEn: "What happens after registration",
+        paragraphs: [
+          "რეგისტრირებულ სუბიექტს შეუძლია გახსნას საბანკო ანგარიში ნებისმიერ ქართულ ბანკში — ეს, ჩვეულებრივ, საჭირო ხდება კონტრაქტების, ინვოისების და საგადასახადო ანგარიშსწორებისთვის.",
+          "მეწარმეთა და არასამეწარმეო (არაკომერციულ) იურიდიულ პირთა რეესტრი საჯაროა — ნებისმიერს შეუძლია გადაამოწმოს კომპანიის სტატუსი, დირექტორის ვინაობა და მფლობელობის სტრუქტურა. ეს გამჭვირვალობა მნიშვნელოვანია პარტნიორებთან და კონტრაგენტებთან ურთიერთობისას.",
+        ],
+        paragraphsEn: [
+          "A registered entity can open a bank account at any Georgian bank — this is normally needed for contracts, invoices, and tax settlements.",
+          "The register of entrepreneurs and non-commercial legal entities is public — anyone can verify a company's status, the identity of its director, and its ownership structure. This transparency matters when dealing with partners and counterparties.",
+        ],
+      },
+    ],
+    sources: [
+      {
+        label: "საქართველოს კანონი „მეწარმეთა შესახებ“ — მუხლები 4, 5, 54 (რეგისტრაციის ორგანო, მისამართი, საჭირო დოკუმენტები)",
+        labelEn: "Law of Georgia on Entrepreneurs — Articles 4, 5, 54 (registration authority, address, required documents)",
+        url: "https://matsne.gov.ge/ka/document/view/28408",
+      },
+      {
+        label: "საქართველოს საგადასახადო კოდექსი — მუხლები 82, 90 (მცირე ბიზნესის სტატუსი), 157 (დღგ-ის სავალდებულო რეგისტრაცია)",
+        labelEn: "Tax Code of Georgia — Articles 82, 90 (small business status), 157 (mandatory VAT registration)",
+        url: "https://matsne.gov.ge/ka/document/view/1043717",
+      },
+      {
+        label: "საჯარო რეესტრის ეროვნული სააგენტო — მომსახურების საფასურები და ვადები",
+        labelEn: "National Agency of Public Registry — service fees and timeframes",
+        url: "https://napr.gov.ge/ka/page/fees-and-terms",
+      },
+    ],
+    order: 6,
     status: "published",
   },
 ]
