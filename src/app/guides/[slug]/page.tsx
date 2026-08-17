@@ -78,12 +78,33 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             </Section>
           ))}
 
+          {guide.sources.length > 0 && (
+            <div className="pt-6 border-t border-border">
+              <h2 className="text-sm font-bold text-foreground mb-2">წყაროები</h2>
+              <ul className="space-y-1 text-xs">
+                {guide.sources.map((source) => (
+                  <li key={source.url}>
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline underline-offset-2 hover:text-primary/80"
+                    >
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="pt-6 border-t border-border flex items-start gap-2 text-xs text-foreground/60">
             <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-gold mt-px" />
             <span>
-              წინამდებარე მასალა წარმოადგენს ზოგად საინფორმაციო მიმოხილვას და არ არის
-              იურიდიული დასკვნა კონკრეტულ საქმეზე. თქვენს ვითარებასთან მორგებული პასუხისთვის
-              გამოიყენეთ ჩვენი AI კონსულტაცია ან მიმართეთ იურისტს.
+              წინამდებარე მასალა წარმოადგენს ზოგად საინფორმაციო მიმოხილვას, გადამოწმებულს
+              ზემოთ მითითებულ წყაროებთან, და არ არის იურიდიული დასკვნა კონკრეტულ საქმეზე.
+              თქვენს ვითარებასთან მორგებული პასუხისთვის გამოიყენეთ ჩვენი AI კონსულტაცია ან
+              მიმართეთ იურისტს.
             </span>
           </div>
         </div>
