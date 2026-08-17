@@ -151,9 +151,13 @@ export function enPath(path: string): string {
  * target route actually has translated content (see PUBLIC_ROUTES `bilingual`).
  * Non-translated routes (terms/privacy/disclaimer, gated app routes) stay
  * unprefixed even when locale is "en" — there's no /en variant to link to.
+ * `/guides/<slug>` is a dynamic route family (every guide is bilingual) so it's
+ * matched by prefix here, same as middleware.ts's EN_BILINGUAL_PATHS handling —
+ * keep the two in sync.
  */
 export function localizedPath(path: string, locale: Locale): string {
   if (locale !== "en") return path
+  if (path.startsWith("/guides/")) return enPath(path)
   const route = PUBLIC_ROUTES.find((r) => r.path === path)
   return route?.bilingual ? enPath(path) : path
 }
