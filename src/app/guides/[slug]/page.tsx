@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { MessageCircle, TriangleAlert } from "lucide-react"
+import { ArrowLeft, MessageCircle, TriangleAlert } from "lucide-react"
 import { getLocale } from "@/lib/i18n/locale"
 import { PageHero } from "@/components/site/PageHero"
 import { JsonLd } from "@/components/site/JsonLd"
@@ -77,6 +77,13 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       />
       <PageHero title={heroTitle} subtitle={heroSubtitle} />
       <section className="container mx-auto max-w-3xl px-4 py-12">
+        <Link
+          href={isEn ? enPath("/guides") : "/guides"}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary transition-colors mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 text-gold" />
+          {isEn ? "Back to guides" : "გზამკვლევებზე დაბრუნება"}
+        </Link>
         <div className="bg-card border border-border rounded-2xl p-8 md:p-10 animate-fade-up delay-150 space-y-6 text-sm leading-relaxed text-foreground/90">
           <p className="text-base text-foreground">{intro}</p>
 
