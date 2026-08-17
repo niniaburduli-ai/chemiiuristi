@@ -93,6 +93,7 @@ const HomePageSchema = new Schema(
       pricing: { type: Boolean, default: true },
       faq: { type: Boolean, default: true },
       howItWorks: { type: Boolean, default: true },
+      guides: { type: Boolean, default: true },
     },
     hero: {
       title: { type: String, default: "" },
@@ -121,6 +122,8 @@ const HomePageSchema = new Schema(
     featuresHeading: { type: String, default: "" },
     featuresHeadingEn: { type: String, default: "" },
     features: [featureSchema],
+    guidesHeading: { type: String, default: "" },
+    guidesHeadingEn: { type: String, default: "" },
     pricingHeading: { type: String, default: "" },
     pricingHeadingEn: { type: String, default: "" },
     plans: [planSchema],

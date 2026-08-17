@@ -99,6 +99,7 @@ export interface HomePageData {
     pricing: boolean
     faq: boolean
     howItWorks: boolean
+    guides: boolean
   }
   hero: {
     title: string
@@ -123,6 +124,8 @@ export interface HomePageData {
   featuresHeading: string
   featuresHeadingEn?: string
   features: HomePageFeature[]
+  guidesHeading: string
+  guidesHeadingEn?: string
   pricingHeading: string
   pricingHeadingEn?: string
   plans: HomePagePlan[]

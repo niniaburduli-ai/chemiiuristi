@@ -1,6 +1,6 @@
 /** Client-safe feature-flag constants + helpers (no DB import). */
 
-export type FeatureKey = "chat" | "generate" | "review" | "templates" | "legislation"
+export type FeatureKey = "chat" | "generate" | "review" | "templates" | "legislation" | "guides"
 
 /** Flags without a nav/page (e.g. site-wide banners) — not part of FEATURE_DEFS. */
 export type SiteFlagKey = "testModeBanner"
@@ -13,6 +13,7 @@ export const DEFAULT_FLAGS: FeatureFlagsData = {
   review: true,
   templates: true,
   legislation: true,
+  guides: true,
   testModeBanner: true,
 }
 
@@ -28,6 +29,7 @@ export const FEATURE_DEFS: {
   { key: "review", label: "დოკუმენტის მიმოხილვა", description: "ატვირთული დოკუმენტის ანალიზი", paths: ["/review"] },
   { key: "templates", label: "მზა შაბლონები", description: "სტანდარტული დოკუმენტების შევსება", paths: ["/templates"] },
   { key: "legislation", label: "კანონმდებლობა", description: "კანონმდებლობის ბაზა", paths: ["/legislation"] },
+  { key: "guides", label: "იურიდიული გზამკვლევები", description: "სტატიების გვერდი კონკრეტულ სამართლებრივ საკითხებზე", paths: ["/guides"] },
 ]
 
 /** Which feature (if any) owns a path/href. */

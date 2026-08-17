@@ -11,6 +11,7 @@ const FeatureFlagsSchema = new Schema(
     review: { type: Boolean, default: true },
     templates: { type: Boolean, default: true },
     legislation: { type: Boolean, default: true },
+    guides: { type: Boolean, default: true },
     testModeBanner: { type: Boolean, default: true },
   },
   { timestamps: true, minimize: false }
@@ -23,6 +24,7 @@ export type FeatureFlagsDoc = {
   review: boolean
   templates: boolean
   legislation: boolean
+  guides: boolean
   testModeBanner: boolean
   createdAt: Date
   updatedAt: Date

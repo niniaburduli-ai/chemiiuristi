@@ -30,7 +30,7 @@ function moveItem<T extends { order: number }>(arr: T[], i: number, dir: -1 | 1)
 }
 
 const EMPTY: HomePageData = {
-  sections: { hero: true, stats: true, features: true, pricing: true, faq: true, howItWorks: true },
+  sections: { hero: true, stats: true, features: true, pricing: true, faq: true, howItWorks: true, guides: true },
   hero: { title: "", titleEn: "", subtitle: "", subtitleEn: "", ctaText: "", ctaHref: "", imageUrl: "", imagePubId: "" },
   serviceCards: [],
   cardsHeading: "", cardsHeadingEn: "",
@@ -46,6 +46,7 @@ const EMPTY: HomePageData = {
   statsCardsVisible: { services: true, satisfaction: true, rating: true },
   featuresHeading: "", featuresHeadingEn: "",
   features: [],
+  guidesHeading: "", guidesHeadingEn: "",
   pricingHeading: "", pricingHeadingEn: "",
   plans: [],
   faqHeading: "", faqHeadingEn: "",
@@ -332,7 +333,7 @@ export function HomePageForm() {
       {/* ── Section visibility overview ── */}
       <section className="space-y-1 rounded-lg border p-4">
         <h3 className="font-medium mb-3">სექციების ხილვადობა</h3>
-        {(["hero", "stats", "features", "pricing", "faq"] as const).map((key) => (
+        {(["hero", "stats", "features", "guides", "pricing", "faq"] as const).map((key) => (
           <div key={key} className="flex items-center justify-between rounded px-2 py-1 hover:bg-muted/40">
             <span className="text-sm text-muted-foreground">{key}</span>
             <Vis
@@ -700,6 +701,29 @@ export function HomePageForm() {
             </div>
           ))}
         </div>
+      </CollapsibleCard>
+
+      {/* ── Guides ── */}
+      <CollapsibleCard
+        title="იურიდიული გზამკვლევები (Guides)"
+        right={
+          <Vis
+            value={sec.guides}
+            onChange={() => setData((p) => ({ ...p, sections: { ...p.sections, guides: !p.sections.guides } }))}
+          />
+        }
+      >
+        <BiInput
+          label="სექციის სათაური"
+          kaValue={data.guidesHeading}
+          enValue={data.guidesHeadingEn ?? ""}
+          onKa={(v) => upd("guidesHeading", v)}
+          onEn={(v) => upd("guidesHeadingEn", v)}
+        />
+
+        <p className="rounded-md border border-dashed bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          გზამკვლევების შინაარსი იმართება „გზამკვლევები&quot; ტაბიდან — ეს სექცია ავტომატურად აჩვენებს პირველ 5-ს. აქ მხოლოდ სათაურსა და ხილვადობას აკონტროლებ.
+        </p>
       </CollapsibleCard>
 
       {/* ── Pricing ── */}

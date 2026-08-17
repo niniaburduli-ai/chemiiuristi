@@ -24,6 +24,7 @@ export async function getFeatureFlags(): Promise<FeatureFlagsData> {
       review: doc.review !== false,
       templates: doc.templates !== false,
       legislation: doc.legislation !== false,
+      guides: doc.guides !== false,
       testModeBanner: doc.testModeBanner !== false,
     }
   } catch {

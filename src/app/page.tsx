@@ -9,7 +9,8 @@ import { ServiceCards } from "@/components/site/service-cards"
 import { HowItWorks } from "@/components/site/how-it-works"
 import { FaqCarousel } from "@/components/site/FaqCarousel"
 import { TestimonialsSection } from "@/components/site/TestimonialsSection"
-import { getHomePage, getFAQ } from "@/lib/cms"
+import { GuidesBentoSection } from "@/components/site/guides-bento"
+import { getHomePage, getFAQ, getGuides } from "@/lib/cms"
 import { getVisiblePlans } from "@/lib/plans-db"
 import { getCustomPlanRatesFull } from "@/lib/custom-plan-rates"
 import { STEP_QUANTITIES } from "@/lib/custom-plan-rates-config"
@@ -54,13 +55,14 @@ export default async function Home() {
   const locale = await getLocale()
   const d = getDict(locale)
   const seed = getHomeSeed()
-  const [cmsData, flags, publicStats, faqData, feedbackSummary, approvedFeedback] = await Promise.all([
+  const [cmsData, flags, publicStats, faqData, feedbackSummary, approvedFeedback, guides] = await Promise.all([
     getHomePage(),
     getFeatureFlags(),
     getPublicStats(),
     getFAQ(locale),
     getFeedbackSummary(),
     getApprovedFeedback(),
+    getGuides(),
   ])
   const [dbPlans, customRatesFull] = await Promise.all([getVisiblePlans(), getCustomPlanRatesFull()])
 
@@ -151,6 +153,14 @@ export default async function Home() {
     cmsData?.featuresHeadingEn || seed.featuresHeadingEn,
     locale,
   )
+
+  // ── Guides heading ────────────────────────────────────────────────────────────
+  const guidesHeading = pick(
+    cmsData?.guidesHeading   || seed.guidesHeading,
+    cmsData?.guidesHeadingEn || seed.guidesHeadingEn,
+    locale,
+  )
+  const guidesViewAllLabel = locale === "en" ? "View all guides ➔" : "ყველა გზამკვლევის ნახვა ➔"
 
   // ── Pricing heading ───────────────────────────────────────────────────────────
   const pricingHeading = pick(
@@ -362,6 +372,16 @@ export default async function Home() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* ── LEGAL GUIDES ── */}
+      {sections.guides !== false && (
+        <GuidesBentoSection
+          guides={guides}
+          locale={locale}
+          heading={guidesHeading}
+          viewAllLabel={guidesViewAllLabel}
+        />
       )}
 
       {/* ── PRICING ── */}
