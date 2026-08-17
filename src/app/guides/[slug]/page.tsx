@@ -126,7 +126,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             <span>
               {isEn
                 ? "This material is a general informational overview, checked against the sources above, and is not legal advice on a specific case. For an answer tailored to your situation, use our AI consultation or contact a lawyer."
-                : "წინამდებარე მასალა წარმოადგენს ზოგად საინფორმაციო მიმოხილვას, გადამოწმებულს ზემოთ მითითებულ წყაროებთან, და არ არის იურიდიული დასკვნა კონკრეტულ საქმეზე. თქვენს ვითარებასთან მორგებული პასუხისთვის გამოიყენეთ ჩვენი AI კონსულტაცია ან მიმართეთ იურისტს."}
+                : "ეს მასალა წარმოადგენს ზოგად მიმოხილვას და ეფუძნება მითითებულ საკანონმდებლო წყაროებს. იგი არ არის ინდივიდუალური იურიდიული დასკვნა. კონკრეტული პასუხისთვის გამოიყენეთ AI კონსულტაცია ან მიმართეთ იურისტს."}
             </span>
           </div>
         </div>
