@@ -89,7 +89,7 @@ export const DEFAULT_GUIDES: GuideItem[] = [
   {
     _id: "guide-2",
     slug: "binis-qiravnobis-khelshekruleba",
-    title: "ბინის ქირავნობის ხელშეკრულება — რა უნდა იწეროდეს",
+    title: "ბინის ქირავნობის ხელშეკრულება — მთავარი პუნქტები, რაც უნდა იცოდეთ",
     titleEn: "Apartment Rental Agreement — What It Should Include",
     description:
       "რა პირობები აუცილებლად უნდა შედიოდეს ბინის ქირავნობის ხელშეკრულებაში — მეიჯარისა და მოიჯარის უფლება-მოვალეობები, დეპოზიტი, ვადა და ხშირი შეცდომები.",
