@@ -47,6 +47,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   const title = pick(guide.title, guide.titleEn, locale)
   const intro = pick(guide.intro, guide.introEn, locale)
+  const dashIndex = title.indexOf(" — ")
+  const heroTitle = dashIndex === -1 ? title : title.slice(0, dashIndex)
+  const heroSubtitle = dashIndex === -1 ? undefined : title.slice(dashIndex + 3)
 
   return (
     <div>
@@ -72,7 +75,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           }),
         ]}
       />
-      <PageHero title={title} />
+      <PageHero title={heroTitle} subtitle={heroSubtitle} />
       <section className="container mx-auto max-w-3xl px-4 py-12">
         <div className="bg-card border border-border rounded-2xl p-8 md:p-10 animate-fade-up delay-150 space-y-6 text-sm leading-relaxed text-foreground/90">
           <p className="text-base text-foreground">{intro}</p>
