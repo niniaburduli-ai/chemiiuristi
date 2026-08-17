@@ -74,12 +74,12 @@ export async function Footer() {
 
   const staticNav = [
     { href: "/", label: d.footer.nav.home },
-    { href: "/about", label: d.footer.nav.about },
     { href: "/services", label: d.footer.nav.services },
-    { href: "/legislation", label: d.footer.nav.legislation },
-    { href: "/guides", label: d.footer.nav.guides },
     { href: "/pricing", label: d.footer.nav.pricing },
+    { href: "/guides", label: d.footer.nav.guides },
+    { href: "/legislation", label: d.footer.nav.legislation },
     { href: "/faq", label: d.footer.nav.faq },
+    { href: "/about", label: d.footer.nav.about },
   ]
     .filter((n) => isPathEnabled(n.href, flags))
     .map((n) => ({ ...n, href: localizedPath(n.href, locale) }));

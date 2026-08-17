@@ -23,12 +23,12 @@ const DEFAULT_SITE_CONFIG: SiteConfigData = {
 const DEFAULT_NAV: NavMenuData = {
   items: [
     { _id: "1", label: "მთავარი", href: "/", order: 0, isExternal: false },
-    { _id: "2", label: "ჩვენ შესახებ", href: "/about", order: 1, isExternal: false },
-    { _id: "3", label: "სერვისები", href: "/services", order: 2, isExternal: false },
-    { _id: "4", label: "კანონმდებლობა", href: "/legislation", order: 3, isExternal: false },
-    { _id: "7", label: "გზამკვლევები", href: "/guides", order: 4, isExternal: false },
-    { _id: "5", label: "ფასები", href: "/pricing", order: 5, isExternal: false },
-    { _id: "6", label: "კითხვები", href: "/faq", order: 6, isExternal: false },
+    { _id: "3", label: "სერვისები", href: "/services", order: 1, isExternal: false },
+    { _id: "5", label: "ფასები", href: "/pricing", order: 2, isExternal: false },
+    { _id: "7", label: "გზამკვლევები", href: "/guides", order: 3, isExternal: false },
+    { _id: "4", label: "კანონმდებლობა", href: "/legislation", order: 4, isExternal: false },
+    { _id: "6", label: "კითხვები", href: "/faq", order: 5, isExternal: false },
+    { _id: "2", label: "ჩვენ შესახებ", href: "/about", order: 6, isExternal: false },
   ],
   status: "published",
 }
@@ -45,12 +45,12 @@ const DEFAULT_SITE_CONFIG_EN: SiteConfigData = {
 const DEFAULT_NAV_EN: NavMenuData = {
   items: [
     { _id: "1", label: "Home", href: "/", order: 0, isExternal: false },
-    { _id: "2", label: "About us", href: "/about", order: 1, isExternal: false },
-    { _id: "3", label: "Services", href: "/services", order: 2, isExternal: false },
-    { _id: "4", label: "Legislation", href: "/legislation", order: 3, isExternal: false },
-    { _id: "7", label: "Guides", href: "/guides", order: 4, isExternal: false },
-    { _id: "5", label: "Pricing", href: "/pricing", order: 5, isExternal: false },
-    { _id: "6", label: "FAQ", href: "/faq", order: 6, isExternal: false },
+    { _id: "3", label: "Services", href: "/services", order: 1, isExternal: false },
+    { _id: "5", label: "Pricing", href: "/pricing", order: 2, isExternal: false },
+    { _id: "7", label: "Guides", href: "/guides", order: 3, isExternal: false },
+    { _id: "4", label: "Legislation", href: "/legislation", order: 4, isExternal: false },
+    { _id: "6", label: "FAQ", href: "/faq", order: 5, isExternal: false },
+    { _id: "2", label: "About us", href: "/about", order: 6, isExternal: false },
   ],
   status: "published",
 }
