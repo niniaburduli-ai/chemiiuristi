@@ -42,7 +42,7 @@ export default function PrivacyPage() {
             <p>მონაცემთა დამმუშავებელია „ჩემი იურისტი&rdquo;.</p>
             <p>
               კონფიდენციალურობასთან დაკავშირებულ საკითხებზე დაგვიკავშირდით: ელფოსტა{" "}
-              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary underline">
+              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary dark:text-gold underline">
                 contact.chemiiuristi@gmail.com
               </a>
               .
@@ -246,7 +246,7 @@ export default function PrivacyPage() {
               „ჩემი იურისტი&rdquo;
               <br />
               ელფოსტა:{" "}
-              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary underline">
+              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary dark:text-gold underline">
                 contact.chemiiuristi@gmail.com
               </a>
             </p>

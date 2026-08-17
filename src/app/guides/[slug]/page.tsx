@@ -117,7 +117,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                       href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary underline underline-offset-2 hover:text-primary/80"
+                      className="text-primary dark:text-gold underline underline-offset-2 hover:text-primary/80 dark:hover:text-gold/80"
                     >
                       {pick(source.label, source.labelEn, locale)}
                     </a>

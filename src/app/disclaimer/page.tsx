@@ -157,7 +157,7 @@ export default function DisclaimerPage() {
               „ჩემი იურისტი&rdquo;
               <br />
               ელფოსტა:{" "}
-              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary underline">
+              <a href="mailto:contact.chemiiuristi@gmail.com" className="text-primary dark:text-gold underline">
                 contact.chemiiuristi@gmail.com
               </a>
             </p>
