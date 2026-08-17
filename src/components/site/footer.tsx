@@ -77,6 +77,7 @@ export async function Footer() {
     { href: "/about", label: d.footer.nav.about },
     { href: "/services", label: d.footer.nav.services },
     { href: "/legislation", label: d.footer.nav.legislation },
+    { href: "/guides", label: d.footer.nav.guides },
     { href: "/pricing", label: d.footer.nav.pricing },
     { href: "/faq", label: d.footer.nav.faq },
   ]

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
+import { GUIDES } from "@/lib/guides-content"
 
 /**
  * Central SEO config. All canonical URLs, keyword targets, and structured-data
@@ -136,6 +137,13 @@ export const PUBLIC_ROUTES: {
   { path: "/terms", changeFrequency: "yearly", priority: 0.2, bilingual: false },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.2, bilingual: false },
   { path: "/disclaimer", changeFrequency: "yearly", priority: 0.2, bilingual: false },
+  { path: "/guides", changeFrequency: "monthly", priority: 0.7, bilingual: false },
+  ...GUIDES.map((g) => ({
+    path: `/guides/${g.slug}` as const,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+    bilingual: false,
+  })),
 ]
 
 /** `/en` + path, collapsing "/en/" for the homepage down to "/en". */
