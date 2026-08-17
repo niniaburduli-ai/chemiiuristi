@@ -229,10 +229,10 @@ export default async function Home() {
                   {d.home.heroBadge}
                 </span>
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gold leading-[1.05] tracking-tight animate-fade-up delay-150">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gold leading-[1.05] tracking-tight animate-fade-up delay-150">
                 {heroTitle}
               </h1>
-              <p className="text-xs sm:text-sm md:text-xl font-semibold text-white leading-snug animate-fade-up delay-300 max-w-lg text-balance [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
+              <p className="text-base sm:text-lg md:text-xl font-semibold text-white leading-snug animate-fade-up delay-300 max-w-lg text-balance [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
                 {heroSubtitle}
               </p>
               <Link
