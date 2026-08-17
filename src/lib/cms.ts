@@ -5,13 +5,15 @@ import { NavMenu } from "@/lib/models/NavMenu"
 import { HomePage } from "@/lib/models/HomePage"
 import { AboutPage } from "@/lib/models/AboutPage"
 import { FAQ } from "@/lib/models/FAQ"
+import { Guides } from "@/lib/models/Guides"
 import { FooterContent } from "@/lib/models/FooterContent"
 import { LegalNotice } from "@/lib/models/LegalNotice"
 import type {
   SiteConfigData, NavMenuData, HomePageData, AboutPageData,
-  FAQData, FooterData, LegalNoticeData, LegalNoticeType,
+  FAQData, GuideItem, FooterData, LegalNoticeData, LegalNoticeType,
 } from "@/types/cms"
 import type { Locale } from "@/lib/i18n/config"
+import { DEFAULT_GUIDES } from "@/lib/guides-seed"
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
 
@@ -232,6 +234,26 @@ export async function getFAQ(locale: Locale = "ka"): Promise<FAQData> {
       .map((i) => ({ _id: String(i._id), question: i.question, answer: i.answer, category: i.category, order: i.order, status: i.status as import("@/types/cms").CMSStatus }))
     return items.length > 0 ? toPlain({ items }) : fallback
   } catch { return fallback }
+}
+
+/** Published guides sorted for display, ka+en fields both live on each item. */
+export async function getGuides(): Promise<GuideItem[]> {
+  try {
+    await dbConnect()
+    const doc = await Guides.findOne().lean()
+    if (!doc) return DEFAULT_GUIDES
+    const items = doc.items
+      .filter((i) => i.status === "published")
+      .sort((a, b) => a.order - b.order)
+      .map((i) => toPlain(i as unknown as GuideItem))
+    return items.length > 0 ? items : DEFAULT_GUIDES
+  } catch { return DEFAULT_GUIDES }
+}
+
+/** A single published guide by slug, or null if it doesn't exist / isn't published. */
+export async function getGuide(slug: string): Promise<GuideItem | null> {
+  const guides = await getGuides()
+  return guides.find((g) => g.slug === slug) ?? null
 }
 
 export async function getFooter(locale: Locale = "ka"): Promise<FooterData> {

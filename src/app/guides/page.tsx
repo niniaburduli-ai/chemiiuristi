@@ -4,11 +4,12 @@ import { PageHero } from "@/components/site/PageHero"
 import { JsonLd } from "@/components/site/JsonLd"
 import { GuidesSearch } from "@/components/site/guides-search"
 import { buildMetadata, breadcrumbJsonLd, enPath, KEYWORDS_KA, KEYWORDS_EN } from "@/lib/seo"
-import { GUIDES } from "@/lib/guides-content"
+import { getGuides } from "@/lib/cms"
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const isEn = locale === "en"
+  const guides = await getGuides()
   return buildMetadata({
     title: isEn
       ? "Legal Guides — Plain-Language Answers to Common Questions"
@@ -17,7 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
       ? "Practical legal guides on common questions in Georgia — traffic fines, apartment rentals, employment contracts, divorce, and more."
       : "პრაქტიკული სამართლებრივი გზამკვლევები საქართველოში ხშირად წამოჭრილ საკითხებზე — მანქანის ჯარიმები, ბინის ქირავნობა, შრომითი ხელშეკრულება, განქორწინება და სხვა.",
     path: "/guides",
-    keywords: isEn ? [...GUIDES.flatMap((g) => g.keywordsEn), ...KEYWORDS_EN] : [...GUIDES.flatMap((g) => g.keywords), ...KEYWORDS_KA],
+    keywords: isEn
+      ? [...guides.flatMap((g) => g.keywordsEn ?? []), ...KEYWORDS_EN]
+      : [...guides.flatMap((g) => g.keywords), ...KEYWORDS_KA],
     locale,
     bilingual: true,
   })
@@ -26,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GuidesIndexPage() {
   const locale = await getLocale()
   const isEn = locale === "en"
+  const guides = await getGuides()
   return (
     <div>
       <JsonLd
@@ -50,7 +54,7 @@ export default async function GuidesIndexPage() {
         }
       />
       <section className="container mx-auto max-w-3xl px-4 py-12">
-        <GuidesSearch guides={GUIDES} locale={locale} />
+        <GuidesSearch guides={guides} locale={locale} />
       </section>
     </div>
   )

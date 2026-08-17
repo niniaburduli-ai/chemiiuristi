@@ -1,46 +1,14 @@
+import type { GuideItem } from "@/types/cms"
+
 /**
- * Static legal-guide articles — bilingual hardcoded prose (ka is the source
- * of truth, en is a real translation, same shape as src/lib/i18n/dictionaries.ts).
- * Each targets a long-tail query from KEYWORDS_KA/KEYWORDS_EN that currently
- * has no matching page on the site.
- *
- * Add a new entry here + a matching PUBLIC_ROUTES entry in src/lib/seo.ts to
- * publish another guide. The route is bilingual, so also add its slug check
- * in middleware.ts if the /guides prefix rule there ever changes.
+ * Shown until the admin publishes real guide content in the DB (Guides
+ * collection), so /guides is never empty on a fresh install — same role as
+ * DEFAULT_FAQ in lib/cms.ts. These 6 articles are the ones originally
+ * shipped; content verified against matsne.gov.ge (see each item's `sources`).
  */
-
-export type GuideSection = {
-  title: string
-  titleEn: string
-  paragraphs: string[]
-  paragraphsEn: string[]
-  list?: string[]
-  listEn?: string[]
-}
-
-export type GuideSource = {
-  label: string
-  labelEn: string
-  url: string
-}
-
-export type Guide = {
-  slug: string
-  title: string
-  titleEn: string
-  description: string
-  descriptionEn: string
-  keywords: string[]
-  keywordsEn: string[]
-  intro: string
-  introEn: string
-  sections: GuideSection[]
-  /** Primary legislation / official sources the article is checked against. */
-  sources: GuideSource[]
-}
-
-export const GUIDES: Guide[] = [
+export const DEFAULT_GUIDES: GuideItem[] = [
   {
+    _id: "guide-1",
     slug: "mankanis-jarimis-gasachivreba",
     title: "მანქანის ჯარიმის გასაჩივრება — რა ნაბიჯებია საჭირო",
     titleEn: "Appealing a Traffic Fine in Georgia — What Steps Are Needed",
@@ -115,8 +83,11 @@ export const GUIDES: Guide[] = [
         url: "https://matsne.gov.ge/ka/document/view/28216",
       },
     ],
+    order: 0,
+    status: "published",
   },
   {
+    _id: "guide-2",
     slug: "binis-qiravnobis-khelshekruleba",
     title: "ბინის ქირავნობის ხელშეკრულება — რა უნდა იწეროდეს",
     titleEn: "Apartment Rental Agreement — What It Should Include",
@@ -193,8 +164,11 @@ export const GUIDES: Guide[] = [
         url: "https://matsne.gov.ge/ka/document/view/31702",
       },
     ],
+    order: 1,
+    status: "published",
   },
   {
+    _id: "guide-3",
     slug: "shromiti-khelshekrulebis-pirobebi",
     title: "შრომითი ხელშეკრულების პირობები — რა უფლებები გაქვთ დასაქმებულს",
     titleEn: "Employment Contract Terms — Your Rights as an Employee",
@@ -269,8 +243,11 @@ export const GUIDES: Guide[] = [
         url: "https://matsne.gov.ge/ka/document/view/1155567",
       },
     ],
+    order: 2,
+    status: "published",
   },
   {
+    _id: "guide-4",
     slug: "gankortsineba-saqartveloshi",
     title: "განქორწინება საქართველოში — პროცედურის ზოგადი მიმოხილვა",
     titleEn: "Divorce in Georgia — General Overview of the Procedure",
@@ -338,8 +315,11 @@ export const GUIDES: Guide[] = [
         url: "https://legal.ge/ka/news/ganqorwineba-saqartveloshi-procedura-vadebi-advokati-ka",
       },
     ],
+    order: 3,
+    status: "published",
   },
   {
+    _id: "guide-5",
     slug: "memkvidreobis-migheba",
     title: "მემკვიდრეობის მიღება — რა ნაბიჯებია საჭირო",
     titleEn: "Accepting an Inheritance — What Steps Are Needed",
@@ -415,8 +395,11 @@ export const GUIDES: Guide[] = [
         url: "https://www.legalaid.ge/ka/p/69/მემკვიდრეობითი-სამართალი",
       },
     ],
+    order: 4,
+    status: "published",
   },
   {
+    _id: "guide-6",
     slug: "khelshekrulebis-batiloba",
     title: "ხელშეკრულების ბათილობა — როდის შეიძლება ხელშეკრულების გაბათილება",
     titleEn: "Void and Voidable Contracts — When a Contract Can Be Invalidated",
@@ -479,9 +462,7 @@ export const GUIDES: Guide[] = [
         url: "https://matsne.gov.ge/ka/document/view/31702",
       },
     ],
+    order: 5,
+    status: "published",
   },
 ]
-
-export function getGuide(slug: string): Guide | undefined {
-  return GUIDES.find((g) => g.slug === slug)
-}

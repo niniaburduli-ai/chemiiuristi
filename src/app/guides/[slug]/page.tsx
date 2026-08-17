@@ -7,11 +7,7 @@ import { PageHero } from "@/components/site/PageHero"
 import { JsonLd } from "@/components/site/JsonLd"
 import { buildMetadata, breadcrumbJsonLd, enPath, articleJsonLd } from "@/lib/seo"
 import { pick, pickArr } from "@/lib/i18n/loc"
-import { GUIDES, getGuide } from "@/lib/guides-content"
-
-export function generateStaticParams() {
-  return GUIDES.map((g) => ({ slug: g.slug }))
-}
+import { getGuide } from "@/lib/cms"
 
 export async function generateMetadata({
   params,
@@ -19,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const guide = getGuide(slug)
+  const guide = await getGuide(slug)
   if (!guide) return {}
   const locale = await getLocale()
   return buildMetadata({
@@ -44,7 +40,7 @@ function Section({ n, title, children }: { n: number; title: string; children: R
 
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const guide = getGuide(slug)
+  const guide = await getGuide(slug)
   if (!guide) notFound()
   const locale = await getLocale()
   const isEn = locale === "en"

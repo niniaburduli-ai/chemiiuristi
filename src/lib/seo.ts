@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
-import { GUIDES } from "@/lib/guides-content"
 
 /**
  * Central SEO config. All canonical URLs, keyword targets, and structured-data
@@ -138,12 +137,8 @@ export const PUBLIC_ROUTES: {
   { path: "/privacy", changeFrequency: "yearly", priority: 0.2, bilingual: false },
   { path: "/disclaimer", changeFrequency: "yearly", priority: 0.2, bilingual: false },
   { path: "/guides", changeFrequency: "monthly", priority: 0.7, bilingual: true },
-  ...GUIDES.map((g) => ({
-    path: `/guides/${g.slug}` as const,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-    bilingual: true,
-  })),
+  // Individual /guides/<slug> entries are DB-driven (see lib/cms.ts getGuides)
+  // and added to the sitemap dynamically in app/sitemap.ts, not listed here.
 ]
 
 /** `/en` + path, collapsing "/en/" for the homepage down to "/en". */

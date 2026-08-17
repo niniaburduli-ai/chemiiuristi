@@ -12,6 +12,7 @@ import { NavMenu } from "@/lib/models/NavMenu"
 import { HomePage } from "@/lib/models/HomePage"
 import { AboutPage } from "@/lib/models/AboutPage"
 import { FAQ } from "@/lib/models/FAQ"
+import { Guides } from "@/lib/models/Guides"
 import { FooterContent } from "@/lib/models/FooterContent"
 import { LegalNotice } from "@/lib/models/LegalNotice"
 import { ThemeConfig } from "@/lib/models/ThemeConfig"
@@ -48,6 +49,7 @@ export const ADMIN_COLLECTIONS: AdminCollection[] = [
   { slug: "home-pages", label: "Home Pages", labelKa: "მთავარი გვერდები", model: HomePage as unknown as Model<unknown>, hidden: [] },
   { slug: "about-pages", label: "About Pages", labelKa: "გვერდი ჩვენ შესახებ", model: AboutPage as unknown as Model<unknown>, hidden: [] },
   { slug: "faqs", label: "FAQ", labelKa: "ხშირად დასმული კითხვები", model: FAQ as unknown as Model<unknown>, hidden: [] },
+  { slug: "guides", label: "Guides", labelKa: "გზამკვლევები", model: Guides as unknown as Model<unknown>, hidden: [] },
   { slug: "footers", label: "Footers", labelKa: "ქვედა კოლონტიტულები", model: FooterContent as unknown as Model<unknown>, hidden: [] },
   { slug: "legal-notices", label: "Legal Notices", labelKa: "სამართლებრივი შეტყობინებები", model: LegalNotice as unknown as Model<unknown>, hidden: [] },
   { slug: "theme-config", label: "Theme Config", labelKa: "თემის კონფიგურაცია", model: ThemeConfig as unknown as Model<unknown>, hidden: [] },

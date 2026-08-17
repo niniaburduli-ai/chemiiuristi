@@ -6,6 +6,7 @@ import { NavMenuForm } from "./NavMenuForm"
 import { HomePageForm } from "./HomePageForm"
 import { AboutPageForm } from "./AboutPageForm"
 import { FAQForm } from "./FAQForm"
+import { GuidesForm } from "./GuidesForm"
 import { FooterForm } from "./FooterForm"
 import { LegalNoticesForm } from "./LegalNoticesForm"
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/config"
@@ -48,6 +49,7 @@ export function CMSPanel() {
         {section === "homepage" && <HomePageForm />}
         {section === "about" && <AboutPageForm />}
         {section === "faq" && <FAQForm />}
+        {section === "guides" && <GuidesForm />}
         {section === "footer" && <FooterForm locale={locale} />}
         {section === "legal" && <LegalNoticesForm />}
       </div>

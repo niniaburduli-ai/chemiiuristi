@@ -3,12 +3,12 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
-import type { Guide } from "@/lib/guides-content";
+import type { GuideItem } from "@/types/cms";
 import type { Locale } from "@/lib/i18n/config";
 import { pick } from "@/lib/i18n/loc";
 import { enPath } from "@/lib/seo";
 
-export function GuidesSearch({ guides, locale }: { guides: Guide[]; locale: Locale }) {
+export function GuidesSearch({ guides, locale }: { guides: GuideItem[]; locale: Locale }) {
   const isEn = locale === "en";
   const [query, setQuery] = useState("");
 
@@ -18,7 +18,7 @@ export function GuidesSearch({ guides, locale }: { guides: Guide[]; locale: Loca
     return guides.filter((g) => {
       const title = pick(g.title, g.titleEn, locale);
       const description = pick(g.description, g.descriptionEn, locale);
-      const keywords = isEn ? g.keywordsEn : g.keywords;
+      const keywords = isEn ? (g.keywordsEn ?? []) : g.keywords;
       return (
         title.toLowerCase().includes(q) ||
         description.toLowerCase().includes(q) ||

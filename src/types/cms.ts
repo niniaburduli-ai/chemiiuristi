@@ -173,6 +173,38 @@ export interface FooterData {
   status: CMSStatus
 }
 
+export interface GuideSection {
+  title: string
+  titleEn?: string
+  paragraphs: string[]
+  paragraphsEn?: string[]
+  list?: string[]
+  listEn?: string[]
+}
+export interface GuideSource {
+  label: string
+  labelEn?: string
+  url: string
+}
+export interface GuideItem {
+  _id: string
+  /** URL segment — /guides/<slug>. Stable across ka/en since both live on this one item. */
+  slug: string
+  title: string
+  titleEn?: string
+  description: string
+  descriptionEn?: string
+  keywords: string[]
+  keywordsEn?: string[]
+  intro: string
+  introEn?: string
+  sections: GuideSection[]
+  sources: GuideSource[]
+  order: number
+  status: CMSStatus
+}
+export interface GuidesData { items: GuideItem[] }
+
 export interface LegalNoticeData {
   _id: string
   type: LegalNoticeType
