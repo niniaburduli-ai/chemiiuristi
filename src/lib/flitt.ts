@@ -44,10 +44,28 @@ function paymentKey(): string {
  * real subscription quota (see the callback route's hard gate on this).
  */
 export function isSandboxCredentials(): boolean {
-  return process.env.FLITT_PAYMENT_KEY === "test";
+  // Flitt's documented demo merchant (1549901) uses the literal key "test".
+  // A real merchant (e.g. 4057182) running the portal's test mode signs with
+  // its own key, so that check alone would miss it — set FLITT_SANDBOX_MODE=true
+  // in that case to keep the callback's hard guard (no real quota from sandbox
+  // "approved" events) working.
+  if (process.env.FLITT_PAYMENT_KEY === "test") return true;
+  if (process.env.FLITT_SANDBOX_MODE === "true" || process.env.FLITT_SANDBOX_MODE === "1") return true;
+  return false;
 }
 export function appUrl(): string {
   return (process.env.APP_URL || process.env.AUTH_URL || "http://localhost:3000").replace(/\/$/, "");
+}
+
+/**
+ * Public base URL Flitt's *server* uses for to server_callback_url. In local
+ * dev the app is only reachable from the internet through a tunnel
+ * (ngrok/localtunnel), so FLITT_CALLBACK_URL overrides the app URL here. The
+ * browser-facing response_url still uses appUrl() — Flitt bounces the shopper's
+ * own browser there, where localhost works fine.
+ */
+export function callbackUrl(): string {
+  return (process.env.FLITT_CALLBACK_URL || appUrl()).replace(/\/$/, "");
 }
 
 const sha1 = (s: string) => createHash("sha1").update(s, "utf8").digest("hex");
@@ -118,7 +136,7 @@ export async function createSubscriptionCheckout(
     // state "hidden": subscription is enabled but the recurring calendar
     // (amount / count / interval) is NOT shown or editable on checkout.
     recurring_data: { amount, period: "month", every: 1, quantity: 120, state: "hidden" },
-    server_callback_url: `${appUrl()}/api/flitt/callback`,
+    server_callback_url: `${callbackUrl()}/api/flitt/callback`,
     response_url: `${appUrl()}/api/flitt/return`,
     merchant_data: JSON.stringify({ userId: user.id, plan: plan.key }),
     sender_email: user.email,
@@ -168,7 +186,7 @@ export async function createOneTimeCheckout(
     merchant_id: merchantId(),
     currency: "GEL",
     amount: item.amountMinor,
-    server_callback_url: `${appUrl()}/api/flitt/callback`,
+    server_callback_url: `${callbackUrl()}/api/flitt/callback`,
     response_url: `${appUrl()}/api/flitt/return`,
     merchant_data: JSON.stringify(item.merchantData),
     sender_email: user.email,
