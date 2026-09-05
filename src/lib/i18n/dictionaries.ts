@@ -217,6 +217,9 @@ const ka = {
     statusReversed: "დაბრუნებული",
     statusPaid: "გადახდილი",
     customPackageLabel: "ინდივიდუალური პაკეტი",
+    paymentSuccess: "გადახდა წარმატებით დასრულდა.",
+    paymentFailure: "გადახდა ვერ დასრულდა — სცადეთ ხელახლა.",
+    paymentProcessing: "გადახდა მუშავდება — მალე გამოჩნდება ისტორიაში.",
   },
   legislation: {
     title: "კანონმდებლობა",
@@ -693,6 +696,9 @@ const en: Dict = {
     statusReversed: "Reversed",
     statusPaid: "Paid",
     customPackageLabel: "Custom package",
+    paymentSuccess: "Payment completed successfully.",
+    paymentFailure: "Payment failed — please try again.",
+    paymentProcessing: "Payment is processing — it will appear in your history shortly.",
   },
   legislation: {
     title: "Legislation",

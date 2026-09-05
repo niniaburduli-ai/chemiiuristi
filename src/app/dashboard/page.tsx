@@ -36,9 +36,9 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; paymentResult?: string }>;
 }) {
-  const [session, locale, { tab }] = await Promise.all([auth(), getLocale(), searchParams]);
+  const [session, locale, { tab, paymentResult }] = await Promise.all([auth(), getLocale(), searchParams]);
   if (!session?.user?.id) redirect("/login?callbackUrl=/dashboard");
 
   const d = getDict(locale);
@@ -412,6 +412,7 @@ export default async function DashboardPage({
           billingNextPaymentLabel={isPaid && user.resetAt ? new Date(user.resetAt).toLocaleDateString(dateLocale) : null}
           billingCanCancel={isPaid && billingStatus !== "canceled"}
           billingPayments={billingItemsPromise}
+          billingPaymentResult={paymentResult ?? null}
         />
       </div>
     </div>

@@ -270,6 +270,7 @@ function BillingPanel({
   nextPaymentLabel,
   canCancel,
   payments,
+  paymentResult,
 }: {
   d: Dict;
   locale: Locale;
@@ -280,12 +281,22 @@ function BillingPanel({
   nextPaymentLabel: string | null;
   canCancel: boolean;
   payments: BillingPaymentItem[];
+  paymentResult: string | null;
 }) {
   const db = d.billing;
   const planSectionRef = useRef<HTMLDivElement>(null);
   const historySectionRef = useRef<HTMLDivElement>(null);
   const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) =>
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const resultBanner =
+    paymentResult === "success"
+      ? { tone: "bg-emerald-500/10 border-emerald-600/30 text-emerald-700 dark:text-emerald-300", text: db.paymentSuccess, icon: true }
+      : paymentResult === "declined"
+        ? { tone: "bg-red-500/10 border-red-600/30 text-red-700 dark:text-red-300", text: db.paymentFailure, icon: false }
+        : paymentResult === "processing"
+          ? { tone: "bg-amber-500/10 border-amber-600/30 text-amber-700 dark:text-amber-300", text: db.paymentProcessing, icon: false }
+          : null;
 
   return (
     <div className="flex flex-col h-full">
@@ -300,6 +311,12 @@ function BillingPanel({
       </header>
 
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
+        {resultBanner && (
+          <div className={`rounded-xl border px-4 py-3 text-sm font-medium ${resultBanner.tone}`} role="status">
+            {resultBanner.text}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
@@ -412,6 +429,7 @@ function BillingPanelAsync({
   statusLabel: string | null;
   nextPaymentLabel: string | null;
   canCancel: boolean;
+  paymentResult: string | null;
 }) {
   const payments = use(paymentsPromise);
   return <BillingPanel payments={payments} {...rest} />;
@@ -475,6 +493,7 @@ export function DashboardClient({
   billingNextPaymentLabel,
   billingCanCancel,
   billingPayments,
+  billingPaymentResult,
 }: {
   d: Dict;
   initialTab?: string;
@@ -508,6 +527,7 @@ export function DashboardClient({
   billingNextPaymentLabel: string | null;
   billingCanCancel: boolean;
   billingPayments: Promise<BillingPaymentItem[]>;
+  billingPaymentResult: string | null;
 }) {
   const dp = d.profile;
 
@@ -652,6 +672,7 @@ export function DashboardClient({
               statusLabel={billingStatusLabel}
               nextPaymentLabel={billingNextPaymentLabel}
               canCancel={billingCanCancel}
+              paymentResult={billingPaymentResult}
             />
           </Suspense>
         </div>
