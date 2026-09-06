@@ -66,7 +66,7 @@ export function LanguageSwitcher({ current }: { current: Locale }) {
 
   return (
     <div className="flex items-center gap-1 rounded-md border p-0.5">
-      <Globe className="mx-1 h-3.5 w-3.5 shrink-0 text-gold animate-[spin_3s_linear_infinite]" />
+      <Globe className="mx-0.5 h-3 w-3 shrink-0 text-gold animate-[spin_3s_linear_infinite]" />
       {LOCALES.map((l) => {
         const Flag = LOCALE_FLAGS[l]
         return (
@@ -77,11 +77,11 @@ export function LanguageSwitcher({ current }: { current: Locale }) {
             aria-label={LOCALE_LABELS[l]}
             title={LOCALE_LABELS[l]}
             className={[
-              "rounded px-1 py-0.5 transition-opacity overflow-hidden",
+              "rounded px-0.5 py-0.5 transition-opacity overflow-hidden",
               l === current ? "opacity-100 ring-1 ring-primary" : "opacity-50 hover:opacity-80",
             ].join(" ")}
           >
-            <Flag className="h-4 w-6 rounded-[2px]" />
+            <Flag className="h-3.5 w-5 rounded-[2px]" />
           </button>
         )
       })}

@@ -47,10 +47,11 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-sm transition-shadow">
-      <div className="container mx-auto flex min-h-16 flex-wrap md:flex-nowrap items-center justify-between gap-x-4 gap-y-2 lg:gap-x-6 px-4 py-2">
+      <div className="container mx-auto flex min-h-16 flex-wrap md:flex-nowrap items-center justify-between gap-x-3 gap-y-2 lg:gap-x-5 px-3 sm:px-4 py-2">
         {/* Menu trigger (mobile) + Logo — stay together on the first line */}
         <div className="flex items-center gap-2 min-w-0 order-1 md:shrink-0">
-          <MobileNavSheet
+          <div className="lg:hidden shrink-0">
+            <MobileNavSheet
             siteName={siteName}
             menuLabel={d.header.menu}
             navItems={localizedNavItems}
@@ -61,10 +62,11 @@ export async function Header() {
             contactEmail={contactEmail}
             contactAddress={contactAddress}
           />
+          </div>
           <Link href={localizedPath("/", locale)} className="flex items-center gap-2 min-w-0 group">
             <span
               aria-hidden="true"
-              className="inline-block h-9 w-[27px] shrink-0 bg-gold transition-opacity group-hover:opacity-80"
+              className="inline-block h-8 w-6 shrink-0 bg-gold transition-opacity group-hover:opacity-80"
               style={{
                 WebkitMaskImage: "url(/logo-themis.png)",
                 maskImage: "url(/logo-themis.png)",
@@ -77,10 +79,10 @@ export async function Header() {
               }}
             />
             <span className="flex flex-col items-start leading-tight min-w-0">
-              <span className="text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80 shrink-0">
+              <span className="text-base lg:text-lg font-bold text-gold tracking-wide [font-family:var(--font-noto-serif)] transition-opacity group-hover:opacity-80 shrink-0">
                 {siteName}
               </span>
-              <span className="text-sm text-foreground font-normal truncate min-w-0">
+              <span className="text-xs lg:text-sm text-foreground font-normal truncate min-w-0">
                 {tagline}
               </span>
             </span>
@@ -93,7 +95,7 @@ export async function Header() {
         </div>
 
         {/* Nav */}
-        <nav className="hidden lg:flex items-center gap-3 lg:gap-4 text-sm shrink-0 order-2">
+        <nav className="hidden lg:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-sm shrink-0 order-2">
           {localizedNavItems.map((n) => (
             <Link
               key={n._id}
@@ -108,7 +110,7 @@ export async function Header() {
         </nav>
 
         {/* Auth — wraps onto its own line on mobile, inline on desktop */}
-        <div className="flex flex-wrap items-center justify-between md:justify-end gap-1 sm:gap-2 shrink-0 order-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center justify-between md:justify-end gap-1 sm:gap-1.5 shrink-0 order-3 w-full md:w-auto">
           <div className="hidden md:block">
             <LanguageSwitcher current={locale} />
           </div>
@@ -118,16 +120,16 @@ export async function Header() {
               {user.role === "admin" && (
                 <Link
                   href="/admin"
-                  className={buttonVariants({ variant: "outline", size: "sm" }) + " btn-hover"}
+                  className={buttonVariants({ variant: "outline", size: "xs" }) + " btn-hover"}
                 >
                   {d.header.admin}
                 </Link>
               )}
               <Link
                 href="/dashboard"
-                className={buttonVariants({ variant: "ghost", size: "sm" }) + " btn-hover"}
+                className={buttonVariants({ variant: "ghost", size: "xs" }) + " btn-hover"}
               >
-                <User2 className="h-4 w-4 mr-1 text-gold" />
+                <User2 className="h-3.5 w-3.5 mr-1 text-gold" />
                 {initials}
               </Link>
               <LogoutButton />
