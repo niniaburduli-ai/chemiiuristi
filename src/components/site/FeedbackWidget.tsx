@@ -107,9 +107,15 @@ export function FeedbackWidget({ locale }: { locale: Locale }) {
         onPointerCancel={handlePointerUp}
         style={dragTop !== null ? { top: dragTop, transform: "none", transition: isDragging ? "none" : undefined } : undefined}
         aria-label={d.tabLabel}
-        className={`fixed right-0 rotate-180 z-40 touch-none select-none cursor-grab active:cursor-grabbing [writing-mode:vertical-rl] bg-gold text-slate-900 text-xs font-semibold tracking-wider px-2 py-4 rounded-l-lg shadow-lg hover:brightness-95 hover:px-3 transition-all ${dragTop === null ? "top-1/2 -translate-y-1/2" : ""}`}
+        className={`fixed right-0 rotate-180 z-40 touch-none select-none cursor-grab active:cursor-grabbing bg-gold text-slate-900 text-xs font-semibold tracking-wider px-2 py-4 rounded-l-lg shadow-lg hover:brightness-95 hover:px-3 transition-all ${dragTop === null ? "top-1/2 -translate-y-1/2" : ""}`}
       >
-        {d.tabLabel}
+        <span aria-hidden="true" className="flex flex-col items-center gap-[0.05em]">
+          {d.tabLabel.split("").map((char, i) => (
+            <span key={i} className="block rotate-90 leading-none">
+              {char}
+            </span>
+          ))}
+        </span>
       </button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
