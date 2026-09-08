@@ -32,7 +32,7 @@ const ka = {
     },
     legal: {
       privacy: "კონფიდენციალურობის პოლიტიკა",
-      terms: "გამოყენების პირობები",
+      terms: "მომსახურების პირობები",
       disclaimer: "პასუხისმგებლობის შეზღუდვა",
     },
   },
@@ -511,7 +511,7 @@ const en: Dict = {
     },
     legal: {
       privacy: "Privacy policy",
-      terms: "Terms of use",
+      terms: "Terms of Service",
       disclaimer: "Disclaimer",
     },
   },

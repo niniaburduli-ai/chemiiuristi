@@ -35,7 +35,7 @@ export default function TermsPage() {
         <div className="bg-card border border-border rounded-2xl p-8 md:p-10 animate-fade-up delay-150 space-y-6 text-sm leading-relaxed text-foreground/90">
           <Section n={1} title="ზოგადი ინფორმაცია">
             <p>
-              წინამდებარე გამოყენების პირობები წარმოადგენს შეთანხმებას მომხმარებელსა
+              წინამდებარე მომსახურების პირობები წარმოადგენს შეთანხმებას მომხმარებელსა
               და ონლაინ პლატფორმა „ჩემი იურისტი&rdquo;-ს შორის.
             </p>
             <p>
@@ -206,7 +206,7 @@ export default function TermsPage() {
           </Section>
 
           <Section n={12} title="კონტაქტი">
-            <p>გამოყენების პირობებთან დაკავშირებული კითხვების შემთხვევაში დაგვიკავშირდით:</p>
+            <p>მომსახურების პირობებთან დაკავშირებული კითხვების შემთხვევაში დაგვიკავშირდით:</p>
             <p>
               „ჩემი იურისტი&rdquo;
               <br />

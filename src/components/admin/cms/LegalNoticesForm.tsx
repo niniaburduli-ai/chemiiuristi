@@ -10,7 +10,7 @@ import type { LegalNoticeData, LegalNoticeType } from "@/types/cms"
 
 const TYPES: { id: LegalNoticeType; label: string }[] = [
   { id: "ai-warning", label: "AI გაფრთხილება" },
-  { id: "terms", label: "გამოყენების პირობები" },
+  { id: "terms", label: "მომსახურების პირობები" },
   { id: "privacy", label: "კონფიდენციალობა" },
   { id: "cookie", label: "Cookie პოლიტიკა" },
 ]
