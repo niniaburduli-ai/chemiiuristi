@@ -488,7 +488,7 @@ function TemplatesLinkPanel({ sm, locale }: { sm: ReturnType<typeof getDict>["se
 
 function UpgradeCard({ plan, locale, d }: { plan: PlanData | null; locale: Locale; d: ReturnType<typeof getDict> }) {
   if (!plan) return null;
-  const title = locale === "en" ? "Upgrade plan" : "განაახლე პაკეტი";
+  const title = locale === "en" ? "Upgrade plan" : "განაახლეთ პაკეტი";
 
   return (
     <div>

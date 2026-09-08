@@ -295,7 +295,7 @@ export function buildImprovementUserMessage(input: {
   parts.push(
     input.instruction.trim()
       ? `მომხმარებლის მოთხოვნა: ${input.instruction.trim()}`
-      : "შეასწორე ყველა გამოვლენილი რისკი."
+      : "შეასწორეთ ყველა გამოვლენილი რისკი."
   );
 
   return parts.join("\n\n");

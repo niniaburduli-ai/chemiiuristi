@@ -91,7 +91,7 @@ export async function registerAction(
     });
   } catch (err) {
     if (err instanceof AuthError) {
-      return { ok: false, error: "რეგისტრაცია წარმატებით დასრულდა, შედი თავიდან" };
+      return { ok: false, error: "რეგისტრაცია წარმატებით დასრულდა, შედით თავიდან" };
     }
     throw err;
   }

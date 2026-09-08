@@ -232,7 +232,7 @@ function ReviewDetail({ review }: { review: ReviewItem }) {
                     მომხმარებლის მოთხოვნა
                   </p>
                   <p className="text-sm">
-                    {revision.instruction.trim() || "შეასწორე ყველა გამოვლენილი რისკი."}
+                    {revision.instruction.trim() || "შეასწორეთ ყველა გამოვლენილი რისკი."}
                   </p>
                   {revision.createdAt && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">

@@ -17,7 +17,7 @@ export type RegisterInput = z.infer<typeof RegisterSchema>;
 
 export const LoginSchema = z.object({
   email: z.string().email({ message: "არასწორი ელ. ფოსტა" }).toLowerCase().trim(),
-  password: z.string().min(1, { message: "შეიყვანე პაროლი" }),
+  password: z.string().min(1, { message: "შეიყვანეთ პაროლი" }),
 });
 export type LoginInput = z.infer<typeof LoginSchema>;
 

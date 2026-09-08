@@ -47,7 +47,7 @@ export type PlanLimits = {
 const DEFAULT_PLANS: Omit<PlanData, "id">[] = [
   {
     key: "free", name: "საბაზისო პაკეტი", nameEn: "Basic Plan",
-    description: "სცადე როგორ მუშაობს", descriptionEn: "Try how it works",
+    description: "სცადეთ როგორ მუშაობს", descriptionEn: "Try how it works",
     priceMinor: 0, discountPriceMinor: 0, currency: "GEL", period: "month",
     consultations: PLAN_LIMITS.free.consultations,
     includeDocGeneration: true,
